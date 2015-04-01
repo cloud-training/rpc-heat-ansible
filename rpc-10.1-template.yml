@@ -117,10 +117,17 @@ resources:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
         packages:
-          - screen
           - tmux
           - htop
           - multitail
+          - build-essential
+          - software-properties-common
+          - python-software-properties
+          - curl
+          - git-core
+          - python-pip
+          - python-apt
+          - python-dev
         write_files:
           - path: /opt/cloud-training/id_rsa
             permissions: "0600"
@@ -161,7 +168,7 @@ resources:
                   set -e
                   set -x
                   function exit_failure {
-                    %swift_signal_notify% --data-binary '{"status": "FAILURE", "reason": "'"\$@"'"}'
+                    %swift_signal_notify% --data-binary '{"status": "FAILURE", "reason": "'"$@"'"}'
                     exit 1
                   }
                   function exit_success {
@@ -173,7 +180,7 @@ resources:
                   cd /opt/cloud-training
                   git clone https://github.com/cloud-training/rpc-heat-ansible.git || exit_failure "Git Clone Failure"
                   cd /opt/cloud-training/rpc-heat-ansible
-                  #ansible-playbook moodle-playbook.yml -vv || exit_failure "Ansible Playbook Run Failure"
+                  ansible-playbook rpc-10.1-playbook.yml -vv || exit_failure "Ansible Playbook Run Failure"
                   exit_success
                 params:
                   "%swift_signal_notify%": { get_attr: [ swift_signal_handle_infra1, curl_cli ] }
@@ -188,7 +195,6 @@ resources:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
         packages:
-          - screen
           - tmux
           - htop
           - multitail
@@ -207,7 +213,6 @@ resources:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
         packages:
-          - screen
           - tmux
           - htop
           - multitail
@@ -226,7 +231,6 @@ resources:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
         packages:
-          - screen
           - tmux
           - htop
           - multitail
@@ -245,7 +249,6 @@ resources:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
         packages:
-          - screen
           - tmux
           - htop
           - multitail
@@ -264,7 +267,6 @@ resources:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
         packages:
-          - screen
           - tmux
           - htop
           - multitail
@@ -283,7 +285,6 @@ resources:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
         packages:
-          - screen
           - tmux
           - htop
           - multitail
@@ -302,7 +303,6 @@ resources:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
         packages:
-          - screen
           - tmux
           - htop
           - multitail

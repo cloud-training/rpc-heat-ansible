@@ -1,0 +1,8 @@
+---
+# This playbook installs Rackspace Private Cloud 10.1 
+
+- name: Install Rackspace Private Cloud 10.1 
+  hosts: all
+  tasks:
+    - name: Ping Nodes
+      ping:
