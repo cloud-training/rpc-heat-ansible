@@ -6,3 +6,17 @@
   tasks:
     - name: Ping Nodes
       ping:
+
+    - name: Add Nodes Hosts File Entries
+      lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ hostvars[item].node_name }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ hostvars[item].node_name }}' insertafter=EOF state=present
+      with_items: groups['all']
+
+    - name: Set Environment Variables and Force Color Prompt
+      lineinfile: dest=/root/.bashrc regexp='{{ item.regexp }}' line='{{ item.line }}' insertafter=EOF state=present
+      with_items:
+        - { regexp: '^(#)?force_color_prompt',      line: 'force_color_prompt=yes' }
+        - { regexp: '^export MY_HEAT_STACK_PREFIX', line: 'export MY_HEAT_STACK_PREFIX={{ heat_stack_prefix }}' }
+        - { regexp: '^export MY_NODE_ID',           line: 'export MY_NODE_ID={{ node_id }}' }
+        - { regexp: '^export MY_IP',                line: 'export MY_IP={{ hostvars[inventory_hostname].ansible_eth2.ipv4.address }}' }
+        - { regexp: '^export MY_PRIVATE_IP',        line: 'export MY_PRIVATE_IP={{ hostvars[inventory_hostname].ansible_eth2.ipv4.address }}' }
+        - { regexp: '^export MY_PUBLIC_IP',         line: 'export MY_PUBLIC_IP={{ hostvars[inventory_hostname].ansible_eth0.ipv4.address }}' }
