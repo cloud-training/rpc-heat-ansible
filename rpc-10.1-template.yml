@@ -322,7 +322,6 @@ resources:
   server_infra2:
     type: OS::Nova::Server
     properties:
-    properties:
       name:
         str_replace:
           template: "%prefix%-infra2"
@@ -343,7 +342,6 @@ resources:
 
   server_infra3:
     type: OS::Nova::Server
-    properties:
     properties:
       name:
         str_replace:
@@ -366,7 +364,6 @@ resources:
   server_logger1:
     type: OS::Nova::Server
     properties:
-    properties:
       name:
         str_replace:
           template: "%prefix%-logger1"
@@ -387,7 +384,6 @@ resources:
 
   server_compute1:
     type: OS::Nova::Server
-    properties:
     properties:
       name:
         str_replace:
@@ -410,7 +406,6 @@ resources:
   server_compute2:
     type: OS::Nova::Server
     properties:
-    properties:
       name:
         str_replace:
           template: "%prefix%-compute2"
@@ -432,7 +427,6 @@ resources:
   server_block1:
     type: OS::Nova::Server
     properties:
-    properties:
       name:
         str_replace:
           template: "%prefix%-block1"
@@ -453,7 +447,6 @@ resources:
 
   server_object1:
     type: OS::Nova::Server
-    properties:
     properties:
       name:
         str_replace:
