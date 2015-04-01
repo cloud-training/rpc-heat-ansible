@@ -122,16 +122,11 @@ resources:
           - htop
           - multitail
         write_files:
-          - path: /opt/cloud-training/password
-            content: { get_attr: [ password, value ] }
-            permissions: "0600"
           - path: /opt/cloud-training/id_rsa
-            content: { get_attr: [ keypair, private_key ] }
             permissions: "0600"
-          - path: /opt/cloud-training/id_rsa.pub
-            content: { get_attr: [ keypair, public_key ] }
-            permissions: "0644"
+            content: { get_attr: [ keypair, private_key ] }
           - path: /opt/cloud-training/inventory
+            permissions: "0600"
             content:
               str_replace:
                 template: |
@@ -157,12 +152,33 @@ resources:
                   "%server_compute2_ip%": { get_attr: [ server_compute2, accessIPv4 ] }
                   "%server_block1_ip%":   { get_attr: [ server_block1, accessIPv4 ] }
                   "%server_object1_ip%":  { get_attr: [ server_object1, accessIPv4 ] }
+          - path: /opt/cloud-training/runcmd-bash
+            permissions: "0700"
+            content:
+              str_replace:
+                template: |
+                  #!/bin/bash
+                  set -e
+                  set -x
+                  function exit_failure {
+                    %swift_signal_notify% --data-binary '{"status": "FAILURE", "reason": "'"\$@"'"}'
+                    exit 1
+                  }
+                  function exit_success {
+                    %swift_signal_notify% --data-binary '{"status": "SUCCESS"}'
+                  }
+                  /usr/bin/pip install --upgrade pip || exit_failure "PIP Upgrade PIP Failure"
+                  /usr/local/bin/pip install pip==1.5.6 || exit_failure "PIP Install PIP Failure"
+                  /usr/local/bin/pip install ansible==1.6.10 || exit_failure "PIP Install Ansible Failure"
+                  cd /opt/cloud-training
+                  git clone https://github.com/cloud-training/rpc-heat-ansible.git || exit_failure "Git Clone Failure"
+                  cd /opt/cloud-training/rpc-heat-ansible
+                  #ansible-playbook moodle-playbook.yml -vv || exit_failure "Ansible Playbook Run Failure"
+                  exit_success
+                params:
+                  "%swift_signal_notify%": { get_attr: [ swift_signal_handle_infra1, curl_cli ] }
         runcmd:
-          - str_replace:
-              template: |
-                %swift_signal_notify% --data-binary '{"status": "SUCCESS"}'
-              params:
-                "%swift_signal_notify%": { get_attr: [ swift_signal_handle_infra1, curl_cli ] }
+          - /opt/cloud-training/runcmd-bash
 
   cloud_config_infra2:
     type: OS::Heat::CloudConfig
