@@ -170,6 +170,7 @@ resources:
               str_replace:
                 template: |
                   #!/bin/bash
+                  export HOME="/root"
                   set -e
                   set -x
                   function exit_failure {
