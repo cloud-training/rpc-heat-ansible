@@ -111,7 +111,6 @@ resources:
 
   cloud_config_infra1:
     type: OS::Heat::CloudConfig
-    depends_on: [ network ]
     properties:
       cloud_config:
         output:
@@ -151,7 +150,7 @@ resources:
                   %prefix%-object1     ansible_ssh_host=%server_object1_ip%
                 params:
                   "%prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-                  "%server_infra2_ip%": { get_attr: [ server_infra2, addresses, { get_attr: [ network, label ] }, 0, addr ] }
+                  "%server_infra2_ip%": { get_attr: [ server_infra2, accessIPv4 ] }
         runcmd:
           - str_replace:
               template: |
