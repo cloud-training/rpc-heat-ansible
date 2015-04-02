@@ -64,3 +64,13 @@
           partition_type: p
           partition_number: 2
           partition_size: 15G
+        - node_names: [ block1 ]
+          device: /dev/xvda
+          partition_type: p
+          partition_number: 3
+          partition_size: 50G
+        - node_names: [ block1 ]
+          device: /dev/xvda
+          partition_type: p
+          partition_number: 4
+          partition_size: 50G
