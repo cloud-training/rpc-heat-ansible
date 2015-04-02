@@ -30,3 +30,36 @@
     - name: Check Connectivity
       command: fping infra1 infra2 infra3 logger1 compute1 compute2 block1 object1
       changed_when: False
+
+    - name: Partition Disk
+      shell: |
+        fdisk {{ item.device }} <<EOF
+        n
+        {{ item.partition_type }}
+        {{ item.partition }}
+        
+        +{{ item.partition_size }}
+        w
+        EOF creates={{ item.device }}{{ item.partition_number }}
+      when: inventory_hostname in item.node_names
+      with_items:
+        - nodes_names: [ infra1, infra2, infra3 ]
+          device: /dev/xvda
+          partition_type: p
+          partition_number: 2
+          partition_size: 110G
+        - nodes_names: [ logger1 ]
+          device: /dev/xvda
+          partition_type: p
+          partition_number: 2
+          partition_size: 25G
+        - nodes_names: [ compute1, compute2, object1 ]
+          device: /dev/xvda
+          partition_type: p
+          partition_number: 2
+          partition_size: 10G
+        - nodes_names: [ block1 ]
+          device: /dev/xvda
+          partition_type: p
+          partition_number: 2
+          partition_size: 15G
