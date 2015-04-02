@@ -41,7 +41,7 @@
         {{ item.partition_stop }}
         w
         EOF
-        partprobe creates={{ item.device }}{{ item.partition_number }}
+        partprobe {{ item.device }} creates={{ item.device }}{{ item.partition_number }}
       when: node_name in item.node_names
       with_items:
         - node_names: [ infra1, infra2, infra3 ]
@@ -96,7 +96,7 @@
         {{ item.partition_stop }}
         w
         EOF
-        partprobe creates={{ item.device }}{{ item.partition_number }}
+        partprobe {{ item.device }} creates={{ item.device }}{{ item.partition_number }}
       when: node_name in item.node_names
       with_items:
         - node_names: [ object1 ]
