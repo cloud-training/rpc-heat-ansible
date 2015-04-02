@@ -145,14 +145,14 @@ resources:
                   heat_stack_name=%heat_stack_name%
                   
                   [all]
-                  %prefix%-infra1      ansible_connection=local                 node_id=1    node_name=infra1
-                  %prefix%-infra2      ansible_ssh_host=%server_infra2_ip%      node_id=2    node_name=infra2
-                  %prefix%-infra3      ansible_ssh_host=%server_infra3_ip%      node_id=3    node_name=infra3
-                  %prefix%-logger1     ansible_ssh_host=%server_logger1_ip%     node_id=4    node_name=logger1
+                  %prefix%-infra1      ansible_connection=local            node_id=1    node_name=infra1
+                  %prefix%-infra2      ansible_ssh_host=%server_infra2_ip%    node_id=2    node_name=infra2
+                  %prefix%-infra3      ansible_ssh_host=%server_infra3_ip%    node_id=3    node_name=infra3
+                  %prefix%-logger1     ansible_ssh_host=%server_logger1_ip%    node_id=4    node_name=logger1
                   %prefix%-compute1    ansible_ssh_host=%server_compute1_ip%    node_id=5    node_name=compute1
                   %prefix%-compute2    ansible_ssh_host=%server_compute2_ip%    node_id=6    node_name=compute2
-                  %prefix%-block1      ansible_ssh_host=%server_block1_ip%      node_id=7    node_name=block1
-                  %prefix%-object1     ansible_ssh_host=%server_object1_ip%     node_id=8    node_name=object1
+                  %prefix%-block1      ansible_ssh_host=%server_block1_ip%    node_id=7    node_name=block1
+                  %prefix%-object1     ansible_ssh_host=%server_object1_ip%    node_id=8    node_name=object1
                 params:
                   "%prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
                   "%heat_stack_id%": { get_param: "OS::stack_id" }
