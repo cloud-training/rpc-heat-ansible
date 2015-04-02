@@ -7,6 +7,12 @@
     - name: Ping Nodes
       ping:
 
+    - name: Install Packages
+      apt: name={{ item }} state=present
+      with_items:
+        - colordiff
+        - fping
+
     - name: Add Nodes Hosts File Entries
       lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ hostvars[item].node_name }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ hostvars[item].node_name }}' insertafter=EOF state=present
       with_items: groups['all']
