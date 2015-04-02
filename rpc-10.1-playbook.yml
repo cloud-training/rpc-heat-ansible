@@ -41,7 +41,7 @@
         +{{ item.partition_size }}
         w
         EOF creates={{ item.device }}{{ item.partition_number }}
-      when: inventory_hostname in item.node_names
+      when: "'{{ inventory_hostname}}' in {{ item.node_names }}"
       with_items:
         - nodes_names: [ infra1, infra2, infra3 ]
           device: /dev/xvda
