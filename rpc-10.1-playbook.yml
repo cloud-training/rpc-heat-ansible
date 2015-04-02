@@ -31,46 +31,101 @@
       command: fping infra1 infra2 infra3 logger1 compute1 compute2 block1 object1
       changed_when: False
 
-    - name: Partition Disk
+    - name: Partition Disk (Primary / Extended)
       shell: |
         fdisk {{ item.device }} <<EOF
         n
         {{ item.partition_type }}
         {{ item.partition_number }}
-        
-        +{{ item.partition_size }}
+        {{ item.partition_start }}
+        {{ item.partition_stop }}
         w
         EOF
-        partprobe {{ item.device }} creates={{ item.device }}{{ item.partition_number }}
+        partprobe creates={{ device }}{{ item.partition_number }}
       when: node_name in item.node_names
       with_items:
         - node_names: [ infra1, infra2, infra3 ]
           device: /dev/xvda
           partition_type: p
           partition_number: 2
-          partition_size: 110G
+          partition_start: ''
+          partition_stop: +110G
         - node_names: [ logger1 ]
           device: /dev/xvda
           partition_type: p
           partition_number: 2
-          partition_size: 25G
+          partition_start: ''
+          partition_stop: +25G
         - node_names: [ compute1, compute2, object1 ]
           device: /dev/xvda
           partition_type: p
           partition_number: 2
-          partition_size: 10G
+          partition_start: ''
+          partition_stop: +10G
         - node_names: [ block1 ]
           device: /dev/xvda
           partition_type: p
           partition_number: 2
-          partition_size: 15G
+          partition_start: ''
+          partition_stop: +15G
         - node_names: [ block1 ]
           device: /dev/xvda
           partition_type: p
           partition_number: 3
-          partition_size: 50G
+          partition_start: ''
+          partition_stop: +50G
         - node_names: [ block1 ]
           device: /dev/xvda
           partition_type: p
           partition_number: 4
-          partition_size: 50G
+          partition_start: ''
+          partition_stop: +50G
+        - node_names: [ object1 ]
+          device: /dev/xvda
+          partition_type: e
+          partition_number: 3
+          partition_start: ''
+          partition_stop: ''
+
+    - name: Partition Disk (Logical)
+      shell: |
+        fdisk {{ item.device }} <<EOF
+        n
+        l
+        {{ item.partition_start }}
+        {{ item.partition_stop }}
+        w
+        EOF
+        partprobe creates={{ device }}{{ item.partition_number }}
+      when: node_name in item.node_names
+      with_items:
+        - node_names: [ object1 ]
+          device: /dev/xvda
+          partition_type: l
+          partition_number: 5
+          partition_start: ''
+          partition_stop: +20G
+        - node_names: [ object1 ]
+          device: /dev/xvda
+          partition_type: l
+          partition_number: 6
+          partition_start: ''
+          partition_stop: +20G
+        - node_names: [ object1 ]
+          device: /dev/xvda
+          partition_type: l
+          partition_number: 7
+          partition_start: ''
+          partition_stop: +20G
+        - node_names: [ object1 ]
+          device: /dev/xvda
+          partition_type: l
+          partition_number: 8
+          partition_start: ''
+          partition_stop: +20G
+        - node_names: [ object1 ]
+          device: /dev/xvda
+          partition_type: l
+          partition_number: 9
+          partition_start: ''
+          partition_stop: +20G
