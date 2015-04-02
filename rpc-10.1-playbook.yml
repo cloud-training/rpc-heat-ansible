@@ -31,20 +31,17 @@
       command: fping infra1 infra2 infra3 logger1 compute1 compute2 block1 object1
       changed_when: False
 
-    - name: Debug
-      debug: var=inventory_hostname
-
     - name: Partition Disk
       shell: |
         fdisk {{ item.device }} <<EOF
         n
         {{ item.partition_type }}
-        {{ item.partition }}
+        {{ item.partition_number }}
         
         +{{ item.partition_size }}
         w
         EOF creates={{ item.device }}{{ item.partition_number }}
-      when: "'{{ inventory_hostname}}' in {{ item.node_names }}"
+      when: node_name in item.node_names
       with_items:
         - node_names: [ infra1, infra2, infra3 ]
           device: /dev/xvda
