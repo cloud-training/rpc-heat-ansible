@@ -32,7 +32,7 @@
       changed_when: False
 
     - name: Debug
-      debug:
+      debug: var=inventory_hostname
 
     - name: Partition Disk
       shell: |
