@@ -68,6 +68,9 @@
         - nodes: [ block1 ]
           device: /dev/xvda
           size: 20
+        - nodes: [ block1 ]
+          device: /dev/xvda
+          size: 50
         - nodes: [ object1 ]
           device: /dev/xvda
           size: 15
