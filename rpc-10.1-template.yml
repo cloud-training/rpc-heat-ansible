@@ -493,6 +493,30 @@ resources:
       user_data: { get_resource: cloud_config_object1 }
 
 outputs:
+  csshx_cli:
+    description: Cluster SSH
+    value:
+      str_replace:
+        template: |
+          csshX root@[
+            %server_infra1_ip%,
+            %server_infra2_ip%,
+            %server_infra3_ip%,
+            %server_logger1_ip%,
+            %server_compute1_ip%,
+            %server_compute2_ip%,
+            %server_block1_ip%,
+            %server_object1_ip%
+          ]
+        params:
+          "%server_infra1_ip%":   { get_attr: [ server_infra1, accessIPv4 ] }
+          "%server_infra2_ip%":   { get_attr: [ server_infra2, accessIPv4 ] }
+          "%server_infra3_ip%":   { get_attr: [ server_infra3, accessIPv4 ] }
+          "%server_logger1_ip%":  { get_attr: [ server_logger1, accessIPv4 ] }
+          "%server_compute1_ip%": { get_attr: [ server_compute1, accessIPv4 ] }
+          "%server_compute2_ip%": { get_attr: [ server_compute2, accessIPv4 ] }
+          "%server_block1_ip%":   { get_attr: [ server_block1, accessIPv4 ] }
+          "%server_object1_ip%":  { get_attr: [ server_object1, accessIPv4 ] }
   password:
     description: Password
     value: { get_attr: [ password, value ] }
