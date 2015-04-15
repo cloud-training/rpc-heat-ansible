@@ -70,7 +70,7 @@
           size: 20
         - nodes: [ block1 ]
           device: /dev/xvda
-          size: 50
+          size: 100
         - nodes: [ object1 ]
           device: /dev/xvda
           size: 15
