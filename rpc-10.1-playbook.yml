@@ -66,4 +66,4 @@
           nodes: [ logger1, compute1, compute2, block1, object1 ]
 
     - name: Create Partitions Done Fact
-      ini_file: dest=/etc/ansible/facts.d/partitions.fact option=created value=true
+      ini_file: dest=/etc/ansible/facts.d/partitions.fact section=state option=created value=true
