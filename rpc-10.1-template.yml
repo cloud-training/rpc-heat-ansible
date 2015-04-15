@@ -184,6 +184,8 @@ resources:
                   /usr/local/bin/pip install pip==1.5.6 || exit_failure "PIP Install PIP Failure"
                   /usr/local/bin/pip install ansible==1.6.10 || exit_failure "PIP Install Ansible Failure"
                   cd /opt/cloud-training
+                  export MY_PUBLIC_IP=`curl -s http://ipv4.icanhazip.com/`
+                  sed -i "s/ansible_connection=local/ansible_ssh_host=$MY_PUBLIC_IP/" inventory
                   git clone https://github.com/cloud-training/rpc-heat-ansible.git || exit_failure "Git Clone Failure"
                   cd /opt/cloud-training/rpc-heat-ansible
                   ansible-playbook rpc-10.1-playbook.yml -vv || exit_failure "Ansible Playbook Run Failure"
