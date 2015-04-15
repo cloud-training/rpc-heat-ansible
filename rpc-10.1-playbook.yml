@@ -39,6 +39,9 @@
       command: fping infra1 infra2 infra3 logger1 compute1 compute2 block1 object1
       changed_when: False
 
+    - name: Create /etc/ansible/facts.d
+      file: path=/etc/ansible/facts.d state=directory
+
     - name: Create Partitions
       shell: |
         export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
