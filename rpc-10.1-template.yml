@@ -184,8 +184,10 @@ resources:
                   /usr/local/bin/pip install pip==1.5.6 || exit_failure "PIP Install PIP Failure"
                   /usr/local/bin/pip install ansible==1.6.10 || exit_failure "PIP Install Ansible Failure"
                   cd /opt/cloud-training
+                  # BEGIN - Terrible Chicken Egg Hack
                   export MY_PUBLIC_IP=`curl -s http://ipv4.icanhazip.com/`
                   sed -i "s/ansible_connection=local/ansible_ssh_host=$MY_PUBLIC_IP/" inventory
+                  # END - Terrible Chicken Egg Hack
                   git clone https://github.com/cloud-training/rpc-heat-ansible.git || exit_failure "Git Clone Failure"
                   cd /opt/cloud-training/rpc-heat-ansible
                   ansible-playbook rpc-10.1-playbook.yml -vv || exit_failure "Ansible Playbook Run Failure"
@@ -193,7 +195,7 @@ resources:
                 params:
                   "%swift_signal_notify%": { get_attr: [ swift_signal_handle_infra1, curl_cli ] }
         runcmd:
-          - /opt/cloud-training/runcmd-bash
+          - /opt/cloud-training/runcmd-bash >> /opt/cloud-training/runcmd-bash.log 2>> /opt/cloud-training/runcmd-bash.err
 
   cloud_config_infra2:
     type: OS::Heat::CloudConfig
