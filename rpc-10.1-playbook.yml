@@ -48,7 +48,7 @@
         export PARTITION_END=`awk "BEGIN { print $PARTITION_START + {{ item.size }} }"`
         parted {{ item.device }} mkpart {{ item.type }} ${PARTITION_START}GB ${PARTITION_END}GB
         partprobe {{ item.device }}
-      when: node_name in item.nodes and ( ansible_local is not defined or ( ansible_local is defined and ansible_local.state is defined and ansible_local.state.partitions is defined and ansible_local.state.partitions.created is defined and ansible_local.state.partitions.created != true ) ) )
+      when: node_name in item.nodes and ansible_local is not defined
       with_items:
         - device: /dev/xvda
           type: primary
