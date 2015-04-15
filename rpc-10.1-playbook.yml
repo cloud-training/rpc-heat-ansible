@@ -39,10 +39,15 @@
       command: fping infra1 infra2 infra3 logger1 compute1 compute2 block1 object1
       changed_when: False
 
-    - name: Get Boot Partition Start
+    - name: Create Partitions
       shell: |
-         parted /dev/xvda print | awk '/boot/ { print $2 }'
-      register: boot_partition_start
-
-    - name: Debug
-      debug: var=boot_partition_start
+        export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
+        export PARTITION_END=`echo "$PARTITION_START + {{ item.size }}" | bc`
+        parted {{ item.device }} mkpart {{ item.type }} ${PARTITION_START}GB ${PARTITION_END}GB
+        partprobe {{ item.device }}
+      when: node_name in item.hostnames
+      with_items:
+        - device: /dev/xvda
+          type: primary
+          size: 110
+          hostnames: [ infra1, infra2, infra3 ]
