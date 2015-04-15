@@ -58,7 +58,7 @@
       with_items:
         - nodes: [ infra1, infra2, infra3 ]
           device: /dev/xvda
-          size: 115
+          size: 130
         - nodes: [ logger1 ]
           device: /dev/xvda
           size: 30
