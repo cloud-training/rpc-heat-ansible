@@ -72,7 +72,7 @@
           device: /dev/xvda
           size: 15
 
-    - name: Create Extended Partitions
+    - name: Create Extended Partitions (Extended Partition Will Consume All Free Space)
       shell: |
         export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
         export PARTITION_END=`parted {{ item.device }} print free | awk '/Free Space/ { print $2 }' | tail -n 1 | sed 's/GB//'`
