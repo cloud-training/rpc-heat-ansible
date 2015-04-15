@@ -50,7 +50,7 @@
         - device: /dev/xvda
           type: primary
           size: 110
-          hostnames: [ infra1, infra2, infra3 ]
+          nodes: [ infra1, infra2, infra3 ]
         - device: /dev/xvda
           type: primary
           size: 20
