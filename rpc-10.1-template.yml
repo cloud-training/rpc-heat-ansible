@@ -25,7 +25,7 @@ resources:
       cidr: 192.168.2.0/24
       label:
         str_replace:
-          template: "%prefix%-rpc-private"
+          template: "%prefix%-rpc-network"
           params:
             "%prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
 
