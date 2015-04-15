@@ -48,34 +48,64 @@
       command: fping infra1 infra2 infra3 logger1 compute1 compute2 block1 object1
       changed_when: False
 
-    - name: Create Partitions
+    - name: Create Primary Partitions
       shell: |
         export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
         export PARTITION_END=`awk "BEGIN { print $PARTITION_START + {{ item.size }} }"`
-        parted {{ item.device }} mkpart {{ item.type }} ${PARTITION_START}GB ${PARTITION_END}GB
+        parted {{ item.device }} mkpart primary ${PARTITION_START}GB ${PARTITION_END}GB
         partprobe {{ item.device }}
       when: node_name in item.nodes and ansible_local.partitions is not defined
       with_items:
         - nodes: [ infra1, infra2, infra3 ]
           device: /dev/xvda
-          type: primary
           size: 115
         - nodes: [ logger1 ]
           device: /dev/xvda
-          type: primary
           size: 30
         - nodes: [ compute1, compute2 ]
           device: /dev/xvda
-          type: primary
           size: 15
         - nodes: [ block1 ]
           device: /dev/xvda
-          type: primary
           size: 20
         - nodes: [ object1 ]
           device: /dev/xvda
-          type: primary
           size: 15
+
+    - name: Create Extended Partitions
+      shell: |
+        export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
+        export PARTITION_END=`parted {{ item.device }} print free | awk '/Free Space/ { print $2 }' | tail -n 1 | sed 's/GB//'`
+        parted {{ item.device }} mkpart extended ${PARTITION_START}GB ${PARTITION_END}GB
+        partprobe {{ item.device }}
+      when: node_name in item.nodes and ansible_local.partitions is not defined
+      with_items:
+        - nodes: [ object1 ]
+          device: /dev/xvda
+
+    - name: Create Logical Partitions
+      shell: |
+        export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
+        export PARTITION_END=`awk "BEGIN { print $PARTITION_START + {{ item.size }} }"`
+        parted {{ item.device }} mkpart logical ${PARTITION_START}GB ${PARTITION_END}GB
+        partprobe {{ item.device }}
+      when: node_name in item.nodes and ansible_local.partitions is not defined
+      with_items:
+        - nodes: [ object1 ]
+          device: /dev/xvda
+          size: 20
+        - nodes: [ object1 ]
+          device: /dev/xvda
+          size: 20
+        - nodes: [ object1 ]
+          device: /dev/xvda
+          size: 20
+        - nodes: [ object1 ]
+          device: /dev/xvda
+          size: 20
+        - nodes: [ object1 ]
+          device: /dev/xvda
+          size: 20
 
     - name: Create Partitions Done Fact
       ini_file: dest=/etc/ansible/facts.d/partitions.fact section=state option=created value=true
