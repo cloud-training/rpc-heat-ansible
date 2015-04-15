@@ -72,10 +72,10 @@
           device: /dev/xvda
           type: primary
           size: 20
-        - nodes: [ object ]
+        - nodes: [ object1 ]
           device: /dev/xvda
           type: primary
-          size: 20
+          size: 15
 
     - name: Create Partitions Done Fact
       ini_file: dest=/etc/ansible/facts.d/partitions.fact section=state option=created value=true
