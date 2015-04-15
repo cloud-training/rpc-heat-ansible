@@ -48,7 +48,7 @@
         export PARTITION_END=`awk "BEGIN { print $PARTITION_START + {{ item.size }} }"`
         parted {{ item.device }} mkpart {{ item.type }} ${PARTITION_START}GB ${PARTITION_END}GB
         partprobe {{ item.device }}
-      when: node_name in item.nodes
+      when: node_name in item.nodes and partitions is defined and partitions.created is defined and partitions.created is true
       with_items:
         - device: /dev/xvda
           type: primary
@@ -58,3 +58,6 @@
           type: primary
           size: 20
           nodes: [ logger1, compute1, compute2, block1, object1 ]
+
+    - name: Create Partitions Done Fact
+      file: path=/etc/ansible/facts.d/partitions.fact content="[partitions]\ncreated=true" state=present
