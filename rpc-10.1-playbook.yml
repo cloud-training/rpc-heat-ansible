@@ -56,14 +56,26 @@
         partprobe {{ item.device }}
       when: node_name in item.nodes and ansible_local.partitions is not defined
       with_items:
-        - device: /dev/xvda
+        - nodes: [ infra1, infra2, infra3 ]
+          device: /dev/xvda
           type: primary
-          size: 110
-          nodes: [ infra1, infra2, infra3 ]
-        - device: /dev/xvda
+          size: 115
+        - nodes: [ logger1 ]
+          device: /dev/xvda
+          type: primary
+          size: 30
+        - nodes: [ compute1, compute2 ]
+          device: /dev/xvda
+          type: primary
+          size: 15
+        - nodes: [ block1 ]
+          device: /dev/xvda
           type: primary
           size: 20
-          nodes: [ logger1, compute1, compute2, block1, object1 ]
+        - nodes: [ object ]
+          device: /dev/xvda
+          type: primary
+          size: 20
 
     - name: Create Partitions Done Fact
       ini_file: dest=/etc/ansible/facts.d/partitions.fact section=state option=created value=true
