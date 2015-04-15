@@ -7,6 +7,15 @@
     - name: Ping Nodes
       ping:
 
+    - name: Create /etc/ansible/facts.d
+      file: path=/etc/ansible/facts.d state=directory
+
+    - name: Create Dummy Fact
+      ini_file: dest=/etc/ansible/facts.d/dummy.fact section=dummy option=dummy value=dummy
+
+    - name: Gather Facts
+      setup:
+
     - name: Install Packages
       apt: name={{ item }} state=present
       with_items:
@@ -39,16 +48,13 @@
       command: fping infra1 infra2 infra3 logger1 compute1 compute2 block1 object1
       changed_when: False
 
-    - name: Create /etc/ansible/facts.d
-      file: path=/etc/ansible/facts.d state=directory
-
     - name: Create Partitions
       shell: |
         export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
         export PARTITION_END=`awk "BEGIN { print $PARTITION_START + {{ item.size }} }"`
         parted {{ item.device }} mkpart {{ item.type }} ${PARTITION_START}GB ${PARTITION_END}GB
         partprobe {{ item.device }}
-      when: node_name in item.nodes and ansible_local is not defined
+      when: node_name in item.nodes and ansible_local.state is not defined
       with_items:
         - device: /dev/xvda
           type: primary
