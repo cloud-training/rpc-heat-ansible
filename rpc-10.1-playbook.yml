@@ -42,12 +42,16 @@
     - name: Create Partitions
       shell: |
         export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
-        export PARTITION_END=`echo "$PARTITION_START + {{ item.size }}" | bc`
+        export PARTITION_END=`awk "BEGIN { print $PARTITION_START + {{ item.size }} }"`
         parted {{ item.device }} mkpart {{ item.type }} ${PARTITION_START}GB ${PARTITION_END}GB
         partprobe {{ item.device }}
-      when: node_name in item.hostnames
+      when: node_name in item.nodes
       with_items:
         - device: /dev/xvda
           type: primary
           size: 110
           hostnames: [ infra1, infra2, infra3 ]
+        - device: /dev/xvda
+          type: primary
+          size: 20
+          nodes: [ logger1, compute1, compute2, block1, object1 ]
