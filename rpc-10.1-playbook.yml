@@ -54,7 +54,7 @@
         export PARTITION_END=`awk "BEGIN { print $PARTITION_START + {{ item.size }} }"`
         parted {{ item.device }} mkpart {{ item.type }} ${PARTITION_START}GB ${PARTITION_END}GB
         partprobe {{ item.device }}
-      when: node_name in item.nodes and ansible_local.state is not defined
+      when: node_name in item.nodes and ansible_local.partitions is not defined
       with_items:
         - device: /dev/xvda
           type: primary
@@ -66,4 +66,4 @@
           nodes: [ logger1, compute1, compute2, block1, object1 ]
 
     - name: Create Partitions Done Fact
-      ini_file: dest=/etc/ansible/facts.d/state.fact section=partitions option=created value=true
+      ini_file: dest=/etc/ansible/facts.d/partitions.fact option=created value=true
