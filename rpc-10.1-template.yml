@@ -514,3 +514,6 @@ outputs:
   private_key:
     description: Private Key
     value: { get_attr: [ keypair, private_key ] }
+  server_infra1_ip:
+    description: Infra1 IP
+    value: { get_attr: [ server_infra1, accessIPv4 ] }
