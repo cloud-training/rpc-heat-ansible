@@ -65,49 +65,49 @@ resources:
     properties:
       handle: { get_resource: swift_signal_handle_infra2 }
       count: 1
-      timeout: 600
+      timeout: 900
 
   swift_signal_infra3:
     type: OS::Heat::SwiftSignal
     properties:
       handle: { get_resource: swift_signal_handle_infra3 }
       count: 1
-      timeout: 600
+      timeout: 900
 
   swift_signal_logger1:
     type: OS::Heat::SwiftSignal
     properties:
       handle: { get_resource: swift_signal_handle_logger1 }
       count: 1
-      timeout: 600
+      timeout: 900
 
   swift_signal_compute1:
     type: OS::Heat::SwiftSignal
     properties:
       handle: { get_resource: swift_signal_handle_compute1 }
       count: 1
-      timeout: 600
+      timeout: 900
 
   swift_signal_compute2:
     type: OS::Heat::SwiftSignal
     properties:
       handle: { get_resource: swift_signal_handle_compute2 }
       count: 1
-      timeout: 600
+      timeout: 900
 
   swift_signal_block1:
     type: OS::Heat::SwiftSignal
     properties:
       handle: { get_resource: swift_signal_handle_block1 }
       count: 1
-      timeout: 600
+      timeout: 900
 
   swift_signal_object1:
     type: OS::Heat::SwiftSignal
     properties:
       handle: { get_resource: swift_signal_handle_object1 }
       count: 1
-      timeout: 600
+      timeout: 900
 
   cloud_config_infra1:
     type: OS::Heat::CloudConfig
