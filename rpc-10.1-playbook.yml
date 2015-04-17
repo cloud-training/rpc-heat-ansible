@@ -48,6 +48,18 @@
       command: fping infra1 infra2 infra3 logger1 compute1 compute2 block1 object1
       changed_when: False
 
+    - name: Create Swap
+      shell: |
+        dd if=/dev/zero of=/mnt/4GB.swap bs=1024 count=4194304
+        mkswap /mnt/4GB.swap
+        swapon /mnt/4GB.swap
+
+    - name: Add Swap To /etc/fstab
+      lineinfile: dest=/etc/fstab regexp='/mnt/4GB.swap  none  swap  sw 0  0' line='/mnt/1GB.swap  none  swap  sw 0  0' insertafter=EOF
+
+    - name: Set Swappiness
+      sysctl: name=vm.swappiness value=90 state=present
+
     - name: Create Primary Partitions
       shell: |
         export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
