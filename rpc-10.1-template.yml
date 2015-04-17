@@ -153,6 +153,24 @@ resources:
                   %prefix%-compute2    ansible_ssh_host=%server_compute2_ip%    node_id=6    node_name=compute2
                   %prefix%-block1      ansible_ssh_host=%server_block1_ip%    node_id=7    node_name=block1
                   %prefix%-object1     ansible_ssh_host=%server_object1_ip%    node_id=8    node_name=object1
+                  
+                  [infra]
+                  %prefix%-infra1
+                  %prefix%-infra2
+                  %prefix%-infra3
+                  
+                  [logger]
+                  %prefix%-logger1
+                  
+                  [compute]
+                  %prefix%-compute1
+                  %prefix%-compute2
+                  
+                  [block]
+                  %prefix%-block1
+                  
+                  [object]
+                  %prefix%-object1
                 params:
                   "%prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
                   "%heat_stack_id%": { get_param: "OS::stack_id" }
