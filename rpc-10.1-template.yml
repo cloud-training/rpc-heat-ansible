@@ -350,7 +350,7 @@ resources:
           template: "%prefix%-infra1"
           params:
             "%prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-      flavor: 4GB Standard Instance
+      flavor: 8GB Standard Instance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
       networks:
@@ -371,7 +371,7 @@ resources:
           template: "%prefix%-infra2"
           params:
             "%prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-      flavor: 4GB Standard Instance
+      flavor: 8GB Standard Instance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
       networks:
@@ -392,7 +392,7 @@ resources:
           template: "%prefix%-infra3"
           params:
             "%prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-      flavor: 4GB Standard Instance
+      flavor: 8GB Standard Instance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
       networks:
