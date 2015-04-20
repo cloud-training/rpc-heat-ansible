@@ -12,7 +12,7 @@ used_ips:
 
 global_overrides:
   internal_lb_vip_address: 172.29.236.1
-  external_lb_vip_address: {{ hostvars[inventory_hostname]["ansible_" + public_network_interface].ipv4.address }}
+  external_lb_vip_address: {{ hostvars[ groups.infra|first ].ansible_eth0.ipv4.address }}
   tunnel_bridge: "br-vxlan"
   management_bridge: "br-mgmt"
   provider_networks:
