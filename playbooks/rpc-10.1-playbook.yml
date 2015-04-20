@@ -239,6 +239,8 @@
 
     - name: Bring Up VXLANs
       command: ifup vxlan-{{ item }}
+      register: ifup_vxlans_result
+      changed_when: "ifup_vxlans_result.rc == 0 and ifup_vxlans_result.stdout != 'ifup: interface vxlan-storage already configured'"
       with_items:
         - mgmt
         - vxlan
