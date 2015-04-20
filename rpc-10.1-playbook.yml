@@ -6,33 +6,49 @@
   tasks:
     - name: Ping Nodes
       ping:
+      tags:
+        - setup
 
     - name: Create /etc/ansible/facts.d
       file: path=/etc/ansible/facts.d state=directory
+      tags:
+        - setup
 
     - name: Create Dummy Fact
       ini_file: dest=/etc/ansible/facts.d/dummy.fact section=dummy option=dummy value=dummy
+      tags:
+        - setup
 
     - name: Gather Facts
       setup:
+      tags:
+        - setup
 
     - name: Install Packages
       apt: name={{ item }} state=present
       with_items:
         - colordiff
         - fping
+      tags:
+        - setup
 
     - name: Add Nodes Hosts File Entries (Long)
       lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ hostvars[item].node_name }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ hostvars[item].node_name }}' insertafter=EOF state=present
       with_items: groups['all']
+      tags:
+        - setup
 
     - name: Add Nodes Hosts File Entries (Short)
       lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }}' insertafter=EOF state=present
       with_items: groups['all']
+      tags:
+        - setup
 
     - name: Add Nodes Hosts File Entries (Node)
       lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ "n%02d"|format(hostvars[item].node_id) }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ "n%02d"|format(hostvars[item].node_id) }}' insertafter=EOF state=present
       with_items: groups['all']
+      tags:
+        - setup
 
     - name: Set Environment Variables and Force Color Prompt
       lineinfile: dest=/root/.bashrc regexp='{{ item.regexp }}' line='{{ item.line }}' insertafter=EOF state=present
@@ -43,22 +59,32 @@
         - { regexp: '^export MY_IP',                line: 'export MY_IP={{ hostvars[inventory_hostname].ansible_eth2.ipv4.address }}' }
         - { regexp: '^export MY_PRIVATE_IP',        line: 'export MY_PRIVATE_IP={{ hostvars[inventory_hostname].ansible_eth2.ipv4.address }}' }
         - { regexp: '^export MY_PUBLIC_IP',         line: 'export MY_PUBLIC_IP={{ hostvars[inventory_hostname].ansible_eth0.ipv4.address }}' }
+      tags:
+        - setup
 
     - name: Check Connectivity
       command: fping infra1 infra2 infra3 logger1 compute1 compute2 block1 object1
       changed_when: False
+      tags:
+        - setup
 
     - name: Create Swap
       shell: |
         dd if=/dev/zero of=/mnt/4GB.swap bs=1024 count=4194304
         mkswap /mnt/4GB.swap
         swapon /mnt/4GB.swap
+      tags:
+        - setup
 
     - name: Add Swap To /etc/fstab
       lineinfile: dest=/etc/fstab regexp='/mnt/4GB.swap  none  swap  sw 0  0' line='/mnt/4GB.swap  none  swap  sw 0  0' insertafter=EOF
+      tags:
+        - setup
 
     - name: Set Swappiness
       sysctl: name=vm.swappiness value=90 state=present
+      tags:
+        - setup
 
     - name: Create Primary Partitions
       shell: |
@@ -86,6 +112,8 @@
         - nodes: [ object1 ]
           device: /dev/xvda
           size: 15
+      tags:
+        - setup
 
     - name: Create Extended Partitions (Extended Partition Will Consume All Free Space)
       shell: |
@@ -97,6 +125,8 @@
       with_items:
         - nodes: [ object1 ]
           device: /dev/xvda
+      tags:
+        - setup
 
     - name: Create Logical Partitions
       shell: |
@@ -121,6 +151,10 @@
         - nodes: [ object1 ]
           device: /dev/xvda
           size: 20
+      tags:
+        - setup
 
     - name: Create Partitions Done Fact
       ini_file: dest=/etc/ansible/facts.d/partitions.fact section=state option=created value=true
+      tags:
+        - setup
