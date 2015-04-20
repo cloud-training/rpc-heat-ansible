@@ -70,20 +70,16 @@
 
     - name: Create Swap File
       command: dd if=/dev/zero of=/mnt/4GB.swap bs=1024 count=4194304 creates=/mnt/4GB.swap
-      register: create_swap_file
       tags:
         - setup
 
     - name: Format Swap File
       command: mkswap /mnt/4GB.swap
-      when: create_swap_file.changed
-      register: format_swap_file
       tags:
         - setup
 
     - name: Enable Swap File
       command: swapon /mnt/4GB.swap
-      when: format_swap_file.changed
       tags:
         - setup
 
