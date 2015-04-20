@@ -1,52 +1,38 @@
 ---
 # This playbook installs Rackspace Private Cloud v10.1
 
-- name: Install Rackspace Private Cloud v10.1
+- name: Setup
   hosts: all
+  tags:
+    - setup
   tasks:
     - name: Ping Nodes
       ping:
-      tags:
-        - setup
 
     - name: Add Nodes Hosts File Entries (Long)
       lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }}' insertafter=EOF state=present
       with_items: groups['all']
-      tags:
-        - setup
 
     - name: Add Nodes Hosts File Entries (Short)
       lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ hostvars[item].node_name }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ hostvars[item].node_name }}' insertafter=EOF state=present
       with_items: groups['all']
-      tags:
-        - setup
 
     - name: Add Nodes Hosts File Entries (Node)
       lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ "n%02d"|format(hostvars[item].node_id) }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ "n%02d"|format(hostvars[item].node_id) }}' insertafter=EOF state=present
       with_items: groups['all']
-      tags:
-        - setup
 
     - name: Check Connectivity
       command: fping infra1 infra2 infra3 logger1 compute1 compute2 block1 object1
       changed_when: False
-      tags:
-        - setup
 
     - name: Create /etc/ansible/facts.d
       file: path=/etc/ansible/facts.d state=directory
-      tags:
-        - setup
 
     - name: Create Dummy Fact
       ini_file: dest=/etc/ansible/facts.d/dummy.fact section=dummy option=dummy value=dummy
-      tags:
-        - setup
 
     - name: Gather Facts
       setup:
-      tags:
-        - setup
 
     - name: Set Environment Variables and Force Color Prompt
       lineinfile: dest=/root/.bashrc regexp='{{ item.regexp }}' line='{{ item.line }}' insertafter=EOF state=present
@@ -57,50 +43,34 @@
         - { regexp: '^export MY_IP',                line: 'export MY_IP={{ hostvars[inventory_hostname].ansible_eth2.ipv4.address }}' }
         - { regexp: '^export MY_PRIVATE_IP',        line: 'export MY_PRIVATE_IP={{ hostvars[inventory_hostname].ansible_eth2.ipv4.address }}' }
         - { regexp: '^export MY_PUBLIC_IP',         line: 'export MY_PUBLIC_IP={{ hostvars[inventory_hostname].ansible_eth0.ipv4.address }}' }
-      tags:
-        - setup
 
     - name: Install Packages
       apt: name={{ item }} state=present
       with_items:
         - colordiff
         - fping
-      tags:
-        - setup
 
     - name: Create Swap File
       command: dd if=/dev/zero of=/mnt/4GB.swap bs=1024 count=4194304 creates=/mnt/4GB.swap
-      tags:
-        - setup
 
     - name: Format Swap File
       command: mkswap /mnt/4GB.swap
       changed_when: false
-      tags:
-        - setup
 
     - name: Check Swap File
       command: swapon -s
       register: check_swap_file
       changed_when: false
-      tags:
-        - setup
 
     - name: Enable Swap File
       command: swapon /mnt/4GB.swap
       when: "'/mnt/4GB.swap' not in check_swap_file.stdout"
-      tags:
-        - setup
 
     - name: Add Swap To /etc/fstab
       lineinfile: dest=/etc/fstab regexp='/mnt/4GB.swap  none  swap  sw 0  0' line='/mnt/4GB.swap  none  swap  sw 0  0' insertafter=EOF
-      tags:
-        - setup
 
     - name: Set Swappiness
       sysctl: name=vm.swappiness value=90 state=present
-      tags:
-        - setup
 
     - name: Create Primary Partitions
       shell: |
@@ -128,8 +98,6 @@
         - nodes: [ object1 ]
           device: /dev/xvda
           size: 15
-      tags:
-        - setup
 
     - name: Create Extended Partitions (Extended Partition Will Consume All Free Space)
       shell: |
@@ -141,8 +109,6 @@
       with_items:
         - nodes: [ object1 ]
           device: /dev/xvda
-      tags:
-        - setup
 
     - name: Create Logical Partitions
       shell: |
@@ -167,16 +133,44 @@
         - nodes: [ object1 ]
           device: /dev/xvda
           size: 20
-      tags:
-        - setup
 
     - name: Create Partitions Done Fact
       ini_file: dest=/etc/ansible/facts.d/partitions.fact section=state option=created value=true
-      tags:
-        - setup
 
+- name: Install Compute
+  hosts: all
+  tags:
+    - install-compute
+  tasks:
     - name: Check Connectivity
       command: fping infra1 infra2 infra3 logger1 compute1 compute2 block1 object1
       changed_when: False
-      tags:
-        - install-compute
+
+- name: Install Compute
+  hosts: infra[0]
+  tags:
+    - install-compute
+  tasks:
+    - name: Genereate SSH Keypair
+      command: ssh-keygen -f ~/.ssh/id_rsa -t rsa -q -N "" creates=/root/.ssh/id_rsa.pub
+
+    - name: Get SSH Public Key
+      command: cat /root/.ssh/id_rsa.pub
+      register: public_key
+      changed_when: False
+
+- name: Install Compute
+  hosts: all
+  tags:
+    - install-compute
+  tasks:
+    - name: Distribute SSH Public Key
+      authorized_key: user=root key='{{ hostvars.n01.public_key.stdout }}' state=present
+
+- name: Install Compute
+  hosts: infra[0]
+  tags:
+    - install-compute
+  tasks:
+    - name: Test Connectivity
+      shell: ssh infra1 hostname && ssh infra2 hostname && ssh infra3 hostname && ssh logger1 hostname && ssh compute1 hostname && ssh compute2 hostname && ssh block1 hostname && ssh object1 hostname
