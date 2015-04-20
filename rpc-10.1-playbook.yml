@@ -9,6 +9,30 @@
       tags:
         - setup
 
+    - name: Add Nodes Hosts File Entries (Long)
+      lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }}' insertafter=EOF state=present
+      with_items: groups['all']
+      tags:
+        - setup
+
+    - name: Add Nodes Hosts File Entries (Short)
+      lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ hostvars[item].node_name }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ hostvars[item].node_name }}' insertafter=EOF state=present
+      with_items: groups['all']
+      tags:
+        - setup
+
+    - name: Add Nodes Hosts File Entries (Node)
+      lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ "n%02d"|format(hostvars[item].node_id) }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ "n%02d"|format(hostvars[item].node_id) }}' insertafter=EOF state=present
+      with_items: groups['all']
+      tags:
+        - setup
+
+    - name: Check Connectivity
+      command: fping infra1 infra2 infra3 logger1 compute1 compute2 block1 object1
+      changed_when: False
+      tags:
+        - setup
+
     - name: Create /etc/ansible/facts.d
       file: path=/etc/ansible/facts.d state=directory
       tags:
@@ -24,32 +48,6 @@
       tags:
         - setup
 
-    - name: Install Packages
-      apt: name={{ item }} state=present
-      with_items:
-        - colordiff
-        - fping
-      tags:
-        - setup
-
-    - name: Add Nodes Hosts File Entries (Long)
-      lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ hostvars[item].node_name }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ hostvars[item].node_name }} \#Long' insertafter=EOF state=present
-      with_items: groups['all']
-      tags:
-        - setup
-
-    - name: Add Nodes Hosts File Entries (Short)
-      lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }} \#Short' insertafter=EOF state=present
-      with_items: groups['all']
-      tags:
-        - setup
-
-    - name: Add Nodes Hosts File Entries (Node)
-      lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ "n%02d"|format(hostvars[item].node_id) }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ "n%02d"|format(hostvars[item].node_id) }}' insertafter=EOF state=present
-      with_items: groups['all']
-      tags:
-        - setup
-
     - name: Set Environment Variables and Force Color Prompt
       lineinfile: dest=/root/.bashrc regexp='{{ item.regexp }}' line='{{ item.line }}' insertafter=EOF state=present
       with_items:
@@ -62,9 +60,11 @@
       tags:
         - setup
 
-    - name: Check Connectivity
-      command: fping infra1 infra2 infra3 logger1 compute1 compute2 block1 object1
-      changed_when: False
+    - name: Install Packages
+      apt: name={{ item }} state=present
+      with_items:
+        - colordiff
+        - fping
       tags:
         - setup
 
