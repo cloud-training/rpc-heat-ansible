@@ -174,3 +174,9 @@
       ini_file: dest=/etc/ansible/facts.d/partitions.fact section=state option=created value=true
       tags:
         - setup
+
+    - name: Check Connectivity
+      command: fping infra1 infra2 infra3 logger1 compute1 compute2 block1 object1
+      changed_when: False
+      tags:
+        - install-compute

@@ -207,7 +207,7 @@ resources:
                   sed -i "s/ansible_connection=local/ansible_ssh_host=$MY_PUBLIC_IP/" inventory
                   # END - Terrible Chicken Egg Hack
                   git clone https://github.com/cloud-training/rpc-heat-ansible.git || exit_failure "Git Clone Failure"
-                  cd /opt/cloud-training/rpc-heat-ansible
+                  cd /opt/cloud-training/rpc-heat-ansible/playbooks
                   ansible-playbook rpc-10.1-playbook.yml -v || exit_failure "Ansible Playbook Run Failure"
                   exit_success
                 params:
