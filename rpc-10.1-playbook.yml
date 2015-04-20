@@ -78,11 +78,15 @@
       tags:
         - setup
 
+    - name: Check Swap File
+      command: swapon -s
+      register: check_swap_file
+      tags:
+        - setup
+
     - name: Enable Swap File
       command: swapon /mnt/4GB.swap
-      register: enable_swap_file
-      failed_when: enable_swap_file.rc not in [ 255, 0]
-      changed_when: enable_swap_file.rc == 0
+      when: "'/mnt/4GB.swap' not in check_swap_file.stdout"
       tags:
         - setup
 
