@@ -227,3 +227,9 @@
 
     - name: Create End-of-Line In /etc/ssh/sshd_config Done Fact
       ini_file: dest=/etc/ansible/facts.d/sshd_config.fact section=state option=created value=true
+
+    - name: Create /etc/network/interfaces.d/
+      file: dest=/etc/network/interfaces.d/ state=directory
+
+    - name: Source /etc/network/interfaces.d/*.cfg
+      lineinfile: dest=/etc/network/interfaces line='source /etc/network/interfaces.d/*.cfg' state=present insertafter=EOF
