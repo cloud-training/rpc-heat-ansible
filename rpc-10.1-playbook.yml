@@ -80,6 +80,9 @@
 
     - name: Enable Swap File
       command: swapon /mnt/4GB.swap
+      register: enable_swap_file
+      failed_when: enable_swap_file.rc not in [ 255, 0]
+      changed_when: enable_swap_file.rc == 0
       tags:
         - setup
 
