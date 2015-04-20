@@ -216,3 +216,14 @@
         - group: block
           vg: cinder-volumes
           pvs: /dev/xvda3
+
+    - name: Create End-of-Line In /etc/ssh/sshd_config
+      shell: |
+        cat >> /etc/ssh/sshd_config <<EOF
+        
+        
+        EOF
+      when: ansible_local.sshd_config is not defined
+
+    - name: Create End-of-Line In /etc/ssh/sshd_config Done Fact
+      ini_file: dest=/etc/ansible/facts.d/sshd_config.fact section=state option=created value=true
