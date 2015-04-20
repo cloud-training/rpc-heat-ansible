@@ -233,3 +233,6 @@
 
     - name: Source /etc/network/interfaces.d/*.cfg
       lineinfile: dest=/etc/network/interfaces line='source /etc/network/interfaces.d/*.cfg' state=present insertafter=EOF
+
+    - name: Create /etc/network/interfaces.d/rpc.cfg
+      template: src=rpc-install/rpc.j2 dest=/etc/network/interfaces.d/rpc.cfg
