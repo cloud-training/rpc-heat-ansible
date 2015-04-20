@@ -236,3 +236,11 @@
 
     - name: Create /etc/network/interfaces.d/rpc.cfg
       template: src=templates/etc/network/interfaces.d/rpc.cfg.j2 dest=/etc/network/interfaces.d/rpc.cfg
+
+    - name: Bring Up VXLANs
+      command: ifup vxlan-{{ item }}
+      with_items:
+        - mgmt
+        - vxlan
+        - vlan
+        - storage
