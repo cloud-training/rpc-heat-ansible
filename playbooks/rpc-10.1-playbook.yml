@@ -27,8 +27,9 @@
       with_items: groups['all']
 
     - name: Check Connectivity
-      command: fping infra1 infra2 infra3 logger1 compute1 compute2 block1 object1
+      command: fping {{ item }}
       changed_when: False
+      with_items: groups['all']
 
     - name: Create /etc/ansible/facts.d
       file: path=/etc/ansible/facts.d state=directory
@@ -83,24 +84,24 @@
         export PARTITION_END=`awk "BEGIN { print $PARTITION_START + {{ item.size }} }"`
         parted {{ item.device }} mkpart primary ${PARTITION_START}GB ${PARTITION_END}GB
         partprobe {{ item.device }}
-      when: inventory_hostname in item.nodes and ansible_local.partitions is not defined
+      when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
-        - nodes: [ infra1, infra2, infra3 ]
+        - group: infra
           device: /dev/xvda
           size: 130
-        - nodes: [ logger1 ]
+        - group: logger
           device: /dev/xvda
           size: 30
-        - nodes: [ compute1, compute2 ]
+        - group: compute
           device: /dev/xvda
           size: 15
-        - nodes: [ block1 ]
+        - group: block
           device: /dev/xvda
           size: 20
-        - nodes: [ block1 ]
+        - group: block
           device: /dev/xvda
           size: 100
-        - nodes: [ object1 ]
+        - group: object
           device: /dev/xvda
           size: 15
 
@@ -110,9 +111,9 @@
         export PARTITION_END=`parted {{ item.device }} print free | awk '/Free Space/ { print $2 }' | tail -n 1 | sed 's/GB//'`
         parted {{ item.device }} mkpart extended ${PARTITION_START}GB ${PARTITION_END}GB
         partprobe {{ item.device }}
-      when: node_name in item.nodes and ansible_local.partitions is not defined
+      when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
-        - nodes: [ object1 ]
+        - group: object
           device: /dev/xvda
 
     - name: Create Logical Partitions
@@ -121,21 +122,21 @@
         export PARTITION_END=`awk "BEGIN { print $PARTITION_START + {{ item.size }} }"`
         parted {{ item.device }} mkpart logical ${PARTITION_START}GB ${PARTITION_END}GB
         partprobe {{ item.device }}
-      when: node_name in item.nodes and ansible_local.partitions is not defined
+      when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
-        - nodes: [ object1 ]
+        - group: object
           device: /dev/xvda
           size: 20
-        - nodes: [ object1 ]
+        - group: object
           device: /dev/xvda
           size: 20
-        - nodes: [ object1 ]
+        - group: object
           device: /dev/xvda
           size: 20
-        - nodes: [ object1 ]
+        - group: object
           device: /dev/xvda
           size: 20
-        - nodes: [ object1 ]
+        - group: object
           device: /dev/xvda
           size: 20
 
@@ -148,8 +149,9 @@
     - install-compute
   tasks:
     - name: Check Connectivity
-      command: fping infra1 infra2 infra3 logger1 compute1 compute2 block1 object1
+      command: fping {{ item }}
       changed_when: False
+      with_items: groups['all']
 
 - name: Install Compute
   hosts: infra[0]
@@ -177,5 +179,7 @@
   tags:
     - install-compute
   tasks:
-    - name: Test Connectivity
-      shell: ssh infra1 hostname && ssh infra2 hostname && ssh infra3 hostname && ssh logger1 hostname && ssh compute1 hostname && ssh compute2 hostname && ssh block1 hostname && ssh object1 hostname
+    - name: Test SSH Connectivity
+      command: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no {{ item }} hostname
+      changed_when: False
+      with_items: groups['all']
