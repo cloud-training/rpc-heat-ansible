@@ -153,42 +153,25 @@
       changed_when: False
       with_items: groups['all']
 
-- name: Install Compute
-  hosts: infra[0]
-  tags:
-    - install-compute
-  tasks:
     - name: Genereate SSH Keypair
       command: ssh-keygen -f ~/.ssh/id_rsa -t rsa -q -N "" creates=/root/.ssh/id_rsa.pub
+      when: inventory_hostname == groups.infra|first
 
     - name: Get SSH Public Key
       command: cat /root/.ssh/id_rsa.pub
       register: public_key_result
       changed_when: False
+      when: inventory_hostname == groups.infra|first
 
-- name: Install Compute
-  hosts: all
-  tags:
-    - install-compute
-  tasks:
     - name: Distribute SSH Public Key
       authorized_key: user=root key='{{ hostvars[ groups.infra|first ].public_key_result.stdout }}' state=present
 
-- name: Install Compute
-  hosts: infra[0]
-  tags:
-    - install-compute
-  tasks:
     - name: Test SSH Connectivity
       command: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no {{ item }} hostname
       changed_when: False
+      when: inventory_hostname == groups.infra|first
       with_items: groups['all']
 
-- name: Install Compute
-  hosts: all
-  tags:
-    - install-compute
-  tasks:
     - name: Update and Upgrade System
       apt: upgrade=safe update_cache=yes cache_valid_time=3600
 
