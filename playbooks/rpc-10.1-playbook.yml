@@ -4,11 +4,16 @@
 - name: Setup
   hosts: all
   tags:
-    - setup
+    - none
   tasks:
     - name: Ping Nodes
       ping:
 
+- name: Setup
+  hosts: all
+  tags:
+    - setup
+  tasks:
     - name: Add Nodes Hosts File Entries (Long)
       lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }}' insertafter=EOF state=present
       with_items: groups['all']
