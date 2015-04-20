@@ -14,6 +14,12 @@
   tags:
     - setup
   tasks:
+    - name: Install Packages
+      apt: name={{ item }} state=present
+      with_items:
+        - colordiff
+        - fping
+    
     - name: Add Nodes Hosts File Entries (Long)
       lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ hostvars[item].node_name }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ hostvars[item].node_name }}' insertafter=EOF state=present
       with_items: groups['all']
@@ -49,12 +55,6 @@
         - { regexp: '^export MY_IP',                line: 'export MY_IP={{ hostvars[inventory_hostname].ansible_eth2.ipv4.address }}' }
         - { regexp: '^export MY_PRIVATE_IP',        line: 'export MY_PRIVATE_IP={{ hostvars[inventory_hostname].ansible_eth2.ipv4.address }}' }
         - { regexp: '^export MY_PUBLIC_IP',         line: 'export MY_PUBLIC_IP={{ hostvars[inventory_hostname].ansible_eth0.ipv4.address }}' }
-
-    - name: Install Packages
-      apt: name={{ item }} state=present
-      with_items:
-        - colordiff
-        - fping
 
     - name: Create Swap File
       command: dd if=/dev/zero of=/mnt/4GB.swap bs=1024 count=4194304 creates=/mnt/4GB.swap
