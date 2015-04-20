@@ -80,7 +80,7 @@
 
     - name: Format Swap File
       command: mkswap /mnt/4GB.swap
-      when: create_swap_file is defined
+      when: create_swap_file.skipped == false
       register: format_swap_file
       tags:
         - setup
@@ -91,7 +91,7 @@
 
     - name: Enable Swap File
       command: swapon /mnt/4GB.swap
-      when: format_swap_file is defined
+      when: format_swap_file.skipped == false
       tags:
         - setup
 
