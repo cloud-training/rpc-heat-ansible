@@ -146,7 +146,7 @@
 - name: Install Compute
   hosts: all
   tags:
-    - install-compute
+    - install-rpc-compute
   tasks:
     - name: Check Connectivity
       command: fping {{ item }}
@@ -251,3 +251,14 @@
       command: fping 172.29.236.{{ hostvars[item].node_id }}
       changed_when: False
       with_items: groups['all']
+
+- name: Install Compute
+  hosts: infra[0]
+  tags:
+    - install-rpc-compute
+  tasks:
+    - name: Create /opt
+      file: dest=/opt state=directory
+
+    - name: Clone RPC Repo
+      git: repo=https://github.com/stackforge/os-ansible-deployment.git dest=/opt/os-ansible-deployment version=10.1.3
