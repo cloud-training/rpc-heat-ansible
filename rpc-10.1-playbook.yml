@@ -75,12 +75,14 @@
 
     - name: Format Swap File
       command: mkswap /mnt/4GB.swap
+      changed_when: false
       tags:
         - setup
 
     - name: Check Swap File
       command: swapon -s
       register: check_swap_file
+      changed_when: false
       tags:
         - setup
 
