@@ -287,3 +287,6 @@
         - rpc_environment.yml
         - rpc_user_config.yml
         - user_variables.yml
+
+    - name: Update RPC User Config
+      template: src=templates/etc/rpc_deploy/rpc_user_config-10.1.yml.j2 dest=/etc/rpc_deploy/rpc_user_config.yml
