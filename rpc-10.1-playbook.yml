@@ -69,11 +69,11 @@
         - setup
 
     - name: Create Swap
-      shell: |
+      shell: | creates=/mnt/4GB.swap
         dd if=/dev/zero of=/mnt/4GB.swap bs=1024 count=4194304
         mkswap /mnt/4GB.swap
         swapon /mnt/4GB.swap
-        creates=/mnt/4GB.swap
+        
       tags:
         - setup
 
