@@ -15,11 +15,11 @@
     - setup
   tasks:
     - name: Add Nodes Hosts File Entries (Long)
-      lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }}' insertafter=EOF state=present
+      lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ hostvars[item].node_name }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ hostvars[item].node_name }}' insertafter=EOF state=present
       with_items: groups['all']
 
     - name: Add Nodes Hosts File Entries (Short)
-      lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ hostvars[item].node_name }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ hostvars[item].node_name }}' insertafter=EOF state=present
+      lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }}' insertafter=EOF state=present
       with_items: groups['all']
 
     - name: Add Nodes Hosts File Entries (Node)
@@ -83,7 +83,7 @@
         export PARTITION_END=`awk "BEGIN { print $PARTITION_START + {{ item.size }} }"`
         parted {{ item.device }} mkpart primary ${PARTITION_START}GB ${PARTITION_END}GB
         partprobe {{ item.device }}
-      when: node_name in item.nodes and ansible_local.partitions is not defined
+      when: inventory_hostname in item.nodes and ansible_local.partitions is not defined
       with_items:
         - nodes: [ infra1, infra2, infra3 ]
           device: /dev/xvda
