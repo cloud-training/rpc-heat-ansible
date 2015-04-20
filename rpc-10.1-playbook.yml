@@ -75,6 +75,8 @@
         - setup
 
     - debug: var=create_swap_file
+      tags:
+        - setup
 
     - name: Format Swap File
       command: mkswap /mnt/4GB.swap
@@ -84,6 +86,8 @@
         - setup
 
     - debug: var=format_swap_file
+      tags:
+        - setup
 
     - name: Enable Swap File
       command: swapon /mnt/4GB.swap
