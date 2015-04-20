@@ -183,3 +183,30 @@
       command: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no {{ item }} hostname
       changed_when: False
       with_items: groups['all']
+
+- name: Install Compute
+  hosts: all
+  tags:
+    - install-compute
+  tasks:
+    - name: Upgrade System
+      apt: upgrade=safe update_cache=yes cache_valid_time=3600
+
+    - name: Install Base Packages
+      apt: pkg={{ item }} state=present update_cache=yes force=yes
+      with_items:
+        - aptitude
+        - build-essential
+        - git
+        - python-dev
+        - bridge-utils
+        - debootstrap
+        - ifenslave
+        - lsof
+        - lvm2
+        - ntp
+        - ntpdate
+        - openssh-server
+        - sudo
+        - tcpdump
+        - vlan
