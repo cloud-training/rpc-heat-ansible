@@ -74,16 +74,20 @@
       tags:
         - setup
 
+    - debug: var=create_swap_file
+
     - name: Format Swap File
       command: mkswap /mnt/4GB.swap
-      when: create_swap_file is defined and create_swap_file.rc == 0
+      when: create_swap_file is defined
       register: format_swap_file
       tags:
         - setup
 
+    - debug: var=format_swap_file
+
     - name: Enable Swap File
       command: swapon /mnt/4GB.swap
-      when: format_swap_file is defined and format_swap_file.rc == 0
+      when: format_swap_file is defined
       tags:
         - setup
 
