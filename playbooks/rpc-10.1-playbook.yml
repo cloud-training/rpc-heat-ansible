@@ -246,3 +246,8 @@
         - vxlan
         - vlan
         - storage
+
+    - name: Check Connectivity
+      command: fping 172.29.236.{{ hostvars[item].node_id }}
+      changed_when: False
+      with_items: groups['all']
