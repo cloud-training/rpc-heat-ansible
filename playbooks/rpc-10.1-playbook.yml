@@ -65,12 +65,12 @@
 
     - name: Check Swap File
       command: swapon -s
-      register: check_swap_file
+      register: check_swap_file_result
       changed_when: false
 
     - name: Enable Swap File
       command: swapon /mnt/4GB.swap
-      when: "'/mnt/4GB.swap' not in check_swap_file.stdout"
+      when: "'/mnt/4GB.swap' not in check_swap_file_result.stdout"
 
     - name: Add Swap To /etc/fstab
       lineinfile: dest=/etc/fstab regexp='/mnt/4GB.swap  none  swap  sw 0  0' line='/mnt/4GB.swap  none  swap  sw 0  0' insertafter=EOF
@@ -163,7 +163,7 @@
 
     - name: Get SSH Public Key
       command: cat /root/.ssh/id_rsa.pub
-      register: public_key
+      register: public_key_result
       changed_when: False
 
 - name: Install Compute
@@ -172,7 +172,7 @@
     - install-compute
   tasks:
     - name: Distribute SSH Public Key
-      authorized_key: user=root key='{{ hostvars[ groups.infra|first ].public_key.stdout }}' state=present
+      authorized_key: user=root key='{{ hostvars[ groups.infra|first ].public_key_result.stdout }}' state=present
 
 - name: Install Compute
   hosts: infra[0]
@@ -189,10 +189,10 @@
   tags:
     - install-compute
   tasks:
-    - name: Upgrade System
+    - name: Update and Upgrade System
       apt: upgrade=safe update_cache=yes cache_valid_time=3600
 
-    - name: Install Base Packages
+    - name: Install Necessary Base Packages
       apt: pkg={{ item }} state=present update_cache=yes force=yes
       with_items:
         - aptitude
@@ -210,3 +210,15 @@
         - sudo
         - tcpdump
         - vlan
+
+    - name: Create Physical Volumes
+      command: pvcreate --metadatasize 2048 {{ item.device }}
+      register: pvcreate_result
+      failed_when: pvcreate_result.rc != 0 and pvcreate_result.rc != 5
+      when: inventory_hostname in groups[ item.group ]
+      changed_when: False
+      with_items:
+        - group: all
+          device: /dev/xvda2
+        - group: block
+          device: /dev/xvda3
