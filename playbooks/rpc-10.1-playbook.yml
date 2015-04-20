@@ -222,3 +222,14 @@
           device: /dev/xvda2
         - group: block
           device: /dev/xvda3
+
+    - name: Create Logical Volume Groups
+      lvg: vg={{ item.vg }} pvs={{ item.pvs }} state=present vg_options=''
+      when: inventory_hostname in groups[ item.group ]
+      with_items:
+        - group: all
+          vg: lxc
+          pvs: /dev/xvda2
+        - group: block
+          vg: cinder-volumes
+          pvs: /dev/xvda3
