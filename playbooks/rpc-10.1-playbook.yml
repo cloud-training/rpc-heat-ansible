@@ -235,4 +235,4 @@
       lineinfile: dest=/etc/network/interfaces line='source /etc/network/interfaces.d/*.cfg' state=present insertafter=EOF
 
     - name: Create /etc/network/interfaces.d/rpc.cfg
-      template: src=templates/etc/network/interfaces.d/rpc.j2 dest=/etc/network/interfaces.d/rpc.cfg
+      template: src=templates/etc/network/interfaces.d/rpc.cfg.j2 dest=/etc/network/interfaces.d/rpc.cfg
