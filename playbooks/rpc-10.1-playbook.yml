@@ -172,7 +172,7 @@
     - install-compute
   tasks:
     - name: Distribute SSH Public Key
-      authorized_key: user=root key='{{ hostvars.[ groups.infra|first ].public_key.stdout }}' state=present
+      authorized_key: user=root key='{{ hostvars[ groups.infra|first ].public_key.stdout }}' state=present
 
 - name: Install Compute
   hosts: infra[0]
