@@ -62,21 +62,21 @@ global_overrides:
           # - swift_proxy
 
 infra_hosts:
-  infra1:
+  {{ heat_stack_prefix }}-infra1:
     ip: 172.29.236.1
-  infra2:
+  {{ heat_stack_prefix }}-infra2:
     ip: 172.29.236.2
-  infra3:
+  {{ heat_stack_prefix }}-infra3:
     ip: 172.29.236.3
 
 compute_hosts:
-  compute1:
+  {{ heat_stack_prefix }}-compute1:
     ip: 172.29.236.5
-  compute2:
+  {{ heat_stack_prefix }}-compute2:
     ip: 172.29.236.6
 
 storage_hosts:
-  block1:
+  {{ heat_stack_prefix }}-block1:
     ip: 172.29.236.7
     container_vars:
       cinder_backends:
@@ -87,17 +87,17 @@ storage_hosts:
           volume_backend_name: LVM_iSCSI
 
 log_hosts:
-  logger1:
+  {{ heat_stack_prefix }}-logger1:
     ip: 172.29.236.4
 
 network_hosts:
-  infra1:
+  {{ heat_stack_prefix }}-infra1:
     ip: 172.29.236.1
-  infra2:
+  {{ heat_stack_prefix }}-infra2:
     ip: 172.29.236.2
-  infra3:
+  {{ heat_stack_prefix }}-infra3:
     ip: 172.29.236.3
 
 haproxy_hosts:
-  infra1:
+  {{ heat_stack_prefix }}-infra1:
     ip: 172.29.236.1
