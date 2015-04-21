@@ -301,6 +301,13 @@
         - { search: 'secret:$',                                             replace: 'secret: {{ heat_stack_password }}' }
         - { search: 'heat_auth_encryption_key: {{ heat_stack_password }}$', replace: 'heat_auth_encryption_key: {{ heat_stack_password }}12345678901234567890' }
         - { search: '# nova_virt_type: kvm',                                replace: 'nova_virt_type: qemu' }
+        - { search: 'glance_default_store: file',                                                                        replace: 'glance_default_store: swift' }
+        - { search: 'glance_swift_store_auth_address: "\{\{ rackspace_cloud_auth_url \}\}"',                             replace: 'glance_swift_store_auth_address: "http://104.130.171.39:5000/v2.0"' }
+        - { search: 'glance_swift_store_user: "\{\{ rackspace_cloud_tenant_id \}\}:\{\{ rackspace_cloud_username \}\}"', replace: 'glance_swift_store_user: "MyProject:myadmin"' }
+        - { search: 'glance_swift_store_key: "\{\{ rackspace_cloud_password \}\}"',                                      replace: 'glance_swift_store_key: "mypassword"' }
+        - { search: 'glance_swift_store_container: SomeContainerName',                                                   replace: 'glance_swift_store_container: "rpc10.1-glance-images"' }
+        - { search: 'glance_swift_store_region: SomeRegion',                                                             replace: 'glance_swift_store_region: RegionOne' }
+        - { search: 'glance_swift_store_endpoint_type: internalURL',                                                     replace: 'glance_swift_store_endpoint_type: publicURL' }
       when: ansible_local.user_variables is not defined
 
     - name: Update /etc/rpc_deploy/user_variables.yml Done Fact
