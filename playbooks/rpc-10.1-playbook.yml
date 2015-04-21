@@ -292,13 +292,18 @@
       template: src=templates/etc/rpc_deploy/rpc_user_config-10.1.yml.j2 dest=/etc/rpc_deploy/rpc_user_config.yml
 
     - name: Update RPC User Variables
-      lineinfile: dest=/etc/rpc_deploy/user_variables.yml regexp='{{ item.regexp}}' line='{{ item.line }}' state=present
+      shell: |
+        sed -i 's|{{ item.search }}|{{ item.replace }}|g' /etc/rpc_deploy/user_variables.yml
       with_items:
-        - { regexp: 'password:$',                                           line: 'password: {{ heat_stack_password }}' }
-        - { regexp: 'token:$',                                              line: 'token: {{ heat_stack_password }}' }
-        - { regexp: 'key:$',                                                line: 'key: {{ heat_stack_password }}' }
-        - { regexp: 'secret:$',                                             line: 'secret: {{ heat_stack_password }}' }
-        - { regexp: 'heat_auth_encryption_key: {{ heat_stack_password }}$', line: 'heat_auth_encryption_key: {{ heat_stack_password }}12345678901234567890' }
-        - { regexp: '# nova_virt_type: kvm',                                line: 'nova_virt_type: qemu' }
+        - { search: 'password:$',                                           replace: 'password: {{ heat_stack_password }}' }
+        - { search: 'token:$',                                              replace: 'token: {{ heat_stack_password }}' }
+        - { search: 'key:$',                                                replace: 'key: {{ heat_stack_password }}' }
+        - { search: 'secret:$',                                             replace: 'secret: {{ heat_stack_password }}' }
+        - { search: 'heat_auth_encryption_key: {{ heat_stack_password }}$', replace: 'heat_auth_encryption_key: {{ heat_stack_password }}12345678901234567890' }
+        - { search: '# nova_virt_type: kvm',                                replace: 'nova_virt_type: qemu' }
+      when: ansible_local.user_variables is not defined
+
+    - name: Update /etc/rpc_deploy/user_variables.yml Done Fact
+      ini_file: dest=/etc/ansible/facts.d/user_variables.fact section=state option=done value=true
 
     # Glance Swift Configuration
