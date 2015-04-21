@@ -20,9 +20,9 @@ resources:
     properties:
       name:
         str_replace:
-          template: "%prefix%-rpc-keypair"
+          template: "%heat_stack_prefix%-rpc-keypair"
           params:
-            "%prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
+            "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
       save_private_key: True
 
   network:
@@ -31,9 +31,9 @@ resources:
       cidr: 192.168.2.0/24
       label:
         str_replace:
-          template: "%prefix%-rpc-network"
+          template: "%heat_stack_prefix%-rpc-network"
           params:
-            "%prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
+            "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
 
   swift_signal_handle_infra1:
     type: OS::Heat::SwiftSignalHandle
@@ -146,19 +146,20 @@ resources:
                   [all:vars]
                   ansible_ssh_user=root
                   ansible_ssh_private_key_file=/opt/cloud-training/id_rsa
-                  heat_stack_prefix=%prefix%
+                  heat_stack_prefix=%heat_stack_prefix%
                   heat_stack_id=%heat_stack_id%
                   heat_stack_name=%heat_stack_name%
+                  heat_stack_password=%heat_stack_password%
                   
                   [all]
-                  infra1      ansible_connection=local            node_id=1    node_name=%prefix%-infra1
-                  infra2      ansible_ssh_host=%server_infra2_ip%    node_id=2    node_name=%prefix%-infra2
-                  infra3      ansible_ssh_host=%server_infra3_ip%    node_id=3    node_name=%prefix%-infra3
-                  logger1     ansible_ssh_host=%server_logger1_ip%    node_id=4    node_name=%prefix%-logger1
-                  compute1    ansible_ssh_host=%server_compute1_ip%    node_id=5    node_name=%prefix%-compute1
-                  compute2    ansible_ssh_host=%server_compute2_ip%    node_id=6    node_name=%prefix%-compute2
-                  block1      ansible_ssh_host=%server_block1_ip%    node_id=7    node_name=%prefix%-block1
-                  object1     ansible_ssh_host=%server_object1_ip%    node_id=8    node_name=%prefix%-object1
+                  infra1      ansible_connection=local    node_id=1
+                  infra2      ansible_ssh_host=%server_infra2_ip%    node_id=2
+                  infra3      ansible_ssh_host=%server_infra3_ip%    node_id=3
+                  logger1     ansible_ssh_host=%server_logger1_ip%    node_id=4
+                  compute1    ansible_ssh_host=%server_compute1_ip%    node_id=5
+                  compute2    ansible_ssh_host=%server_compute2_ip%    node_id=6
+                  block1      ansible_ssh_host=%server_block1_ip%    node_id=7
+                  object1     ansible_ssh_host=%server_object1_ip%    node_id=8
                   
                   [infra]
                   infra1
@@ -178,16 +179,17 @@ resources:
                   [object]
                   object1
                 params:
-                  "%prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-                  "%heat_stack_id%": { get_param: "OS::stack_id" }
-                  "%heat_stack_name%": { get_param: "OS::stack_name" }
-                  "%server_infra2_ip%":   { get_attr: [ server_infra2, accessIPv4 ] }
-                  "%server_infra3_ip%":   { get_attr: [ server_infra3, accessIPv4 ] }
-                  "%server_logger1_ip%":  { get_attr: [ server_logger1, accessIPv4 ] }
-                  "%server_compute1_ip%": { get_attr: [ server_compute1, accessIPv4 ] }
-                  "%server_compute2_ip%": { get_attr: [ server_compute2, accessIPv4 ] }
-                  "%server_block1_ip%":   { get_attr: [ server_block1, accessIPv4 ] }
-                  "%server_object1_ip%":  { get_attr: [ server_object1, accessIPv4 ] }
+                  "%heat_stack_prefix%":   { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
+                  "%heat_stack_id%":       { get_param: "OS::stack_id" }
+                  "%heat_stack_name%":     { get_param: "OS::stack_name" }
+                  "%heat_stack_password%": { get_attr: [ password, value ] }
+                  "%server_infra2_ip%":    { get_attr: [ server_infra2, accessIPv4 ] }
+                  "%server_infra3_ip%":    { get_attr: [ server_infra3, accessIPv4 ] }
+                  "%server_logger1_ip%":   { get_attr: [ server_logger1, accessIPv4 ] }
+                  "%server_compute1_ip%":  { get_attr: [ server_compute1, accessIPv4 ] }
+                  "%server_compute2_ip%":  { get_attr: [ server_compute2, accessIPv4 ] }
+                  "%server_block1_ip%":    { get_attr: [ server_block1, accessIPv4 ] }
+                  "%server_object1_ip%":   { get_attr: [ server_object1, accessIPv4 ] }
           - path: /opt/cloud-training/runcmd-bash
             permissions: "0700"
             content:
@@ -354,9 +356,9 @@ resources:
     properties:
       name:
         str_replace:
-          template: "%prefix%-infra1"
+          template: "%heat_stack_prefix%-infra1"
           params:
-            "%prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
+            "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
       flavor: 8GB Standard Instance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
@@ -375,9 +377,9 @@ resources:
     properties:
       name:
         str_replace:
-          template: "%prefix%-infra2"
+          template: "%heat_stack_prefix%-infra2"
           params:
-            "%prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
+            "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
       flavor: 8GB Standard Instance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
@@ -396,9 +398,9 @@ resources:
     properties:
       name:
         str_replace:
-          template: "%prefix%-infra3"
+          template: "%heat_stack_prefix%-infra3"
           params:
-            "%prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
+            "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
       flavor: 8GB Standard Instance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
@@ -417,9 +419,9 @@ resources:
     properties:
       name:
         str_replace:
-          template: "%prefix%-logger1"
+          template: "%heat_stack_prefix%-logger1"
           params:
-            "%prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
+            "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
       flavor: 4GB Standard Instance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
@@ -438,9 +440,9 @@ resources:
     properties:
       name:
         str_replace:
-          template: "%prefix%-compute1"
+          template: "%heat_stack_prefix%-compute1"
           params:
-            "%prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
+            "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
       flavor: 4GB Standard Instance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
@@ -459,9 +461,9 @@ resources:
     properties:
       name:
         str_replace:
-          template: "%prefix%-compute2"
+          template: "%heat_stack_prefix%-compute2"
           params:
-            "%prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
+            "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
       flavor: 4GB Standard Instance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
@@ -480,9 +482,9 @@ resources:
     properties:
       name:
         str_replace:
-          template: "%prefix%-block1"
+          template: "%heat_stack_prefix%-block1"
           params:
-            "%prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
+            "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
       flavor: 4GB Standard Instance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
@@ -501,9 +503,9 @@ resources:
     properties:
       name:
         str_replace:
-          template: "%prefix%-object1"
+          template: "%heat_stack_prefix%-object1"
           params:
-            "%prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
+            "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
       flavor: 4GB Standard Instance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL

@@ -21,7 +21,7 @@
         - fping
 
     - name: Add Nodes Hosts File Entries (Long)
-      lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ hostvars[item].node_name }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ hostvars[item].node_name }}' insertafter=EOF state=present
+      lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ heat_stack_prefix }}-{{ item }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ heat_stack_prefix }}-{{ item }}' insertafter=EOF state=present
       with_items: groups['all']
 
     - name: Add Nodes Hosts File Entries (Short)
@@ -290,3 +290,16 @@
 
     - name: Update RPC User Config
       template: src=templates/etc/rpc_deploy/rpc_user_config-10.1.yml.j2 dest=/etc/rpc_deploy/rpc_user_config.yml
+
+    - name: Update RPC User Variables
+      shell: |
+        sed -i 's|{{ item.search }}|{{ item.replace }}|g' /etc/rpc_deploy/user_variables.yml
+      with_items:
+        - { search: 'password:$',                                           replace: 'password: {{ heat_stack_password }}' }
+        - { search: 'token:$',                                              replace: 'token: {{ heat_stack_password }}' }
+        - { search: 'key:$',                                                replace: 'key: {{ heat_stack_password }}' }
+        - { search: 'secret:$',                                             replace: 'secret: {{ heat_stack_password }}' }
+        - { search: 'heat_auth_encryption_key: {{ heat_stack_password }}$', replace: 'heat_auth_encryption_key: {{ heat_stack_password }}12345678901234567890' }
+        - { search: '# nova_virt_type: kvm',                                replace: 'nova_virt_type: qemu' }
+
+    # Glance Swift Configuration
