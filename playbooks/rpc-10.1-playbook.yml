@@ -1,7 +1,7 @@
 ---
 # This playbook installs Rackspace Private Cloud v10.1
 
-- name: Setup
+- name: None
   hosts: all
   tags:
     - none
@@ -13,6 +13,7 @@
   hosts: all
   tags:
     - setup
+    - install-rpc-compute
   tasks:
     - name: Install Packages
       apt: name={{ item }} state=present
