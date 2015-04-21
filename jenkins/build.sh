@@ -7,10 +7,10 @@ sudo pip install oslo.config
 
 # Environment Binding
 $PUBLIC_CLOUD_CREDENTIALS
-export HEAT_TEMPLATE=${HEAT_TEMPLATE-"compute"}
-export ANSIBLE_TAG=${ANSIBLE_TAG:-"none"}
 
-export STACK_NAME=rpc-jenkins-$BUILD_NUMBER-$HEAT_TEMPLATE-$ANSIBLE_TAG
+HEAT_TEMPLATE=${HEAT_TEMPLATE-"compute"}
+ANSIBLE_TAG=${ANSIBLE_TAG:-"none"}
+STACK_NAME=rpc-jenkins-$BUILD_NUMBER-$HEAT_TEMPLATE-$ANSIBLE_TAG
 
 heat stack-create -f rpc-10.1-$HEAT_TEMPLATE-template.yml -t 180 -P ansible_tag=$ANSIBLE_TAG $STACK_NAME
 
