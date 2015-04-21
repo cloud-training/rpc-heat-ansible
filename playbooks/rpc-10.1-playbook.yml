@@ -306,8 +306,6 @@
     - name: Update /etc/rpc_deploy/user_variables.yml Done Fact
       ini_file: dest=/etc/ansible/facts.d/user_variables.fact section=state option=done value=true
 
-    # Glance Swift Configuration
-
     - name: Run Playbooks
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
       register: playbook_result
