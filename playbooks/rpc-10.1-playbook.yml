@@ -308,5 +308,14 @@
 
     # Glance Swift Configuration
 
-    - name: Run 'Setup - Setup Common' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/setup/setup-common.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
+    - name: Run Playbooks
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
+        - setup/setup-common.yml
+        - setup/build-containers.yml
+        - setup/restart-containers.yml
+        - setup/containers-common.yml
