@@ -307,3 +307,6 @@
       ini_file: dest=/etc/ansible/facts.d/user_variables.fact section=state option=done value=true
 
     # Glance Swift Configuration
+
+    - name: Run 'Setup - Setup Common' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/setup/setup-common.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
