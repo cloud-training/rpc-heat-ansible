@@ -13,7 +13,7 @@
   hosts: all
   tags:
     - setup
-    - install-rpc-compute
+    - install-rpc
   tasks:
     - name: Install Packages
       apt: name={{ item }} state=present
@@ -147,7 +147,7 @@
 - name: Install Compute
   hosts: all
   tags:
-    - install-rpc-compute
+    - install-rpc
   tasks:
     - name: Check Connectivity
       command: fping {{ item }}
@@ -256,7 +256,7 @@
 - name: Install Compute
   hosts: infra[0]
   tags:
-    - install-rpc-compute
+    - install-rpc
   tasks:
     - name: Create /opt
       file: dest=/opt state=directory

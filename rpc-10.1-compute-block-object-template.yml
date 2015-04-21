@@ -123,10 +123,10 @@ resources:
                   
                   [all]
                   infra1      ansible_connection=local    node_id=1
-                  logger1     ansible_ssh_host=%server_logger1_ip%    node_id=4
-                  compute1    ansible_ssh_host=%server_compute1_ip%    node_id=5
-                  block1      ansible_ssh_host=%server_block1_ip%    node_id=7
-                  object1     ansible_ssh_host=%server_object1_ip%    node_id=8
+                  logger1     ansible_ssh_host=%server_logger1_ip%    node_id=2
+                  compute1    ansible_ssh_host=%server_compute1_ip%    node_id=3
+                  block1      ansible_ssh_host=%server_block1_ip%    node_id=4
+                  object1     ansible_ssh_host=%server_object1_ip%    node_id=5
                   
                   [infra]
                   infra1
