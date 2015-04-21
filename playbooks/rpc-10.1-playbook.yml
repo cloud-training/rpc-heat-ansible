@@ -327,3 +327,13 @@
         - infrastructure/kibana-install.yml
         - infrastructure/es2unix-install.yml
         - infrastructure/rsyslog-config.yml
+        - openstack/keystone-all.yml
+        - openstack/glance-all.yml
+        - openstack/heat-all.yml
+        - openstack/nova-all.yml
+        - openstack/neutron-all.yml
+        - openstack/cinder-all.yml
+        - openstack/horizon-all.yml
+        - openstack/utility-all.yml
+        - openstack/rpc-support-all.yml
+        - infrastructure/rsyslog-config.yml
