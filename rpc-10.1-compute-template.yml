@@ -49,7 +49,7 @@ resources:
     properties:
       handle: { get_resource: swift_signal_handle_infra1 }
       count: 1
-      timeout: 10800
+      timeout: 14400
 
   swift_signal_logger1:
     type: OS::Heat::SwiftSignal
