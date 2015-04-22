@@ -12,7 +12,7 @@ HEAT_TEMPLATE=${HEAT_TEMPLATE-"compute"}
 ANSIBLE_TAG=${ANSIBLE_TAG:-"none"}
 STACK_NAME=rpc-jenkins-$BUILD_NUMBER-$HEAT_TEMPLATE-$ANSIBLE_TAG
 
-heat stack-create -f rpc-10.1-$HEAT_TEMPLATE-template.yml -t 180 -P ansible_tag=$ANSIBLE_TAG $STACK_NAME
+heat stack-create -f rpc-10.1-$HEAT_TEMPLATE-template.yml -t 240 -P ansible_tag=$ANSIBLE_TAG $STACK_NAME
 
 BUILD_COMPLETED=0
 BUILD_FAILED=0
