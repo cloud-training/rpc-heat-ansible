@@ -550,6 +550,12 @@
         - xvdz8
         - xvdz9
 
+- name: Install Object
+  hosts: infra[0]
+  tags:
+    - install-rpc
+    - install-rpc-compute-object
+  tasks:
     - name: Create /etc/rpc_deploy/conf.d
       file: dest=/etc/rpc_deploy/conf.d state=directory
 
