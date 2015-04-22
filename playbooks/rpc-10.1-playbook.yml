@@ -104,11 +104,11 @@
       shell: |
         export PARTITION_START=`parted {{ item.device }} unit B print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/B//'`
         export PARTITION_END=`awk "BEGIN { printf \"%u\", $PARTITION_START + {{ item.size }} }"`
-        echo "====="
-        echo "Start: "$PARTITION_START
-        echo "End:   "$PARTITION_END
-        echo "Size:  {{ item.size }}"
-        echo "====="
+        echo '====='
+        echo 'Start: $PARTITION_START'
+        echo 'End:   $PARTITION_END'
+        echo 'Size:  {{ item.size }}'
+        echo '====='
         parted -s -a cylinder {{ item.device }} unit B mkpart primary ${PARTITION_START} ${PARTITION_END} && partprobe {{ item.device }}
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
@@ -135,10 +135,10 @@
       shell: |
         export PARTITION_START=`parted {{ item.device }} unit B print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/B//'`
         export PARTITION_END=`parted {{ item.device }} unit B print free | awk '/Free Space/ { print $2 }' | tail -n 1 | sed 's/B//'`
-        echo "====="
-        echo "Start: "$PARTITION_START
-        echo "End:   "$PARTITION_END
-        echo "====="
+        echo '====='
+        echo 'Start: $PARTITION_START'
+        echo 'End:   $PARTITION_END'
+        echo '====='
         parted -s -a cylinder {{ item.device }} unit B mkpart extended ${PARTITION_START} ${PARTITION_END} && partprobe {{ item.device }}
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
@@ -149,11 +149,11 @@
       shell: |
         export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/B//'`
         export PARTITION_END=`awk "BEGIN { printf \"%u\", $PARTITION_START + {{ item.size }} }"`
-        echo "====="
-        echo "Start: "$PARTITION_START
-        echo "End:   "$PARTITION_END
-        echo "Size:  {{ item.size }}"
-        echo "====="
+        echo '====='
+        echo 'Start: $PARTITION_START'
+        echo 'End:   $PARTITION_END'
+        echo 'Size:  {{ item.size }}'
+        echo '====='
         parted -s -a cylinder {{ item.device }} unit B mkpart logical ${PARTITION_START} ${PARTITION_END} && partprobe {{ item.device }}
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
