@@ -102,35 +102,35 @@
 
     - name: Create Primary Partitions
       shell: |
-        export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
+        export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/B//'`
         export PARTITION_END=`awk "BEGIN { print $PARTITION_START + {{ item.size }} }"`
-        parted {{ item.device }} mkpart primary ${PARTITION_START}GB ${PARTITION_END}GB && partprobe {{ item.device }}
+        parted -a optimal {{ item.device }} unit B mkpart primary ${PARTITION_START}B ${PARTITION_END}B && partprobe {{ item.device }}
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
         - group: infra
           device: /dev/xvdz
-          size: 130
+          size: 139586437120
         - group: logger
           device: /dev/xvdz
-          size: 30
+          size: 32212254720
         - group: compute
           device: /dev/xvdz
-          size: 15
+          size: 16106127360
         - group: block
           device: /dev/xvdz
-          size: 20
+          size: 21474836480
         - group: block
           device: /dev/xvdz
-          size: 100
+          size: 107374182400
         - group: object
           device: /dev/xvdz
-          size: 15
+          size: 16106127360
 
     - name: Create Extended Partitions (Extended Partition Will Consume All Free Space)
       shell: |
-        export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
-        export PARTITION_END=`parted {{ item.device }} print free | awk '/Free Space/ { print $2 }' | tail -n 1 | sed 's/GB//'`
-        parted {{ item.device }} mkpart extended ${PARTITION_START}GB ${PARTITION_END}GB && partprobe {{ item.device }}
+        export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/B//'`
+        export PARTITION_END=`parted {{ item.device }} print free | awk '/Free Space/ { print $2 }' | tail -n 1 | sed 's/B//'`
+        parted -a optimal {{ item.device }} unit B mkpart extended ${PARTITION_START}B ${PARTITION_END}B && partprobe {{ item.device }}
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
         - group: object
@@ -138,26 +138,26 @@
 
     - name: Create Logical Partitions
       shell: |
-        export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
+        export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/B//'`
         export PARTITION_END=`awk "BEGIN { print $PARTITION_START + {{ item.size }} }"`
-        parted {{ item.device }} mkpart logical ${PARTITION_START}GB ${PARTITION_END}GB && partprobe {{ item.device }}
+        parted -a optimal {{ item.device }} unit B mkpart logical ${PARTITION_START}B ${PARTITION_END}B && partprobe {{ item.device }}
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
         - group: object
           device: /dev/xvdz
-          size: 20
+          size: 21474836480
         - group: object
           device: /dev/xvdz
-          size: 20
+          size: 21474836480
         - group: object
           device: /dev/xvdz
-          size: 20
+          size: 21474836480
         - group: object
           device: /dev/xvdz
-          size: 20
+          size: 21474836480
         - group: object
           device: /dev/xvdz
-          size: 20
+          size: 21474836480
 
     - name: Create Partitions Done Fact
       ini_file: dest=/etc/ansible/facts.d/partitions.fact section=state option=done value=true
