@@ -215,6 +215,7 @@
         - sudo
         - tcpdump
         - vlan
+        - xfsprogs
 
     - name: Create Physical Volumes
       command: pvcreate --metadatasize 2048 {{ item.device }}
@@ -238,6 +239,16 @@
         - group: block
           vg: cinder-volumes
           pvs: /dev/xvdz2
+
+    - name: XFS Format Volumes
+      filesystem: dev=/dev/{{ item.name }} fstype=xfs opts="-i size=1024"
+      when: inventory_hostname in groups.object
+      with_items:
+        - xvdz5
+        - xvdz6
+        - xvdz7
+        - xvdz8
+        - xvdz9
 
     - name: Create End-of-Line In /etc/ssh/sshd_config
       shell: |
