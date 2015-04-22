@@ -11,7 +11,7 @@ used_ips:
   - 172.29.244.1,172.29.244.50
 
 global_overrides:
-  internal_lb_vip_address: 172.29.236.1
+  internal_lb_vip_address: 172.29.236.{{ hostvars[ groups.infra|first ].node_id }}
   external_lb_vip_address: {{ hostvars[ groups.infra|first ].ansible_eth0.ipv4.address }}
   tunnel_bridge: "br-vxlan"
   management_bridge: "br-mgmt"
@@ -61,23 +61,27 @@ global_overrides:
           - nova_compute
           # - swift_proxy
 
+{% if groups.infra|length > 0 %}
 infra_hosts:
-  {{ heat_stack_prefix }}-infra1:
-    ip: 172.29.236.1
-  {{ heat_stack_prefix }}-infra2:
-    ip: 172.29.236.2
-  {{ heat_stack_prefix }}-infra3:
-    ip: 172.29.236.3
+{% for host in groups.infra %}
+  {{ heat_stack_prefix }}-{{ host }}
+    ip: 172.29.236.{{ hostvars[ host ].node_id }}
+{% endfor %}
+{% endif %}
 
+{% if groups.compute|length > 0 %}
 compute_hosts:
-  {{ heat_stack_prefix }}-compute1:
-    ip: 172.29.236.5
-  {{ heat_stack_prefix }}-compute2:
-    ip: 172.29.236.6
+{% for host in groups.compute %}
+  {{ heat_stack_prefix }}-{{ host }}
+    ip: 172.29.236.{{ hostvars[ host ].node_id }}
+{% endfor %}
+{% endif %}
 
+{% if groups.block|length > 0 %}
 storage_hosts:
-  {{ heat_stack_prefix }}-block1:
-    ip: 172.29.236.7
+{% for host in groups.block %}
+  {{ heat_stack_prefix }}-{{ host }}
+    ip: 172.29.236.{{ hostvars[ host ].node_id }}
     container_vars:
       cinder_backends:
         limit_container_types: cinder_volume
@@ -85,19 +89,25 @@ storage_hosts:
           volume_group: cinder-volumes
           volume_driver: cinder.volume.drivers.lvm.LVMISCSIDriver
           volume_backend_name: LVM_iSCSI
+{% endfor %}
+{% endif %}
 
+{% if groups.logger|length > 0 %}
 log_hosts:
-  {{ heat_stack_prefix }}-logger1:
-    ip: 172.29.236.4
+{% for host in groups.logger %}
+  {{ heat_stack_prefix }}-{{ host }}
+    ip: 172.29.236.{{ hostvars[ host ].node_id }}
+{% endfor %}
+{% endif %}
 
+{% if groups.infra|length > 0 %}
 network_hosts:
-  {{ heat_stack_prefix }}-infra1:
-    ip: 172.29.236.1
-  {{ heat_stack_prefix }}-infra2:
-    ip: 172.29.236.2
-  {{ heat_stack_prefix }}-infra3:
-    ip: 172.29.236.3
+{% for host in groups.infra %}
+  {{ heat_stack_prefix }}-{{ host }}
+    ip: 172.29.236.{{ hostvars[ host ].node_id }}
+{% endfor %}
+{% endif %}
 
 haproxy_hosts:
-  {{ heat_stack_prefix }}-infra1:
-    ip: 172.29.236.1
+  {{ heat_stack_prefix }}-{{ groups.infra|first }}:
+    ip: 172.29.236.{{ hostvars[ groups.infra|first ].node_id }}
