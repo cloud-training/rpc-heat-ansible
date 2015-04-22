@@ -52,8 +52,16 @@ if [[ $BUILD_FAILED -eq 1 && $SWIFT_SIGNAL_FAILED -gt 0 || ( $BUILD_FAILED -eq 0
   scp -i $STACK_NAME.pem -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$INFRA1_IP:/opt/cloud-training/runcmd-bash.* .
 fi
 
-if [[ $BUILD_FAILED -eq 0 ]]; then
-  heat stack-delete $STACK_NAME
-fi
+BUILD_DELETED=1
+heat stack-delete $STACK_NAME
+
+until [[ $BUILD_DELETED -eq 0 ]]; do
+  sleep 10
+  STACK_STATUS=`heat stack-list | awk '/'$STACK_NAME'/ { print $6 }'`
+  BUILD_DELETED=`heat stack-list | grep $STACK_NAME | wc -l`
+  echo "===================================================="
+  echo "Stack Status:  $STACK_STATUS"
+  echo "Build Deleted: $BUILD_DELETED"
+done
 
 exit $BUILD_FAILED
