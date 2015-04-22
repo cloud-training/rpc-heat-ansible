@@ -325,7 +325,7 @@
     - name: Update /etc/rpc_deploy/user_variables.yml Done Fact
       ini_file: dest=/etc/ansible/facts.d/user_variables.fact section=state option=done value=true
 
-    - name: Run Playbooks
+    - name: Run 'Setup - Setup Common' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
@@ -333,26 +333,210 @@
       delay: 10
       with_items:
         - setup/setup-common.yml
+
+    - name: Run 'Setup - Build Containers' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - setup/build-containers.yml
+
+    - name: Run 'Setup - Restart Containers' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - setup/restart-containers.yml
+
+    - name: Run 'Setup - Containers Common' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - setup/containers-common.yml
+
+    - name: Run 'Infrastructure - HAProxy Install' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - infrastructure/haproxy-install.yml
+
+    - name: Run 'Infrastructure - Memcached Install' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - infrastructure/memcached-install.yml
+
+    - name: Run 'Infrastructure - Galera Install' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - infrastructure/galera-install.yml
+
+    - name: Run 'Infrastructure - Rabbit Install' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - infrastructure/rabbit-install.yml
+
+    - name: Run 'Infrastructure - Rsyslog Install' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - infrastructure/rsyslog-install.yml
+
+    - name: Run 'Infrastructure - Elasticsearch Install' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - infrastructure/elasticsearch-install.yml
+
+    - name: Run 'Infrastructure - Logstash Install' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - infrastructure/logstash-install.yml
+
+    - name: Run 'Infrastructure - Kibana Install' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - infrastructure/kibana-install.yml
+
+    - name: Run 'Infrastructure - Elasticsearch CLI Install' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - infrastructure/es2unix-install.yml
+
+    - name: Run 'Infrastructure - Rsyslog Config' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - infrastructure/rsyslog-config.yml
+
+    - name: Run 'OpenStack - Keystone All' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - openstack/keystone-all.yml
+
+    - name: Run 'OpenStack - Glance All' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - openstack/glance-all.yml
+
+    - name: Run 'OpenStack - Heat All' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - openstack/heat-all.yml
+
+    - name: Run 'OpenStack - Nova All' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - openstack/nova-all.yml
+
+    - name: Run 'OpenStack - Neutron All' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - openstack/neutron-all.yml
+
+    - name: Run 'OpenStack - Cinder All' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - openstack/cinder-all.yml
+
+    - name: Run 'OpenStack - Horizon All' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - openstack/horizon-all.yml
+
+    - name: Run 'OpenStack - Utility All' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - openstack/utility-all.yml
+
+    - name: Run 'OpenStack - RPC Support All' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - openstack/rpc-support-all.yml
+
+    - name: Run 'Infrastructure - Rsyslog Config' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/{{ item }} chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+      with_items:
         - infrastructure/rsyslog-config.yml
