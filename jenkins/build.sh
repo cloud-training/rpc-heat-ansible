@@ -60,8 +60,8 @@ until [[ $BUILD_DELETED -eq 0 ]]; do
   STACK_STATUS=`heat stack-list | awk '/'$STACK_NAME'/ { print $6 }'`
   BUILD_DELETED=`heat stack-list | grep $STACK_NAME | wc -l`
   echo "===================================================="
-  echo "Stack Status:  $STACK_STATUS"
-  echo "Build Deleted: $BUILD_DELETED"
+  echo "Stack Status:        $STACK_STATUS"
+  echo "Build Deleted:       $BUILD_DELETED"
 done
 
 exit $BUILD_FAILED
