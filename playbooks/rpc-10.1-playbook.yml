@@ -512,7 +512,7 @@
       apt: pkg=xfsprogs state=present update_cache=yes force=yes
 
     - name: XFS Format Volumes
-      filesystem: dev=/dev/{{ item }} fstype=xfs opts="-i size=1024"
+      filesystem: dev=/dev/{{ item }} fstype=xfs opts="-i size=1024 -L {{ item }}"
       with_items:
         - xvdz5
         - xvdz6
