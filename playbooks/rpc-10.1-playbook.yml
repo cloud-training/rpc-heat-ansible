@@ -549,3 +549,18 @@
         - xvdz7
         - xvdz8
         - xvdz9
+
+    - name: Create /etc/rpc_deploy/conf.d
+      file: dest=/etc/rpc_deploy/conf.d state=directory
+
+    - name: Copy Default Configuration Files
+      command: cp /opt/os-ansible-deployment/etc/rpc_deploy/{{ item }} /etc/rpc_deploy/{{ item }} creates=/etc/rpc_deploy/{{ item }}
+      with_items:
+        - conf.d/swift.yml
+
+    - name: Update Swift Config
+      template: src=templates/etc/rpc_deploy/conf.d/swift-10.1.yml.j2 dest=/etc/rpc_deploy/conf.d/swift.yml
+
+    - name: Update RPC User Config
+      shell: |
+        sed -i -r 's|          # - swift_proxy|          - swift_proxy|g' /etc/rpc_deploy/rpc_user_config.yml
