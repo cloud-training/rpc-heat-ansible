@@ -81,7 +81,7 @@
 
     - name: Create Partition Table
       shell: |
-        parted {{ item.device }} mktable {{ item.type }}
+        parted {{ item.device }} mktable {{ item.type }} && partprobe {{ item.device }}
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
         - group: infra
@@ -104,8 +104,7 @@
       shell: |
         export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
         export PARTITION_END=`awk "BEGIN { print $PARTITION_START + {{ item.size }} }"`
-        parted {{ item.device }} mkpart primary ${PARTITION_START}GB ${PARTITION_END}GB
-        partprobe {{ item.device }}
+        parted {{ item.device }} mkpart primary ${PARTITION_START}GB ${PARTITION_END}GB && partprobe {{ item.device }}
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
         - group: infra
@@ -131,8 +130,7 @@
       shell: |
         export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
         export PARTITION_END=`parted {{ item.device }} print free | awk '/Free Space/ { print $2 }' | tail -n 1 | sed 's/GB//'`
-        parted {{ item.device }} mkpart extended ${PARTITION_START}GB ${PARTITION_END}GB
-        partprobe {{ item.device }}
+        parted {{ item.device }} mkpart extended ${PARTITION_START}GB ${PARTITION_END}GB && partprobe {{ item.device }}
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
         - group: object
@@ -142,8 +140,7 @@
       shell: |
         export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
         export PARTITION_END=`awk "BEGIN { print $PARTITION_START + {{ item.size }} }"`
-        parted {{ item.device }} mkpart logical ${PARTITION_START}GB ${PARTITION_END}GB
-        partprobe {{ item.device }}
+        parted {{ item.device }} mkpart logical ${PARTITION_START}GB ${PARTITION_END}GB && partprobe {{ item.device }}
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
         - group: object

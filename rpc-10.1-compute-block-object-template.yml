@@ -269,6 +269,9 @@ resources:
       flavor: 8GB Standard Instance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
+      block_device_mapping:
+        - device_name: /dev/vdz
+          volume_id: { get_resource: volume_infra1 }
       networks:
         - uuid: 00000000-0000-0000-0000-000000000000
         - uuid: 11111111-1111-1111-1111-111111111111
@@ -290,6 +293,9 @@ resources:
       flavor: 4GB Standard Instance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
+      block_device_mapping:
+        - device_name: /dev/vdz
+          volume_id: { get_resource: volume_logger1 }
       networks:
         - uuid: 00000000-0000-0000-0000-000000000000
         - uuid: 11111111-1111-1111-1111-111111111111
@@ -311,6 +317,9 @@ resources:
       flavor: 4GB Standard Instance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
+      block_device_mapping:
+        - device_name: /dev/vdz
+          volume_id: { get_resource: volume_compute1 }
       networks:
         - uuid: 00000000-0000-0000-0000-000000000000
         - uuid: 11111111-1111-1111-1111-111111111111
@@ -332,6 +341,9 @@ resources:
       flavor: 4GB Standard Instance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
+      block_device_mapping:
+        - device_name: /dev/vdz
+          volume_id: { get_resource: volume_block1 }
       networks:
         - uuid: 00000000-0000-0000-0000-000000000000
         - uuid: 11111111-1111-1111-1111-111111111111
@@ -353,6 +365,9 @@ resources:
       flavor: 4GB Standard Instance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
+      block_device_mapping:
+        - device_name: /dev/vdz
+          volume_id: { get_resource: volume_object1 }
       networks:
         - uuid: 00000000-0000-0000-0000-000000000000
         - uuid: 11111111-1111-1111-1111-111111111111
@@ -362,6 +377,61 @@ resources:
       config_drive: True
       user_data_format: RAW
       user_data: { get_resource: cloud_config_object1 }
+
+  volume_infra1:
+    type: OS::Cinder::Volume
+    properties:
+      name:
+        str_replace:
+          template: "%heat_stack_prefix%-infra1"
+          params:
+            "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
+      size: 150
+      volume_type: SSD
+
+  volume_logger1:
+    type: OS::Cinder::Volume
+    properties:
+      name:
+        str_replace:
+          template: "%heat_stack_prefix%-logger1"
+          params:
+            "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
+      size: 150
+      volume_type: SSD
+
+  volume_compute1:
+    type: OS::Cinder::Volume
+    properties:
+      name:
+        str_replace:
+          template: "%heat_stack_prefix%-compute1"
+          params:
+            "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
+      size: 150
+      volume_type: SSD
+
+  volume_block1:
+    type: OS::Cinder::Volume
+    properties:
+      name:
+        str_replace:
+          template: "%heat_stack_prefix%-block1"
+          params:
+            "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
+      size: 150
+      volume_type: SSD
+
+  volume_object1:
+    type: OS::Cinder::Volume
+    properties:
+      name:
+        str_replace:
+          template: "%heat_stack_prefix%-object1"
+          params:
+            "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
+      size: 150
+      volume_type: SSD
 
 outputs:
   password:
