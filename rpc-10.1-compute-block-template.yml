@@ -239,7 +239,7 @@ resources:
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
       block_device_mapping:
-        - device_name: /dev/vdz
+        - device_name: /dev/xvdz
           volume_id: { get_resource: volume_infra1 }
       networks:
         - uuid: 00000000-0000-0000-0000-000000000000
@@ -263,7 +263,7 @@ resources:
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
       block_device_mapping:
-        - device_name: /dev/vdz
+        - device_name: /dev/xvdz
           volume_id: { get_resource: volume_logger1 }
       networks:
         - uuid: 00000000-0000-0000-0000-000000000000
@@ -287,7 +287,7 @@ resources:
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
       block_device_mapping:
-        - device_name: /dev/vdz
+        - device_name: /dev/xvdz
           volume_id: { get_resource: volume_compute1 }
       networks:
         - uuid: 00000000-0000-0000-0000-000000000000
@@ -311,7 +311,7 @@ resources:
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
       block_device_mapping:
-        - device_name: /dev/vdz
+        - device_name: /dev/xvdz
           volume_id: { get_resource: volume_block1 }
       networks:
         - uuid: 00000000-0000-0000-0000-000000000000
