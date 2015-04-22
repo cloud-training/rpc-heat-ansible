@@ -574,3 +574,52 @@
 
     - name: Update /etc/rpc_deploy/user_variables.yml Done Fact
       ini_file: dest=/etc/ansible/facts.d/user_variables_swift.fact section=state option=done value=true
+
+    - name: Run 'Setup - Setup Common' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/setup/setup-common.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+
+    - name: Run 'Setup - Build Containers' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/setup/build-containers.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+
+    - name: Run 'Setup - Restart Containers' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/setup/restart-containers.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+
+    - name: Run 'Setup - Containers Common' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/setup/containers-common.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+
+    - name: Run 'Infrastructure - Rsyslog Install' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/rsyslog-install.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+
+    - name: Run 'Infrastructure - Rsyslog Config' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/rsyslog-config.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+
+    - name: Run 'OpenStack - Swift All' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/swift-all.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
