@@ -104,7 +104,7 @@
       shell: |
         export PARTITION_START=`parted {{ item.device }} unit B print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/B//'`
         export PARTITION_END=`awk "BEGIN { printf \"%u\", $PARTITION_START + {{ item.size }} }"`
-        parted -a optimal {{ item.device }} unit B mkpart primary ${PARTITION_START} ${PARTITION_END} && partprobe {{ item.device }}
+        parted -a cylinder {{ item.device }} unit B mkpart primary ${PARTITION_START} ${PARTITION_END} && partprobe {{ item.device }}
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
         - group: infra
@@ -130,7 +130,7 @@
       shell: |
         export PARTITION_START=`parted {{ item.device }} unit B print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/B//'`
         export PARTITION_END=`parted {{ item.device }} unit B print free | awk '/Free Space/ { print $2 }' | tail -n 1 | sed 's/B//'`
-        parted -a optimal {{ item.device }} unit B mkpart extended ${PARTITION_START} ${PARTITION_END} && partprobe {{ item.device }}
+        parted -a cylinder {{ item.device }} unit B mkpart extended ${PARTITION_START} ${PARTITION_END} && partprobe {{ item.device }}
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
         - group: object
@@ -140,7 +140,7 @@
       shell: |
         export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/B//'`
         export PARTITION_END=`awk "BEGIN { printf \"%u\", $PARTITION_START + {{ item.size }} }"`
-        parted -a optimal {{ item.device }} unit B mkpart logical ${PARTITION_START} ${PARTITION_END} && partprobe {{ item.device }}
+        parted -a cylinder {{ item.device }} unit B mkpart logical ${PARTITION_START} ${PARTITION_END} && partprobe {{ item.device }}
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
         - group: object
