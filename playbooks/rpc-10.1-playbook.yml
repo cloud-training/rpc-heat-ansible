@@ -88,22 +88,22 @@
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
         - group: infra
-          device: /dev/xvda
+          device: /dev/xvdz
           size: 130
         - group: logger
-          device: /dev/xvda
+          device: /dev/xvdz
           size: 30
         - group: compute
-          device: /dev/xvda
+          device: /dev/xvdz
           size: 15
         - group: block
-          device: /dev/xvda
+          device: /dev/xvdz
           size: 20
         - group: block
-          device: /dev/xvda
+          device: /dev/xvdz
           size: 100
         - group: object
-          device: /dev/xvda
+          device: /dev/xvdz
           size: 15
 
     - name: Create Extended Partitions (Extended Partition Will Consume All Free Space)
@@ -115,7 +115,7 @@
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
         - group: object
-          device: /dev/xvda
+          device: /dev/xvdz
 
     - name: Create Logical Partitions
       shell: |
@@ -126,19 +126,19 @@
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
         - group: object
-          device: /dev/xvda
+          device: /dev/xvdz
           size: 20
         - group: object
-          device: /dev/xvda
+          device: /dev/xvdz
           size: 20
         - group: object
-          device: /dev/xvda
+          device: /dev/xvdz
           size: 20
         - group: object
-          device: /dev/xvda
+          device: /dev/xvdz
           size: 20
         - group: object
-          device: /dev/xvda
+          device: /dev/xvdz
           size: 20
 
     - name: Create Partitions Done Fact
@@ -203,9 +203,9 @@
       changed_when: False
       with_items:
         - group: all
-          device: /dev/xvda2
+          device: /dev/xvdz1
         - group: block
-          device: /dev/xvda3
+          device: /dev/xvdz2
 
     - name: Create Logical Volume Groups
       lvg: vg={{ item.vg }} pvs={{ item.pvs }} state=present vg_options=''
@@ -213,10 +213,10 @@
       with_items:
         - group: all
           vg: lxc
-          pvs: /dev/xvda2
+          pvs: /dev/xvdz1
         - group: block
           vg: cinder-volumes
-          pvs: /dev/xvda3
+          pvs: /dev/xvdz2
 
     - name: Create End-of-Line In /etc/ssh/sshd_config
       shell: |
