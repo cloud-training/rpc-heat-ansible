@@ -102,12 +102,8 @@
 
     - name: Create Primary Partitions
       shell: |
-        export PARTITION_START=`parted -a optimal {{ item.device }} unit B print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/B//'`
+        export PARTITION_START=`parted {{ item.device }} unit B print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/B//'`
         export PARTITION_END=`awk "BEGIN { printf \"%u\", $PARTITION_START + {{ item.size }} }"`
-        echo "====="
-        echo $PARTITION_START
-        echo $PARTITION_END
-        echo "====="
         parted -a optimal {{ item.device }} unit B mkpart primary ${PARTITION_START} ${PARTITION_END} && partprobe {{ item.device }}
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
@@ -132,12 +128,8 @@
 
     - name: Create Extended Partitions (Extended Partition Will Consume All Free Space)
       shell: |
-        export PARTITION_START=`parted -a optimal {{ item.device }} unit B print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/B//'`
-        export PARTITION_END=`parted -a optimal {{ item.device }} unit B print free | awk '/Free Space/ { print $2 }' | tail -n 1 | sed 's/B//'`
-        echo "====="
-        echo $PARTITION_START
-        echo $PARTITION_END
-        echo "====="
+        export PARTITION_START=`parted {{ item.device }} unit B print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/B//'`
+        export PARTITION_END=`parted {{ item.device }} unit B print free | awk '/Free Space/ { print $2 }' | tail -n 1 | sed 's/B//'`
         parted -a optimal {{ item.device }} unit B mkpart extended ${PARTITION_START} ${PARTITION_END} && partprobe {{ item.device }}
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
@@ -148,10 +140,6 @@
       shell: |
         export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/B//'`
         export PARTITION_END=`awk "BEGIN { printf \"%u\", $PARTITION_START + {{ item.size }} }"`
-        echo "====="
-        echo $PARTITION_START
-        echo $PARTITION_END
-        echo "====="
         parted -a optimal {{ item.device }} unit B mkpart logical ${PARTITION_START} ${PARTITION_END} && partprobe {{ item.device }}
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
