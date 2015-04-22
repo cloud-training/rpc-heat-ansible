@@ -103,7 +103,7 @@
     - name: Create Primary Partitions
       shell: |
         export PARTITION_START=`parted -a optimal {{ item.device }} unit B print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/B//'`
-        export PARTITION_END=`awk "BEGIN { print $PARTITION_START + {{ item.size }} }"`
+        export PARTITION_END=`awk "BEGIN { printf \"%u\", $PARTITION_START + {{ item.size }} }"`
         echo "====="
         echo $PARTITION_START
         echo $PARTITION_END
@@ -147,7 +147,7 @@
     - name: Create Logical Partitions
       shell: |
         export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/B//'`
-        export PARTITION_END=`awk "BEGIN { print $PARTITION_START + {{ item.size }} }"`
+        export PARTITION_END=`awk "BEGIN { printf \"%u\", $PARTITION_START + {{ item.size }} }"`
         echo "====="
         echo $PARTITION_START
         echo $PARTITION_END
