@@ -570,3 +570,7 @@
     - name: Update RPC User Config
       shell: |
         sed -i -r 's|          # - swift_proxy|          - swift_proxy|g' /etc/rpc_deploy/rpc_user_config.yml
+      when: ansible_local.user_variables_swift is not defined
+
+    - name: Update /etc/rpc_deploy/user_variables.yml Done Fact
+      ini_file: dest=/etc/ansible/facts.d/user_variables_swift.fact section=state option=done value=true
