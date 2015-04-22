@@ -79,6 +79,27 @@
     - name: Set Swappiness
       sysctl: name=vm.swappiness value=90 state=present
 
+    - name: Create Partition Table
+      shell: |
+        parted {{ item.device }} mktable {{ item.type }}
+      when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
+      with_items:
+        - group: infra
+          device: /dev/xvdz
+          type: msdos
+        - group: logger
+          device: /dev/xvdz
+          type: msdos
+        - group: compute
+          device: /dev/xvdz
+          type: msdos
+        - group: block
+          device: /dev/xvdz
+          type: msdos
+        - group: object
+          device: /dev/xvdz
+          type: msdos
+
     - name: Create Primary Partitions
       shell: |
         export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
