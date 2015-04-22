@@ -542,7 +542,7 @@
         - xvdz9
 
     - name: Mount Loop Device At Boot
-      lineinfile: dest=/etc/rc.local regexp='^mount /srv/node/{{ item.name }}' line='mount /srv/node/{{ item.name }}' insertbefore='^exit 0' state=present
+      lineinfile: dest=/etc/rc.local regexp='^mount /srv/node/{{ item }}' line='mount /srv/node/{{ item }}' insertbefore='^exit 0' state=present
       with_items:
         - xvdz5
         - xvdz6
