@@ -108,7 +108,7 @@
         echo $PARTITION_START
         echo $PARTITION_END
         echo "====="
-        parted -a optimal {{ item.device }} unit B mkpart primary ${PARTITION_START}B ${PARTITION_END}B && partprobe {{ item.device }}
+        parted -a optimal {{ item.device }} unit B mkpart primary ${PARTITION_START} ${PARTITION_END} && partprobe {{ item.device }}
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
         - group: infra
@@ -138,7 +138,7 @@
         echo $PARTITION_START
         echo $PARTITION_END
         echo "====="
-        parted -a optimal {{ item.device }} unit B mkpart extended ${PARTITION_START}B ${PARTITION_END}B && partprobe {{ item.device }}
+        parted -a optimal {{ item.device }} unit B mkpart extended ${PARTITION_START} ${PARTITION_END} && partprobe {{ item.device }}
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
         - group: object
@@ -152,7 +152,7 @@
         echo $PARTITION_START
         echo $PARTITION_END
         echo "====="
-        parted -a optimal {{ item.device }} unit B mkpart logical ${PARTITION_START}B ${PARTITION_END}B && partprobe {{ item.device }}
+        parted -a optimal {{ item.device }} unit B mkpart logical ${PARTITION_START} ${PARTITION_END} && partprobe {{ item.device }}
       when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
       with_items:
         - group: object
