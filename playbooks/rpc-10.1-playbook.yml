@@ -519,3 +519,33 @@
         - xvdz7
         - xvdz8
         - xvdz9
+
+    - name: Create Root Mount Points Directory
+      file: path=/srv/node/ state=directory owner=root group=root
+
+    - name: Create Device Mount Point Directories
+      file: path=/srv/node/{{ item }}/ state=directory
+      with_items:
+        - xvdz5
+        - xvdz6
+        - xvdz7
+        - xvdz8
+        - xvdz9
+
+    - name: Mount Loop Device
+      mount: name=/srv/node/{{ item }} src="LABEL={{ item }}" state=mounted fstype=xfs opts="noauto,noatime,nodiratime,nobarrier,logbufs=8" passno=0
+      with_items:
+        - xvdz5
+        - xvdz6
+        - xvdz7
+        - xvdz8
+        - xvdz9
+
+    - name: Mount Loop Device At Boot
+      lineinfile: dest=/etc/rc.local regexp='^mount /srv/node/{{ item.name }}' line='mount /srv/node/{{ item.name }}' insertbefore='^exit 0' state=present
+      with_items:
+        - xvdz5
+        - xvdz6
+        - xvdz7
+        - xvdz8
+        - xvdz9
