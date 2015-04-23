@@ -3,10 +3,30 @@ heat_template_version: 2013-05-23
 description: Deploy A Rackspace Private Cloud v10.1 Compute + Block + Object Environment
 
 parameters:
-  ansible_tag:
+  ansible_tags:
     type: string
     label: Ansible Tags
-    default: 'none'
+    default: 'prepare'
+  rackspace_cloud_auth_url:
+    type: string
+    label: Rackspace Cloud Auth URL
+    default: 'https://identity.api.rackspacecloud.com/v2.0'
+  rackspace_cloud_tenant_id:
+    type: string
+    label: Rackspace Cloud Tenant ID
+    default: 'SomeTenantID'
+  rackspace_cloud_username:
+    type: string
+    label: Rackspace Cloud Username
+    default: 'SomeUserName'
+  rackspace_cloud_password:
+    type: string
+    label: Rackspace Cloud Password
+    default: 'SomeUsersPassword'
+  rackspace_cloud_api_key:
+    type: string
+    label: Rackspace Cloud API Key
+    default: 'SomeAPIKey'
 
 resources:
   password:
@@ -120,6 +140,10 @@ resources:
                   heat_stack_id=%heat_stack_id%
                   heat_stack_name=%heat_stack_name%
                   heat_stack_password=%heat_stack_password%
+                  rackspace_cloud_tenant_id=%rackspace_cloud_tenant_id%
+                  rackspace_cloud_username=%rackspace_cloud_username%
+                  rackspace_cloud_password=%rackspace_cloud_password%
+                  rackspace_cloud_api_key=%rackspace_cloud_api_key%
                   
                   [all]
                   infra1      ansible_connection=local    node_id=1
@@ -143,14 +167,18 @@ resources:
                   [object]
                   object1
                 params:
-                  "%heat_stack_prefix%":   { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-                  "%heat_stack_id%":       { get_param: "OS::stack_id" }
-                  "%heat_stack_name%":     { get_param: "OS::stack_name" }
-                  "%heat_stack_password%": { get_attr: [ password, value ] }
-                  "%server_logger1_ip%":   { get_attr: [ server_logger1, accessIPv4 ] }
-                  "%server_compute1_ip%":  { get_attr: [ server_compute1, accessIPv4 ] }
-                  "%server_block1_ip%":    { get_attr: [ server_block1, accessIPv4 ] }
-                  "%server_object1_ip%":   { get_attr: [ server_object1, accessIPv4 ] }
+                  "%heat_stack_prefix%":         { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
+                  "%heat_stack_id%":             { get_param: "OS::stack_id" }
+                  "%heat_stack_name%":           { get_param: "OS::stack_name" }
+                  "%rackspace_cloud_tenant_id%": { get_param: "rackspace_cloud_tenant_id" }
+                  "%rackspace_cloud_username%":  { get_param: "rackspace_cloud_username" }
+                  "%rackspace_cloud_password%":  { get_param: "rackspace_cloud_password" }
+                  "%rackspace_cloud_api_key%":   { get_param: "rackspace_cloud_api_key" }
+                  "%heat_stack_password%":       { get_attr: [ password, value ] }
+                  "%server_logger1_ip%":         { get_attr: [ server_logger1, accessIPv4 ] }
+                  "%server_compute1_ip%":        { get_attr: [ server_compute1, accessIPv4 ] }
+                  "%server_block1_ip%":          { get_attr: [ server_block1, accessIPv4 ] }
+                  "%server_object1_ip%":         { get_attr: [ server_object1, accessIPv4 ] }
           - path: /opt/cloud-training/runcmd-bash
             permissions: "0700"
             content:
@@ -177,11 +205,11 @@ resources:
                   # END - Terrible Chicken Egg Hack
                   git clone https://github.com/cloud-training/rpc-heat-ansible.git || exit_failure "Git Clone Failure"
                   cd /opt/cloud-training/rpc-heat-ansible/playbooks
-                  ansible-playbook rpc-10.1-playbook.yml -v --tags %ansible_tag% || exit_failure "Ansible Playbook Run Failure"
+                  ansible-playbook rpc-10.1-playbook.yml -v --tags %ansible_tags% || exit_failure "Ansible Playbook Run Failure"
                   exit_success
                 params:
                   "%swift_signal_notify%": { get_attr: [ swift_signal_handle_infra1, curl_cli ] }
-                  "%ansible_tag%": { get_param: "ansible_tag"}
+                  "%ansible_tags%": { get_param: "ansible_tags"}
         runcmd:
           - /opt/cloud-training/runcmd-bash >> /opt/cloud-training/runcmd-bash.log 2>> /opt/cloud-training/runcmd-bash.err
 

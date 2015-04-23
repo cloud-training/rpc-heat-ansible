@@ -1,21 +1,32 @@
 ---
 # This playbook installs Rackspace Private Cloud v10.1
 
-- name: None
+
+# # Available Tags
+# nothing - Do Nothing
+# prepare - Prepare Environment
+# compute - Install Compute v10.1
+# block   - Install Block v10.1
+# object  - Install Object v10.1
+# maas    - Install MaaS v10.1
+
+
+- name: Do Nothing
   hosts: all
   tags:
-    - none
+    - nothing
   tasks:
     - name: Ping Nodes
       ping:
 
-- name: Setup
+- name: Prepare Environment
   hosts: all
   tags:
-    - setup
-    - install-rpc
-    - install-rpc-compute
-    - install-rpc-compute-object
+    - prepare
+    - compute
+    - block
+    - object
+    - maas
   tasks:
     - name: Install Packages
       apt: name={{ item }} state=present
@@ -24,15 +35,15 @@
         - fping
 
     - name: Add Nodes Hosts File Entries (Long)
-      lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ heat_stack_prefix }}-{{ item }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ heat_stack_prefix }}-{{ item }}' insertafter=EOF state=present
+      lineinfile: dest=/etc/hosts line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ heat_stack_prefix }}-{{ item }}' insertafter=EOF state=present
       with_items: groups.all
 
     - name: Add Nodes Hosts File Entries (Short)
-      lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }}' insertafter=EOF state=present
+      lineinfile: dest=/etc/hosts line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }}' insertafter=EOF state=present
       with_items: groups.all
 
     - name: Add Nodes Hosts File Entries (Node)
-      lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ "n%02d"|format(hostvars[item].node_id) }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ "n%02d"|format(hostvars[item].node_id) }}' insertafter=EOF state=present
+      lineinfile: dest=/etc/hosts line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ "n%02d"|format(hostvars[item].node_id) }}' insertafter=EOF state=present
       with_items: groups.all
 
     - name: Check Connectivity
@@ -76,7 +87,7 @@
       when: "'/mnt/4GB.swap' not in check_swap_file_result.stdout"
 
     - name: Add Swap To /etc/fstab
-      lineinfile: dest=/etc/fstab regexp='/mnt/4GB.swap  none  swap  sw 0  0' line='/mnt/4GB.swap  none  swap  sw 0  0' insertafter=EOF
+      lineinfile: dest=/etc/fstab line='/mnt/4GB.swap  none  swap  sw 0  0' insertafter=EOF state=present
 
     - name: Set Swappiness
       sysctl: name=vm.swappiness value=90 state=present
@@ -84,22 +95,9 @@
     - name: Create Partition Table
       shell: |
         parted -s {{ item.device }} mktable {{ item.type }} && partprobe {{ item.device }}
-      when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
+      when: ansible_local.partitions is not defined
       with_items:
-        - group: infra
-          device: /dev/xvdz
-          type: msdos
-        - group: logger
-          device: /dev/xvdz
-          type: msdos
-        - group: compute
-          device: /dev/xvdz
-          type: msdos
-        - group: block
-          device: /dev/xvdz
-          type: msdos
-        - group: object
-          device: /dev/xvdz
+        - device: /dev/xvdz
           type: msdos
 
     - name: Create Primary Partitions
@@ -167,17 +165,29 @@
     - name: Create Partitions Done Fact
       ini_file: dest=/etc/ansible/facts.d/partitions.fact section=state option=done value=true
 
-- name: Install Compute
+- name: Setup Common
   hosts: all
   tags:
-    - install-rpc
-    - install-rpc-compute
-    - install-rpc-compute-object
+    - compute
+    - block
+    - object
+    - maas
   tasks:
     - name: Check Connectivity
       command: fping {{ item }}
       changed_when: False
       with_items: groups.all
+
+    - name: Create End-of-Line In /etc/ssh/sshd_config
+      shell: |
+        cat >> /etc/ssh/sshd_config <<EOF
+        
+        
+        EOF
+      when: ansible_local.sshd_config is not defined
+
+    - name: Create End-of-Line In /etc/ssh/sshd_config Done Fact
+      ini_file: dest=/etc/ansible/facts.d/sshd_config.fact section=state option=done value=true
 
     - name: Genereate SSH Keypair
       command: ssh-keygen -f ~/.ssh/id_rsa -t rsa -q -N "" creates=/root/.ssh/id_rsa.pub
@@ -224,41 +234,21 @@
       command: pvcreate --metadatasize 2048 {{ item.device }}
       register: pvcreate_result
       failed_when: pvcreate_result.rc != 0 and pvcreate_result.rc != 5
-      when: inventory_hostname in groups[ item.group ]
       changed_when: False
       with_items:
-        - group: all
-          device: /dev/xvdz1
-        - group: block
-          device: /dev/xvdz2
+        - device: /dev/xvdz1
 
     - name: Create Logical Volume Groups
       lvg: vg={{ item.vg }} pvs={{ item.pvs }} state=present vg_options=''
-      when: inventory_hostname in groups[ item.group ]
       with_items:
-        - group: all
-          vg: lxc
+        - vg: lxc
           pvs: /dev/xvdz1
-        - group: block
-          vg: cinder-volumes
-          pvs: /dev/xvdz2
-
-    - name: Create End-of-Line In /etc/ssh/sshd_config
-      shell: |
-        cat >> /etc/ssh/sshd_config <<EOF
-        
-        
-        EOF
-      when: ansible_local.sshd_config is not defined
-
-    - name: Create End-of-Line In /etc/ssh/sshd_config Done Fact
-      ini_file: dest=/etc/ansible/facts.d/sshd_config.fact section=state option=done value=true
 
     - name: Create /etc/network/interfaces.d/
       file: dest=/etc/network/interfaces.d/ state=directory
 
     - name: Source /etc/network/interfaces.d/*.cfg
-      lineinfile: dest=/etc/network/interfaces line='source /etc/network/interfaces.d/*.cfg' state=present insertafter=EOF
+      lineinfile: dest=/etc/network/interfaces line='source /etc/network/interfaces.d/*.cfg' insertafter=EOF state=present
 
     - name: Create /etc/network/interfaces.d/rpc.cfg
       template: src=templates/etc/network/interfaces.d/rpc-10.1.cfg.j2 dest=/etc/network/interfaces.d/rpc.cfg
@@ -278,12 +268,81 @@
       changed_when: False
       with_items: groups.all
 
-- name: Install Compute
+- name: Setup Block
+  hosts: block
+  tags:
+    - block
+  tasks:
+    - name: Create Physical Volumes
+      command: pvcreate --metadatasize 2048 {{ item.device }}
+      register: pvcreate_result
+      failed_when: pvcreate_result.rc != 0 and pvcreate_result.rc != 5
+      changed_when: False
+      with_items:
+        - device: /dev/xvdz2
+
+    - name: Create Logical Volume Groups
+      lvg: vg={{ item.vg }} pvs={{ item.pvs }} state=present vg_options=''
+      with_items:
+        - vg: cinder-volumes
+          pvs: /dev/xvdz2
+
+- name: Setup Object
+  hosts: object
+  tags:
+    - object
+  tasks:
+    - name: Install Necessary Base Packages
+      apt: pkg={{ item }} state=present update_cache=yes force=yes
+      with_items:
+        - xfsprogs
+
+    - name: XFS Format Volumes
+      filesystem: dev=/dev/{{ item }} fstype=xfs opts='-i size=1024 -L {{ item }}'
+      with_items:
+        - xvdz5
+        - xvdz6
+        - xvdz7
+        - xvdz8
+        - xvdz9
+
+    - name: Create Root Mount Points Directory
+      file: path=/srv/node state=directory owner=root group=root
+
+    - name: Create Device Mount Point Directories
+      file: path=/srv/node/{{ item }} state=directory
+      with_items:
+        - xvdz5
+        - xvdz6
+        - xvdz7
+        - xvdz8
+        - xvdz9
+
+    - name: Mount Loop Device
+      mount: name=/srv/node/{{ item }} src='LABEL={{ item }}' state=mounted fstype=xfs opts='noauto,noatime,nodiratime,nobarrier,logbufs=8' passno=0
+      with_items:
+        - xvdz5
+        - xvdz6
+        - xvdz7
+        - xvdz8
+        - xvdz9
+
+    - name: Mount Loop Device At Boot
+      lineinfile: dest=/etc/rc.local line='mount /srv/node/{{ item }}' insertbefore='^exit 0' state=present
+      with_items:
+        - xvdz5
+        - xvdz6
+        - xvdz7
+        - xvdz8
+        - xvdz9
+
+- name: Configure Common
   hosts: infra[0]
   tags:
-    - install-rpc
-    - install-rpc-compute
-    - install-rpc-compute-object
+    - compute
+    - block
+    - object
+    - maas
   tasks:
     - name: Create /opt
       file: dest=/opt state=directory
@@ -306,34 +365,69 @@
     - name: PIP Install Requirements Done Fact
       ini_file: dest=/etc/ansible/facts.d/pip_install_requirements.fact section=state option=done value=true
 
-    - name: Create /etc/rpc_deploy
-      file: dest=/etc/rpc_deploy state=directory
+    - name: Create /etc/rpc_deploy/conf.d
+      file: dest=/etc/rpc_deploy/conf.d state=directory
 
     - name: Copy Default Configuration Files
       command: cp /opt/os-ansible-deployment/etc/rpc_deploy/{{ item }} /etc/rpc_deploy/{{ item }} creates=/etc/rpc_deploy/{{ item }}
       with_items:
         - rpc_environment.yml
-        - rpc_user_config.yml
-        - user_variables.yml
 
-    - name: Update RPC User Config
+    - name: Copy RPC User Config File
       template: src=templates/etc/rpc_deploy/rpc_user_config-10.1.yml.j2 dest=/etc/rpc_deploy/rpc_user_config.yml
 
-    - name: Update RPC User Variables
-      shell: |
-        sed -i -r 's|{{ item.search }}|{{ item.replace }}|g' /etc/rpc_deploy/user_variables.yml
+    - name: Copy RPC User Variables File
+      template: src=templates/etc/rpc_deploy/user_variables-10.1.yml.j2 dest=/etc/rpc_deploy/user_variables.yml
+
+- name: Configure Object
+  hosts: infra[0]
+  tags:
+    - object
+  tasks:
+    - name: Copy RPC Swift Config File
+      template: src=templates/etc/rpc_deploy/conf.d/swift-10.1.yml.j2 dest=/etc/rpc_deploy/conf.d/swift.yml
+    
+    - name: Update RPC User Config File
+      lineinfile: "dest=/etc/rpc_deploy/rpc_user_config.yml regexp='         ( #)? - swift_proxy' line='          - swift_proxy' state=present"
+
+    - name: Update RPC User Variables File
+      lineinfile: dest=/etc/rpc_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
       with_items:
-        - { search: 'password:$',                                           replace: 'password: {{ heat_stack_password }}' }
-        - { search: 'token:$',                                              replace: 'token: {{ heat_stack_password }}' }
-        - { search: 'key:$',                                                replace: 'key: {{ heat_stack_password }}' }
-        - { search: 'secret:$',                                             replace: 'secret: {{ heat_stack_password }}' }
-        - { search: 'heat_auth_encryption_key: {{ heat_stack_password }}$', replace: 'heat_auth_encryption_key: {{ heat_stack_password }}12345678901234567890' }
-        - { search: '# nova_virt_type: kvm',                                replace: 'nova_virt_type: qemu' }
-      when: ansible_local.user_variables is not defined
+        - { regexp: '^glance_default_store:', line: 'glance_default_store: swift' }
+        - { regexp: '^glance_swift_store_user:', line: 'glance_swift_store_user: service:glance' }
+        - { regexp: '^glance_swift_store_container:', line: 'glance_swift_store_container: glance_images' }
+        - { regexp: '^glance_swift_store_region:', line: 'glance_swift_store_region: RegionOne' }
 
-    - name: Update /etc/rpc_deploy/user_variables.yml Done Fact
-      ini_file: dest=/etc/ansible/facts.d/user_variables.fact section=state option=done value=true
+    - name: Update RPC User Variables File - Cause Escaping - Copy Script
+      copy: src=files/tmp/cause-escaping.sh dest=/tmp/cause-escaping.sh mode=0700
 
+    - name: Update RPC User Variables File - Cause Escaping - Run Script
+      command: /tmp/cause-escaping.sh
+
+- name: Configure MaaS
+  hosts: infra[0]
+  tags:
+    - maas
+  tasks:
+    - name: Update RPC User Variables File
+      lineinfile: dest=/etc/rpc_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
+      with_items:
+        - { regexp: '^maas_notification_plan:', line: 'maas_notification_plan: npTechnicalContactsEmail' }
+        - { regexp: '^maas_scheme:', line: 'maas_scheme: http' }
+        - { regexp: '^(# )?maas_(nova|horizon)_scheme:', line: 'maas_horizon_scheme: https' }
+
+# Install Common
+# Install Compute - Play 1 of 2
+# Install Block
+# Install Compute - Play 2 of 2
+# Install Object
+# Install MaaS
+
+- name: Install Compute
+  hosts: infra[0]
+  tags:
+    - compute-off
+  tasks:
     - name: Run 'Setup - Setup Common' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/setup/setup-common.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
       register: playbook_result
@@ -503,78 +597,10 @@
       delay: 10
 
 - name: Install Object
-  hosts: object
-  tags:
-    - install-rpc
-    - install-rpc-compute-object
-  tasks:
-    - name: Install Necessary Base Packages
-      apt: pkg=xfsprogs state=present update_cache=yes force=yes
-
-    - name: XFS Format Volumes
-      filesystem: dev=/dev/{{ item }} fstype=xfs opts="-i size=1024 -L {{ item }}"
-      with_items:
-        - xvdz5
-        - xvdz6
-        - xvdz7
-        - xvdz8
-        - xvdz9
-
-    - name: Create Root Mount Points Directory
-      file: path=/srv/node/ state=directory owner=root group=root
-
-    - name: Create Device Mount Point Directories
-      file: path=/srv/node/{{ item }}/ state=directory
-      with_items:
-        - xvdz5
-        - xvdz6
-        - xvdz7
-        - xvdz8
-        - xvdz9
-
-    - name: Mount Loop Device
-      mount: name=/srv/node/{{ item }} src="LABEL={{ item }}" state=mounted fstype=xfs opts="noauto,noatime,nodiratime,nobarrier,logbufs=8" passno=0
-      with_items:
-        - xvdz5
-        - xvdz6
-        - xvdz7
-        - xvdz8
-        - xvdz9
-
-    - name: Mount Loop Device At Boot
-      lineinfile: dest=/etc/rc.local regexp='^mount /srv/node/{{ item }}' line='mount /srv/node/{{ item }}' insertbefore='^exit 0' state=present
-      with_items:
-        - xvdz5
-        - xvdz6
-        - xvdz7
-        - xvdz8
-        - xvdz9
-
-- name: Install Object
   hosts: infra[0]
   tags:
-    - install-rpc
-    - install-rpc-compute-object
+    - object-off
   tasks:
-    - name: Create /etc/rpc_deploy/conf.d
-      file: dest=/etc/rpc_deploy/conf.d state=directory
-
-    - name: Copy Default Configuration Files
-      command: cp /opt/os-ansible-deployment/etc/rpc_deploy/{{ item }} /etc/rpc_deploy/{{ item }} creates=/etc/rpc_deploy/{{ item }}
-      with_items:
-        - conf.d/swift.yml
-
-    - name: Update Swift Config
-      template: src=templates/etc/rpc_deploy/conf.d/swift-10.1.yml.j2 dest=/etc/rpc_deploy/conf.d/swift.yml
-
-    - name: Update RPC User Config
-      shell: |
-        sed -i -r 's|          # - swift_proxy|          - swift_proxy|g' /etc/rpc_deploy/rpc_user_config.yml
-      when: ansible_local.user_variables_swift is not defined
-
-    - name: Update /etc/rpc_deploy/user_variables.yml Done Fact
-      ini_file: dest=/etc/ansible/facts.d/user_variables_swift.fact section=state option=done value=true
-
     - name: Run 'Setup - Setup Common' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/setup/setup-common.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
       register: playbook_result
@@ -630,3 +656,12 @@
       until: playbook_result.rc == 0
       retries: 5
       delay: 10
+
+# ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/monitoring/raxmon-all.yml
+# ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/monitoring/maas_local.yml
+# ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/monitoring/maas_remote.yml
+# ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/monitoring/maas_cdm.yml
+# ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/monitoring/maas_ssl_check.yml
+# ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/monitoring/swift_maas.yml
+#
+# ansible hosts -m service -a "name=rackspace-monitoring-agent state=restarted"
