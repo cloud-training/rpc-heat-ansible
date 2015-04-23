@@ -399,7 +399,7 @@
         - { regexp: '^glance_swift_store_region:',    line: 'glance_swift_store_region: RegionOne' }
 
     - name: Update RPC User Variables File
-      lineinfile: dest=/etc/rpc_deploy/user_variables.yml regexp='^glance_swift_store_auth_address:' line={{ 'glance_swift_store_auth_address: "{{ auth_identity_uri }}"' }} state=present
+      lineinfile: dest=/etc/rpc_deploy/user_variables.yml regexp='^glance_swift_store_auth_address:' line="{{ \'glance_swift_store_auth_address: "{{ auth_identity_uri }}"\' }}" state=present
 
     - name: Update RPC User Variables File
       lineinfile: dest=/etc/rpc_deploy/user_variables.yml regexp='^glance_swift_store_key:' line={{ 'glance_swift_store_key: "{{ glance_service_password }}"' }} state=present
