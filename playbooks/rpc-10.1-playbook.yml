@@ -400,6 +400,12 @@
         - { regexp: '^glance_swift_store_container:', line: 'glance_swift_store_container: glance_images' }
         - { regexp: '^glance_swift_store_region:', line: 'glance_swift_store_region: RegionOne' }
 
+    - name: Update RPC User Variables File - Cause Escaping - Copy Script
+      copy: src=files/tmp/cause-escaping.sh dest=/tmp/cause-escaping.sh mode=0700
+
+    - name: Update RPC User Variables File - Cause Escaping - Run Script
+      command: /tmp/cause-escaping.sh
+
 - name: Configure MaaS
   hosts: infra[0]
   tags:
