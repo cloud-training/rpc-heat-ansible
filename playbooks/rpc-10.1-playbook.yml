@@ -388,7 +388,7 @@
       template: src=templates/etc/rpc_deploy/conf.d/swift-10.1.yml.j2 dest=/etc/rpc_deploy/conf.d/swift.yml
     
     - name: Update RPC User Config File
-      lineinfile: dest=/etc/rpc_deploy/rpc_user_config.yml regexp='         ( #)? - swift_proxy' line='          - swift_proxy' state=present
+      lineinfile: "dest=/etc/rpc_deploy/rpc_user_config.yml regexp='         ( #)? - swift_proxy' line='          - swift_proxy' state=present"
 
     - name: Update RPC User Variables File
       lineinfile: dest=/etc/rpc_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
@@ -407,6 +407,13 @@
   tasks:
     - name: Configure MaaS
       debug: msg="Configure MaaS"
+
+# Install Common
+# Install Compute - Play 1 of 2
+# Install Block
+# Install Compute - Play 2 of 2
+# Install Object
+# Install MaaS
 
 - name: Install Compute
   hosts: infra[0]
