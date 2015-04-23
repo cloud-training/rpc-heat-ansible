@@ -62,9 +62,9 @@ cinder_v2_service_password: {{ heat_stack_password }}
 glance_default_store: file
 glance_container_mysql_password: {{ heat_stack_password }}
 glance_service_password: {{ heat_stack_password }}
-glance_swift_store_auth_address: "\{\{ rackspace_cloud_auth_url \}\}"
-glance_swift_store_user: "\{\{ rackspace_cloud_tenant_id \}\}:\{\{ rackspace_cloud_username \}\}"
-glance_swift_store_key: "\{\{ rackspace_cloud_password \}\}"
+glance_swift_store_auth_address: "{{ '{{ rackspace_cloud_auth_url }}' }}"
+glance_swift_store_user: "{{ '{{ rackspace_cloud_tenant_id }}' }}:{{ '{{ rackspace_cloud_username }}' }}"
+glance_swift_store_key: "{{ '{{ rackspace_cloud_password }}' }}"
 glance_swift_store_container: SomeContainerName
 glance_swift_store_region: SomeRegion
 # Set the glance swift_store large object variables in MB
@@ -95,11 +95,11 @@ horizon_secret_key: {{ heat_stack_password }}
 # Set maas_auth_method to 'token' to use maas_auth_token/maas_api_url
 # instead of maas_username/maas_api_key
 maas_auth_method: password
-maas_auth_url: "\{\{ rackspace_cloud_auth_url \}\}"
-maas_username: "\{\{ rackspace_cloud_username \}\}"
-maas_api_key: "\{\{ rackspace_cloud_api_key \}\}"
+maas_auth_url: "{{ '{{ rackspace_cloud_auth_url }}' }}"
+maas_username: "{{ '{{ rackspace_cloud_username }}' }}"
+maas_api_key: "{{ '{{ rackspace_cloud_api_key }}' }}"
 maas_auth_token: some_token
-maas_api_url: https://monitoring.api.rackspacecloud.com/v1.0/\{\{ rackspace_cloud_tenant_id \}\}
+maas_api_url: https://monitoring.api.rackspacecloud.com/v1.0/{{ '{{ rackspace_cloud_tenant_id }}' }}
 maas_notification_plan: npManaged
 # By default we will create an agent token for each entity, however if you'd
 # prefer to use the same agent token for all entities then specify it here
