@@ -617,6 +617,13 @@
       retries: 5
       delay: 10
 
+    - name: Run 'Infrastructure - HAProxy Install' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/haproxy-install.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+
     - name: Run 'OpenStack - Swift All' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/swift-all.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
       register: playbook_result
