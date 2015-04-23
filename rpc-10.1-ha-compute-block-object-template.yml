@@ -3,10 +3,10 @@ heat_template_version: 2013-05-23
 description: Deploy A Rackspace Private Cloud v10.1 Reference Architecture Environment
 
 parameters:
-  ansible_tag:
+  ansible_tags:
     type: string
     label: Ansible Tags
-    default: 'none'
+    default: 'prepare'
 
 resources:
   password:
@@ -216,11 +216,11 @@ resources:
                   # END - Terrible Chicken Egg Hack
                   git clone https://github.com/cloud-training/rpc-heat-ansible.git || exit_failure "Git Clone Failure"
                   cd /opt/cloud-training/rpc-heat-ansible/playbooks
-                  ansible-playbook rpc-10.1-playbook.yml -v --tags %ansible_tag% || exit_failure "Ansible Playbook Run Failure"
+                  ansible-playbook rpc-10.1-playbook.yml -v --tags %ansible_tags% || exit_failure "Ansible Playbook Run Failure"
                   exit_success
                 params:
                   "%swift_signal_notify%": { get_attr: [ swift_signal_handle_infra1, curl_cli ] }
-                  "%ansible_tag%": { get_param: "ansible_tag"}
+                  "%ansible_tags%": { get_param: "ansible_tags"}
         runcmd:
           - /opt/cloud-training/runcmd-bash >> /opt/cloud-training/runcmd-bash.log 2>> /opt/cloud-training/runcmd-bash.err
 
