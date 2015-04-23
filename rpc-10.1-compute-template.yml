@@ -7,6 +7,26 @@ parameters:
     type: string
     label: Ansible Tags
     default: 'prepare'
+  rackspace_cloud_auth_url:
+    type: string
+    label: Rackspace Cloud Auth URL
+    default: 'https://identity.api.rackspacecloud.com/v2.0'
+  rackspace_cloud_tenant_id:
+    type: string
+    label: Rackspace Cloud Tenant ID
+    default: 'SomeTenantID'
+  rackspace_cloud_username:
+    type: string
+    label: Rackspace Cloud Username
+    default: 'SomeUserName'
+  rackspace_cloud_password:
+    type: string
+    label: Rackspace Cloud Password
+    default: 'SomeUsersPassword'
+  rackspace_cloud_api_key:
+    type: string
+    label: Rackspace Cloud API Key
+    default: 'SomeAPIKey'
 
 resources:
   password:
