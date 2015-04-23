@@ -391,12 +391,12 @@
       lineinfile: "dest=/etc/rpc_deploy/rpc_user_config.yml regexp='         ( #)? - swift_proxy' line='          - swift_proxy' state=present"
 
     - name: Update RPC User Variables File
-      lineinfile: dest=/etc/rpc_deploy/user_variables.yml regexp="{{ item.regexp }}" line="{{ item.line }}" state=present
+      lineinfile: dest=/etc/rpc_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
       with_items:
         - { regexp: '^glance_default_store:', line: 'glance_default_store: swift' }
-        - { regexp: '^glance_swift_store_auth_address:', line: "glance_swift_store_auth_address: \"{{ '{' }}{{ '{' }} auth_identity_uri {{ '}' }}{{ '}' }}\"" }
+        - { regexp: '', line: 'glance_swift_store_auth_address: "{% raw %}{{ auth_identity_uri }}{% endraw %}"' }
         - { regexp: '^glance_swift_store_user:', line: 'glance_swift_store_user: service:glance' }
-        - { regexp: '^glance_swift_store_key:', line: "glance_swift_store_key: \"{{ '{' }}{{ '{' }} glance_service_password {{ '}' }}{{ '}' }}\"" }
+        - { regexp: '^glance_swift_store_key:', line: 'glance_swift_store_key: "{% raw %}{{ glance_service_password }}{% endraw %}"' }
         - { regexp: '^glance_swift_store_container:', line: 'glance_swift_store_container: glance_images' }
         - { regexp: '^glance_swift_store_region:', line: 'glance_swift_store_region: RegionOne' }
 
