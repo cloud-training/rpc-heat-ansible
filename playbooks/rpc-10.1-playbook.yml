@@ -369,7 +369,7 @@
       file: dest=/etc/rpc_deploy/conf.d state=directory
 
     - name: Copy Default Configuration Files
-      command: cp /opt/os-ansible-deployment/etc/rpc_deploy/{{ item }} /etc/rpc_deploy/{{ item }}
+      command: cp /opt/os-ansible-deployment/etc/rpc_deploy/{{ item }} /etc/rpc_deploy/{{ item }} creates=/etc/rpc_deploy/{{ item }}
       with_items:
         - rpc_environment.yml
 
