@@ -35,15 +35,15 @@
         - fping
 
     - name: Add Nodes Hosts File Entries (Long)
-      lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ heat_stack_prefix }}-{{ item }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ heat_stack_prefix }}-{{ item }}' insertafter=EOF state=present
+      lineinfile: dest=/etc/hosts line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ heat_stack_prefix }}-{{ item }}' insertafter=EOF state=present
       with_items: groups.all
 
     - name: Add Nodes Hosts File Entries (Short)
-      lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }}' insertafter=EOF state=present
+      lineinfile: dest=/etc/hosts line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }}' insertafter=EOF state=present
       with_items: groups.all
 
     - name: Add Nodes Hosts File Entries (Node)
-      lineinfile: dest=/etc/hosts regexp='^{{ hostvars[item].ansible_eth2.ipv4.address }} {{ "n%02d"|format(hostvars[item].node_id) }}' line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ "n%02d"|format(hostvars[item].node_id) }}' insertafter=EOF state=present
+      lineinfile: dest=/etc/hosts line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ "n%02d"|format(hostvars[item].node_id) }}' insertafter=EOF state=present
       with_items: groups.all
 
     - name: Check Connectivity
