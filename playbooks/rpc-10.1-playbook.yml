@@ -14,6 +14,8 @@
   tags:
     - setup
     - install-rpc
+    - install-rpc-compute
+    - install-rpc-compute-object
   tasks:
     - name: Install Packages
       apt: name={{ item }} state=present
@@ -169,6 +171,8 @@
   hosts: all
   tags:
     - install-rpc
+    - install-rpc-compute
+    - install-rpc-compute-object
   tasks:
     - name: Check Connectivity
       command: fping {{ item }}
@@ -278,6 +282,8 @@
   hosts: infra[0]
   tags:
     - install-rpc
+    - install-rpc-compute
+    - install-rpc-compute-object
   tasks:
     - name: Create /opt
       file: dest=/opt state=directory
@@ -491,6 +497,135 @@
 
     - name: Run 'Infrastructure - Rsyslog Config' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/rsyslog-config.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+
+- name: Install Object
+  hosts: object
+  tags:
+    - install-rpc
+    - install-rpc-compute-object
+  tasks:
+    - name: Install Necessary Base Packages
+      apt: pkg=xfsprogs state=present update_cache=yes force=yes
+
+    - name: XFS Format Volumes
+      filesystem: dev=/dev/{{ item }} fstype=xfs opts="-i size=1024 -L {{ item }}"
+      with_items:
+        - xvdz5
+        - xvdz6
+        - xvdz7
+        - xvdz8
+        - xvdz9
+
+    - name: Create Root Mount Points Directory
+      file: path=/srv/node/ state=directory owner=root group=root
+
+    - name: Create Device Mount Point Directories
+      file: path=/srv/node/{{ item }}/ state=directory
+      with_items:
+        - xvdz5
+        - xvdz6
+        - xvdz7
+        - xvdz8
+        - xvdz9
+
+    - name: Mount Loop Device
+      mount: name=/srv/node/{{ item }} src="LABEL={{ item }}" state=mounted fstype=xfs opts="noauto,noatime,nodiratime,nobarrier,logbufs=8" passno=0
+      with_items:
+        - xvdz5
+        - xvdz6
+        - xvdz7
+        - xvdz8
+        - xvdz9
+
+    - name: Mount Loop Device At Boot
+      lineinfile: dest=/etc/rc.local regexp='^mount /srv/node/{{ item }}' line='mount /srv/node/{{ item }}' insertbefore='^exit 0' state=present
+      with_items:
+        - xvdz5
+        - xvdz6
+        - xvdz7
+        - xvdz8
+        - xvdz9
+
+- name: Install Object
+  hosts: infra[0]
+  tags:
+    - install-rpc
+    - install-rpc-compute-object
+  tasks:
+    - name: Create /etc/rpc_deploy/conf.d
+      file: dest=/etc/rpc_deploy/conf.d state=directory
+
+    - name: Copy Default Configuration Files
+      command: cp /opt/os-ansible-deployment/etc/rpc_deploy/{{ item }} /etc/rpc_deploy/{{ item }} creates=/etc/rpc_deploy/{{ item }}
+      with_items:
+        - conf.d/swift.yml
+
+    - name: Update Swift Config
+      template: src=templates/etc/rpc_deploy/conf.d/swift-10.1.yml.j2 dest=/etc/rpc_deploy/conf.d/swift.yml
+
+    - name: Update RPC User Config
+      shell: |
+        sed -i -r 's|          # - swift_proxy|          - swift_proxy|g' /etc/rpc_deploy/rpc_user_config.yml
+      when: ansible_local.user_variables_swift is not defined
+
+    - name: Update /etc/rpc_deploy/user_variables.yml Done Fact
+      ini_file: dest=/etc/ansible/facts.d/user_variables_swift.fact section=state option=done value=true
+
+    - name: Run 'Setup - Setup Common' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/setup/setup-common.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+
+    - name: Run 'Setup - Build Containers' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/setup/build-containers.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+
+    - name: Run 'Setup - Restart Containers' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/setup/restart-containers.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+
+    - name: Run 'Setup - Containers Common' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/setup/containers-common.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+
+    - name: Run 'Infrastructure - Rsyslog Install' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/rsyslog-install.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+
+    - name: Run 'Infrastructure - Rsyslog Config' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/rsyslog-config.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+
+    - name: Run 'Infrastructure - HAProxy Install' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/haproxy-install.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
+      register: playbook_result
+      until: playbook_result.rc == 0
+      retries: 5
+      delay: 10
+
+    - name: Run 'OpenStack - Swift All' Playbook
+      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/swift-all.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
       retries: 5
