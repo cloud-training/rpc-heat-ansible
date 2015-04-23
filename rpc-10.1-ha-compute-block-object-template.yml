@@ -170,6 +170,10 @@ resources:
                   heat_stack_id=%heat_stack_id%
                   heat_stack_name=%heat_stack_name%
                   heat_stack_password=%heat_stack_password%
+                  rackspace_cloud_tenant_id=%rackspace_cloud_tenant_id%
+                  rackspace_cloud_username=%rackspace_cloud_username%
+                  rackspace_cloud_password=%rackspace_cloud_password%
+                  rackspace_cloud_api_key=%rackspace_cloud_api_key%
                   
                   [all]
                   infra1      ansible_connection=local    node_id=1
@@ -199,17 +203,21 @@ resources:
                   [object]
                   object1
                 params:
-                  "%heat_stack_prefix%":   { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-                  "%heat_stack_id%":       { get_param: "OS::stack_id" }
-                  "%heat_stack_name%":     { get_param: "OS::stack_name" }
-                  "%heat_stack_password%": { get_attr: [ password, value ] }
-                  "%server_infra2_ip%":    { get_attr: [ server_infra2, accessIPv4 ] }
-                  "%server_infra3_ip%":    { get_attr: [ server_infra3, accessIPv4 ] }
-                  "%server_logger1_ip%":   { get_attr: [ server_logger1, accessIPv4 ] }
-                  "%server_compute1_ip%":  { get_attr: [ server_compute1, accessIPv4 ] }
-                  "%server_compute2_ip%":  { get_attr: [ server_compute2, accessIPv4 ] }
-                  "%server_block1_ip%":    { get_attr: [ server_block1, accessIPv4 ] }
-                  "%server_object1_ip%":   { get_attr: [ server_object1, accessIPv4 ] }
+                  "%heat_stack_prefix%":         { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
+                  "%heat_stack_id%":             { get_param: "OS::stack_id" }
+                  "%heat_stack_name%":           { get_param: "OS::stack_name" }
+                  "%heat_stack_password%":       { get_attr: [ password, value ] }
+                  "%rackspace_cloud_tenant_id%": { get_param: "rackspace_cloud_tenant_id" }
+                  "%rackspace_cloud_username%":  { get_param: "rackspace_cloud_username" }
+                  "%rackspace_cloud_password%":  { get_param: "rackspace_cloud_password" }
+                  "%rackspace_cloud_api_key%":   { get_param: "rackspace_cloud_api_key" }
+                  "%server_infra2_ip%":          { get_attr: [ server_infra2, accessIPv4 ] }
+                  "%server_infra3_ip%":          { get_attr: [ server_infra3, accessIPv4 ] }
+                  "%server_logger1_ip%":         { get_attr: [ server_logger1, accessIPv4 ] }
+                  "%server_compute1_ip%":        { get_attr: [ server_compute1, accessIPv4 ] }
+                  "%server_compute2_ip%":        { get_attr: [ server_compute2, accessIPv4 ] }
+                  "%server_block1_ip%":          { get_attr: [ server_block1, accessIPv4 ] }
+                  "%server_object1_ip%":         { get_attr: [ server_object1, accessIPv4 ] }
           - path: /opt/cloud-training/runcmd-bash
             permissions: "0700"
             content:
