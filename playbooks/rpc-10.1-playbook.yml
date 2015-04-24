@@ -412,6 +412,11 @@
     - name: Update RPC User Variables File
       lineinfile: dest=/etc/rpc_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
       with_items:
+        - { regexp: '^rackspace_cloud_auth_url:', line: 'rackspace_cloud_auth_url: {{ rackspace_cloud_auth_url }}' }
+        - { regexp: '^rackspace_cloud_tenant_id:', line: 'rackspace_cloud_tenant_id: {{ rackspace_cloud_tenant_id }}' }
+        - { regexp: '^rackspace_cloud_username:', line: 'rackspace_cloud_username: {{ rackspace_cloud_username }}' }
+        - { regexp: '^rackspace_cloud_password:', line: 'rackspace_cloud_password: {{ rackspace_cloud_password }}' }
+        - { regexp: '^rackspace_cloud_api_key:', line: 'rackspace_cloud_api_key: {{ rackspace_cloud_api_key }}' }
         - { regexp: '^maas_notification_plan:', line: 'maas_notification_plan: npTechnicalContactsEmail' }
         - { regexp: '^maas_scheme:', line: 'maas_scheme: http' }
         - { regexp: '^(# )?maas_(nova|horizon)_scheme:', line: 'maas_horizon_scheme: https' }
