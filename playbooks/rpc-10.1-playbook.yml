@@ -328,7 +328,7 @@
         - xvdz9
 
     - name: Mount Loop Device At Boot
-      lineinfile: dest=/etc/rc.local line='mount /srv/node/{{ item }}' insertbefore='^exit 0' state=present
+      lineinfile: dest=/etc/rc.local line='mount /srv/node/{{ item }}' insertafter=EOF state=present
       with_items:
         - xvdz5
         - xvdz6
