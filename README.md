@@ -10,6 +10,7 @@ Some settings should be private, and may be passed in through the use of a Heat 
 
 ```
 parameters:
+  rackspace_cloud_auth_url: 'https://identity.api.rackspacecloud.com/v2.0'
   rackspace_cloud_tenant_id: SomeTenantID
   rackspace_cloud_username: SomeUserName
   rackspace_cloud_password: SomeUsersPassword
