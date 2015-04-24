@@ -351,7 +351,7 @@
       git: repo=https://github.com/stackforge/os-ansible-deployment.git dest=/opt/os-ansible-deployment version=10.1.3
 
     - name: Patch RPC Repo Version
-      lineinfile: dest=/opt/os-ansible-deployment/rpc_deployment/inventory/group_vars/all.yml regexp='^rpc_release: ' line='rpc_release: 10.1.3' state=present
+      lineinfile: "dest=/opt/os-ansible-deployment/rpc_deployment/inventory/group_vars/all.yml regexp='^rpc_release: ' line='rpc_release: 10.1.3' state=present"
 
     - name: Get Modern PIP
       command: curl -O http://mirror.rackspace.com/rackspaceprivatecloud/downloads/get-pip.py chdir=/opt creates=/opt/get-pip.py
