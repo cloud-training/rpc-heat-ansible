@@ -688,4 +688,4 @@
       
     - name: Restart Rackspace Monitoring Agent
       service: name=rackspace-monitoring-agent state=restarted
-      when: agent_installed.exists
+      when: agent_installed.stat.exists
