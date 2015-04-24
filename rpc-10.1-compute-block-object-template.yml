@@ -149,6 +149,7 @@ resources:
                   rackspace_cloud_username=%rackspace_cloud_username%
                   rackspace_cloud_password=%rackspace_cloud_password%
                   rackspace_cloud_api_key=%rackspace_cloud_api_key%
+                  rpc_release=%rpc_release%
                   
                   [all]
                   infra1      ansible_connection=local    node_id=1
@@ -181,6 +182,7 @@ resources:
                   "%rackspace_cloud_username%":  { get_param: "rackspace_cloud_username" }
                   "%rackspace_cloud_password%":  { get_param: "rackspace_cloud_password" }
                   "%rackspace_cloud_api_key%":   { get_param: "rackspace_cloud_api_key" }
+                  "%rpc_release%":               { get_param: "rpc_release" }
                   "%server_logger1_ip%":         { get_attr: [ server_logger1, accessIPv4 ] }
                   "%server_compute1_ip%":        { get_attr: [ server_compute1, accessIPv4 ] }
                   "%server_block1_ip%":          { get_attr: [ server_block1, accessIPv4 ] }
