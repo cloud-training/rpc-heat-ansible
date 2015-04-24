@@ -171,12 +171,12 @@ resources:
                   "%heat_stack_prefix%":         { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
                   "%heat_stack_id%":             { get_param: "OS::stack_id" }
                   "%heat_stack_name%":           { get_param: "OS::stack_name" }
+                  "%heat_stack_password%":       { get_attr: [ password, value ] }
                   "%rackspace_cloud_auth_url%":  { get_param: "rackspace_cloud_auth_url" }
                   "%rackspace_cloud_tenant_id%": { get_param: "rackspace_cloud_tenant_id" }
                   "%rackspace_cloud_username%":  { get_param: "rackspace_cloud_username" }
                   "%rackspace_cloud_password%":  { get_param: "rackspace_cloud_password" }
                   "%rackspace_cloud_api_key%":   { get_param: "rackspace_cloud_api_key" }
-                  "%heat_stack_password%":       { get_attr: [ password, value ] }
                   "%server_logger1_ip%":         { get_attr: [ server_logger1, accessIPv4 ] }
                   "%server_compute1_ip%":        { get_attr: [ server_compute1, accessIPv4 ] }
                   "%server_block1_ip%":          { get_attr: [ server_block1, accessIPv4 ] }
