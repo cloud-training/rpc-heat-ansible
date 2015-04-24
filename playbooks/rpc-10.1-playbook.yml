@@ -676,12 +676,16 @@
       until: playbook_result.rc == 0
       retries: 5
       delay: 10
-      when: groups.object|length > 0
 
 - name: Install MaaS - Play 2 of 2
   hosts: all
   tags:
     - maas
   tasks:
+    - name: Check If Rackspace Monitoring Agent Is Install
+      stat: path=/usr/bin/rackspace-monitoring-agent
+      regsiter: agent_installed
+      
     - name: Restart Rackspace Monitoring Agent
       service: name=rackspace-monitoring-agent state=restarted
+      when: agent_installed.exists
