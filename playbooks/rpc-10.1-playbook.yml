@@ -684,7 +684,7 @@
   tasks:
     - name: Check If Rackspace Monitoring Agent Is Install
       stat: path=/usr/bin/rackspace-monitoring-agent
-      regsiter: agent_installed
+      register: agent_installed
       
     - name: Restart Rackspace Monitoring Agent
       service: name=rackspace-monitoring-agent state=restarted
