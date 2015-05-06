@@ -31,9 +31,9 @@ until [[ $BUILD_COMPLETED -eq 1 ]]; do
   fi
   echo "===================================================="
   echo "Stack Status:        $STACK_STATUS"
-  echo "Resources Failed:    $RESOURCES_FAILED"
   echo "Build Completed:     $BUILD_COMPLETED"
   echo "Build Failed:        $BUILD_FAILED"
+  echo "Resources Failed:    $RESOURCES_FAILED"
   echo "Swift Signal Failed: $SWIFT_SIGNAL_FAILED"
 done
 
