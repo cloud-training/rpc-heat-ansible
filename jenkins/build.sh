@@ -63,6 +63,9 @@ until [[ $BUILD_DELETED -eq 0 ]]; do
   echo "===================================================="
   echo "Stack Status:        $STACK_STATUS"
   echo "Build Deleted:       $BUILD_DELETED"
+  if [[ "$STACK_STATUS" == 'DELETE_FAILED' ]]; then
+    heat stack-delete $STACK_NAME
+  fi
 done
 
 exit $BUILD_FAILED
