@@ -41,7 +41,7 @@ if [[ $BUILD_FAILED -eq 1 ]]; then
   echo "===================================================="
   heat stack-list
   echo "===================================================="
-  heat resource-list $STACK_NAME
+  heat resource-list $STACK_NAME | grep -v CREATE_COMPLETE
   echo "===================================================="
   heat event-list $STACK_NAME
 fi
