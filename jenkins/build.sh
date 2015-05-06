@@ -59,7 +59,7 @@ heat stack-delete $STACK_NAME
 until [[ $BUILD_DELETED -eq 0 ]]; do
   sleep 10
   STACK_STATUS=`heat stack-list | awk '/ '$STACK_NAME' / { print $6 }'`
-  BUILD_DELETED=`heat stack-list | grep $STACK_NAME | wc -l`
+  BUILD_DELETED=`heat stack-list | awk '/ '$STACK_NAME' / { print $6 }' | wc -l`
   echo "===================================================="
   echo "Stack Status:        $STACK_STATUS"
   echo "Build Deleted:       $BUILD_DELETED"
