@@ -413,3 +413,17 @@ outputs:
   server_infra1_ip:
     description: Infra1 IP
     value: { get_attr: [ server_infra1, accessIPv4 ] }
+  all_ips:
+    description: All IPs
+    value:
+      str_replace:
+        template: |
+          infra1   - %server_infra1_ip%
+          logger1  - %server_logger1_ip%
+          compute1 - %server_compute1_ip%
+          block1   - %server_block1_ip%
+        params:
+          "%server_infra1_ip%":   { get_attr: [ server_infra1, accessIPv4 ] }
+          "%server_logger1_ip%":  { get_attr: [ server_logger1, accessIPv4 ] }
+          "%server_compute1_ip%": { get_attr: [ server_compute1, accessIPv4 ] }
+          "%server_block1_ip%":   { get_attr: [ server_block1, accessIPv4 ] }

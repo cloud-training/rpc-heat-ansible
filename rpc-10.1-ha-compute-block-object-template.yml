@@ -677,3 +677,25 @@ outputs:
   server_infra1_ip:
     description: Infra1 IP
     value: { get_attr: [ server_infra1, accessIPv4 ] }
+  all_ips:
+    description: All IPs
+    value:
+      str_replace:
+        template: |
+          infra1   - %server_infra1_ip%
+          infra2   - %server_infra2_ip%
+          infra3   - %server_infra3_ip%
+          logger1  - %server_logger1_ip%
+          compute1 - %server_compute1_ip%
+          compute2 - %server_compute2_ip%
+          block1   - %server_block1_ip%
+          object1  - %server_object1_ip%
+        params:
+          "%server_infra1_ip%":   { get_attr: [ server_infra1, accessIPv4 ] }
+          "%server_infra2_ip%":   { get_attr: [ server_infra2, accessIPv4 ] }
+          "%server_infra3_ip%":   { get_attr: [ server_infra3, accessIPv4 ] }
+          "%server_logger1_ip%":  { get_attr: [ server_logger1, accessIPv4 ] }
+          "%server_compute1_ip%": { get_attr: [ server_compute1, accessIPv4 ] }
+          "%server_compute2_ip%": { get_attr: [ server_compute2, accessIPv4 ] }
+          "%server_block1_ip%":   { get_attr: [ server_block1, accessIPv4 ] }
+          "%server_object1_ip%":  { get_attr: [ server_object1, accessIPv4 ] }
