@@ -22,14 +22,14 @@ global_overrides:
 {% if groups.infra|length > 0 %}
 swift-proxy_hosts:
 {% for host in groups.infra %}
-  {{ heat_stack_prefix }}-{{ host }}:
+  {{ heat_stack_prefix|string }}-{{ host }}:
     ip: 172.29.236.{{ hostvars[ host ].node_id }}
 {% endfor %}
 {% endif %}
 {% if groups.object|length > 0 %}
 swift_hosts:
 {% for host in groups.object %}
-  {{ heat_stack_prefix }}-{{ host }}:
+  {{ heat_stack_prefix|string }}-{{ host }}:
     ip: 172.29.236.{{ hostvars[ host ].node_id }}
 {% endfor %}
 {% endif %}
