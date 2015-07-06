@@ -418,10 +418,10 @@ outputs:
     value:
       str_replace:
         template: |
-          infra1   - %server_infra1_ip%
-          object1  - %server_object1_ip%
-          object2  - %server_object2_ip%
-          object3  - %server_object3_ip%
+          infra1  - %server_infra1_ip%
+          object1 - %server_object1_ip%
+          object2 - %server_object2_ip%
+          object3 - %server_object3_ip%
         params:
           "%server_infra1_ip%":   { get_attr: [ server_infra1, accessIPv4 ] }
           "%server_object1_ip%":  { get_attr: [ server_object1, accessIPv4 ] }
