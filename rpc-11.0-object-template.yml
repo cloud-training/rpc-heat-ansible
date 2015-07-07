@@ -302,7 +302,7 @@ resources:
           template: "%heat_stack_prefix%-infra1"
           params:
             "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-      flavor: 8 GB Performance
+      flavor: 4 GB Performance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
       block_device_mapping:
@@ -350,7 +350,7 @@ resources:
           template: "%heat_stack_prefix%-object1"
           params:
             "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-      flavor: 4 GB Performance
+      flavor: 2 GB Performance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
       block_device_mapping:
@@ -374,7 +374,7 @@ resources:
           template: "%heat_stack_prefix%-object2"
           params:
             "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-      flavor: 4 GB Performance
+      flavor: 2 GB Performance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
       block_device_mapping:
@@ -398,7 +398,7 @@ resources:
           template: "%heat_stack_prefix%-object3"
           params:
             "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-      flavor: 4 GB Performance
+      flavor: 2 GB Performance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: MANUAL
       block_device_mapping:
