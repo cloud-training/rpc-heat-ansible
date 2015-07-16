@@ -416,7 +416,7 @@
         - { regexp: '^rackspace_cloud_password:', line: 'rackspace_cloud_password: {{ rackspace_cloud_password }}' }
         - { regexp: '^rackspace_cloud_api_key:', line: 'rackspace_cloud_api_key: {{ rackspace_cloud_api_key }}' }
         - { regexp: '^maas_notification_plan:', line: 'maas_notification_plan: npTechnicalContactsEmail' }
-        - { regexp: "lb_name: 'unspecified'", line: "lb_name: '{{ heat_stack_prefix|string }}-{{ groups.infra|first }}'" }
+        - { regexp: "^lb_name:", line: "lb_name: '{{ heat_stack_prefix|string }}-{{ groups.infra|first }}'" }
         - { regexp: '^(# )?maas_(nova|horizon)_scheme:', line: 'maas_horizon_scheme: https' }
 
     - name: Set Deploy Environment MaaS Fact
