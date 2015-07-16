@@ -211,7 +211,7 @@ resources:
                   export MY_PUBLIC_IP=`curl -s http://ipv4.icanhazip.com/`
                   sed -i "s/ansible_connection=local/ansible_ssh_host=$MY_PUBLIC_IP/" inventory
                   # END - Terrible Chicken Egg Hack
-                  git clone https://github.com/cloud-training/rpc-heat-ansible.git || exit_failure "Git Clone Failure"
+                  git clone https://github.com/cloud-training/rpc-heat-ansible.git -b kilo || exit_failure "Git Clone Failure"
                   cd /opt/cloud-training/rpc-heat-ansible/playbooks
                   ansible-playbook rpc-11.0-playbook.yml -v --tags %ansible_tags% || exit_failure "Ansible Playbook Run Failure"
                   exit_success
