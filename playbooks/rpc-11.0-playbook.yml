@@ -344,7 +344,7 @@
       file: dest=/opt state=directory
 
     - name: Clone RPC Repo
-      git: repo=https://github.com/rcbops/rpc-openstack.git dest=/opt/rpc-openstack version="{{ rpc_release }}"
+      command: git clone --recursive https://github.com/rcbops/rpc-openstack -b {{ rpc_release }} chdir=/opt
 
     - name: Create /etc/openstack_deploy
       file: dest=/etc/openstack_deploy state=directory
