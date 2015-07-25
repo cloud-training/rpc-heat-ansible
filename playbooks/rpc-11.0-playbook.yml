@@ -345,6 +345,7 @@
 
     - name: Clone RPC Repo
       command: git clone --recursive https://github.com/rcbops/rpc-openstack -b {{ rpc_release }} chdir=/opt
+      ignore_errors: yes
 
     - name: Create /etc/openstack_deploy
       file: dest=/etc/openstack_deploy state=directory
