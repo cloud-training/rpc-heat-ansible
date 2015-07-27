@@ -424,7 +424,7 @@
       pip: name=rackspace-monitoring-cli state=present
 
     - name: Get IP Address Alias
-      shell: raxmon-entities-list --username={{ rackspace_cloud_username }} --api-key={{ rackspace_cloud_api_key }} | grep {{ hostvars[inventory_hostname].ansible_eth0.ipv4.address }}
+      shell: raxmon-entities-list --details --username={{ rackspace_cloud_username }} --api-key={{ rackspace_cloud_api_key }} | grep {{ hostvars[inventory_hostname].ansible_eth0.ipv4.address }}
       register: infra1_maas_target_alias
 
     - name: Get MaaS Target Alias - Public 0
