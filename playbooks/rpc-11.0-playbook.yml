@@ -428,12 +428,12 @@
       register: infra1_maas_target_alias
 
     - name: Get MaaS Target Alias - Public 0
-      lineinfile: dest=/etc/openstack_deploy/user_extras_variables.yml regexp='maas_target_alias:' line='maas_target_alias: public0_v4' state=present
-      when: 'public0_v4' in infra1_maas_target_alias.stdout
+      lineinfile: "dest=/etc/openstack_deploy/user_extras_variables.yml regexp='maas_target_alias:' line='maas_target_alias: public0_v4' state=present"
+      when: "'public0_v4' in infra1_maas_target_alias.stdout"
 
     - name: Get MaaS Target Alias - Public 1
-      lineinfile: dest=/etc/openstack_deploy/user_extras_variables.yml regexp='maas_target_alias:' line='maas_target_alias: public1_v4' state=present
-      when: 'public1_v4' in infra1_maas_target_alias.stdout
+      lineinfile: "dest=/etc/openstack_deploy/user_extras_variables.yml regexp='maas_target_alias:' line='maas_target_alias: public1_v4' state=present"
+      when: "'public1_v4' in infra1_maas_target_alias.stdout"
 
     - name: Set Deploy Environment MaaS Fact
       ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=deploy_maas value=yes
