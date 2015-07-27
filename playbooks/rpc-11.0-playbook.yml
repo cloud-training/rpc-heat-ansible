@@ -427,10 +427,6 @@
       shell: raxmon-entities-list --details --username={{ rackspace_cloud_username }} --api-key={{ rackspace_cloud_api_key }} | grep {{ hostvars[inventory_hostname].ansible_eth0.ipv4.address }}
       register: infra1_maas_target_alias
 
-    - name: Get MaaS Target Alias - Public 0
-      lineinfile: "dest=/etc/openstack_deploy/user_extras_variables.yml regexp='maas_target_alias:' line='maas_target_alias: public0_v4' state=present"
-      when: "'public0_v4' in infra1_maas_target_alias.stdout"
-
     - name: Get MaaS Target Alias - Public 1
       lineinfile: "dest=/etc/openstack_deploy/user_extras_variables.yml regexp='maas_target_alias:' line='maas_target_alias: public1_v4' state=present"
       when: "'public1_v4' in infra1_maas_target_alias.stdout"
