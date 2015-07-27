@@ -448,3 +448,20 @@
     - name: Restart Rackspace Monitoring Agent
       service: name=rackspace-monitoring-agent state=restarted
       when: agent_installed.stat.exists
+
+- name: Update LibVirt CPU Map
+  hosts: compute
+  tags:
+    - compute
+  tasks:
+    - name: Create /usr/share/libvirt
+      file: path=/usr/share/libvirt state=directory
+
+    - name: Copy LibVirt CPU Map
+      copy: src=usr/share/libvirt/cpu_map.xml dest=/usr/share/libvirt/cpu_map.xml
+
+    - name: Restart LibVirt
+      service: name=libvirt-bin state=restarted
+
+    - name: Restart Nova Compute
+      service: name=nova-compute state=restarted
