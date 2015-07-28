@@ -184,6 +184,7 @@
         
         
         EOF
+        
       when: ansible_local.sshd_config is not defined
 
     - name: Create End-of-Line In /etc/ssh/sshd_config Done Fact
