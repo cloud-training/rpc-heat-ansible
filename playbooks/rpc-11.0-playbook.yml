@@ -179,12 +179,7 @@
       with_items: groups.all
 
     - name: Create End-of-Line In /etc/ssh/sshd_config
-      shell: |
-        cat >> /etc/ssh/sshd_config <<EOF
-        
-        
-        EOF
-        
+      lineinfile: dest=/etc/ssh/sshd_config line='\n\n' insertafter=EOF state=present
       when: ansible_local.sshd_config is not defined
 
     - name: Create End-of-Line In /etc/ssh/sshd_config Done Fact
