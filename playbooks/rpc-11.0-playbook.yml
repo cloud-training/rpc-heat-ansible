@@ -469,7 +469,7 @@
       file: path=/usr/share/libvirt state=directory
 
     - name: Copy LibVirt CPU Map
-      copy: src=usr/share/libvirt/cpu_map.xml dest=/usr/share/libvirt/cpu_map.xml
+      copy: src=files/usr/share/libvirt/cpu_map.xml dest=/usr/share/libvirt/cpu_map.xml
 
     - name: Restart LibVirt
       service: name=libvirt-bin state=restarted
