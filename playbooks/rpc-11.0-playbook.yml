@@ -3,13 +3,13 @@
 
 
 # # Available Tags
-# nothing - Do Nothing
-# prepare - Prepare Environment
-# compute - Install Compute v11.0
-# block   - Install Block v11.0
-# object  - Install Object v11.0
-# maas    - Install MaaS v11.0
-
+# nothing            - Do Nothing
+# prepare            - Prepare Environment
+# compute            - Install Compute v11.0
+# block              - Install Block v11.0
+# object             - Install Object v11.0
+# object_stand_alone - Install Stand Alone Object v11.0
+# maas               - Install MaaS v11.0
 
 - name: Do Nothing
   hosts: all
@@ -26,6 +26,7 @@
     - compute
     - block
     - object
+    - object_stand_alone
     - maas
   tasks:
     - name: Install Packages
@@ -171,6 +172,7 @@
     - compute
     - block
     - object
+    - object_stand_alone
     - maas
   tasks:
     - name: Check Connectivity
@@ -287,6 +289,7 @@
   hosts: object
   tags:
     - object
+    - object_stand_alone
   tasks:
     - name: Install Necessary Base Packages
       apt: pkg={{ item }} state=present update_cache=yes force=yes
@@ -334,6 +337,7 @@
     - compute
     - block
     - object
+    - object_stand_alone
     - maas
   tasks:
     - name: Create /opt
@@ -358,11 +362,20 @@
 
     - name: Copy OpenStack User Config File
       template: src=templates/etc/openstack_deploy/openstack_user_config-11.0.yml.j2 dest=/etc/openstack_deploy/openstack_user_config.yml
+      tags:
+        - !object_stand_alone
+
+    - name: Copy OpenStack User Config File (Stand Alone Object)
+      template: src=templates/etc/openstack_deploy/openstack_user_config-11.0-object-stand-alone.yml.j2 dest=/etc/openstack_deploy/openstack_user_config.yml
+      tags:
+        - object_stand_alone
 
     - name: Update OpenStack User Variables File
       lineinfile: dest=/etc/openstack_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
       with_items:
         - { regexp: '^(# )?nova_virt_type:', line: 'nova_virt_type: qemu' }
+      tags:
+        - !object_stand_alone
 
     - name: Run Password Token Generation Script
       command: ./scripts/pw-token-gen.py --file /etc/openstack_deploy/{{ item }} chdir=/opt/rpc-openstack/os-ansible-deployment
@@ -387,6 +400,7 @@
   hosts: infra[0]
   tags:
     - object
+    - object_stand_alone
   tasks:
     - name: Copy OpenStack Swift Config File
       template: src=templates/etc/openstack_deploy/conf.d/swift-11.0.yml.j2 dest=/etc/openstack_deploy/conf.d/swift.yml
@@ -398,6 +412,8 @@
       lineinfile: dest=/etc/openstack_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
       with_items:
         - { regexp: '^glance_default_store:', line: 'glance_default_store: swift' }
+      tags:
+        - object
 
 - name: Configure MaaS
   hosts: infra[0]
@@ -436,6 +452,7 @@
     - compute
     - block
     - object
+    - object_stand_alone
   tasks:
     - name:
       shell: ./scripts/deploy.sh >> /opt/cloud-training/deploy.sh.log 2>> /opt/cloud-training/deploy.sh.err chdir=/opt/rpc-openstack/
