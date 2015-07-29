@@ -362,13 +362,6 @@
 
     - name: Copy OpenStack User Config File
       template: src=templates/etc/openstack_deploy/openstack_user_config-11.0.yml.j2 dest=/etc/openstack_deploy/openstack_user_config.yml
-      tags:
-        - !object_stand_alone
-
-    - name: Copy OpenStack User Config File (Stand Alone Object)
-      template: src=templates/etc/openstack_deploy/openstack_user_config-11.0-object-stand-alone.yml.j2 dest=/etc/openstack_deploy/openstack_user_config.yml
-      tags:
-        - object_stand_alone
 
     - name: Update OpenStack User Variables File
       lineinfile: dest=/etc/openstack_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
@@ -404,7 +397,12 @@
   tasks:
     - name: Copy OpenStack Swift Config File
       template: src=templates/etc/openstack_deploy/conf.d/swift-11.0.yml.j2 dest=/etc/openstack_deploy/conf.d/swift.yml
-    
+
+    - name: Copy OpenStack User Config File
+      template: src=templates/etc/openstack_deploy/openstack_user_config-11.0-object-stand-alone.yml.j2 dest=/etc/openstack_deploy/openstack_user_config.yml
+      tags:
+        - object_stand_alone
+
     - name: Update OpenStack User Config File
       lineinfile: "dest=/etc/openstack_deploy/openstack_user_config.yml regexp='         ( #)? - swift_proxy' line='          - swift_proxy' state=present"
 
