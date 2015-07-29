@@ -367,8 +367,6 @@
       lineinfile: dest=/etc/openstack_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
       with_items:
         - { regexp: '^(# )?nova_virt_type:', line: 'nova_virt_type: qemu' }
-      tags:
-        - compute
 
     - name: Run Password Token Generation Script
       command: ./scripts/pw-token-gen.py --file /etc/openstack_deploy/{{ item }} chdir=/opt/rpc-openstack/os-ansible-deployment
@@ -393,25 +391,31 @@
   hosts: infra[0]
   tags:
     - object
+  tasks:
+    - name: Update OpenStack User Variables File
+      lineinfile: dest=/etc/openstack_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
+      with_items:
+        - { regexp: '^glance_default_store:', line: 'glance_default_store: swift' }
+
+- name: Configure Stand Alone Object
+  hosts: infra[0]
+  tags:
+    - object_stand_alone
+  tasks:
+    - name: Copy OpenStack User Config File
+      template: src=templates/etc/openstack_deploy/openstack_user_config-11.0-object-stand-alone.yml.j2 dest=/etc/openstack_deploy/openstack_user_config.yml
+
+- name: Configure Object Common
+  hosts: infra[0]
+  tags:
+    - object
     - object_stand_alone
   tasks:
     - name: Copy OpenStack Swift Config File
       template: src=templates/etc/openstack_deploy/conf.d/swift-11.0.yml.j2 dest=/etc/openstack_deploy/conf.d/swift.yml
 
-    - name: Copy OpenStack User Config File
-      template: src=templates/etc/openstack_deploy/openstack_user_config-11.0-object-stand-alone.yml.j2 dest=/etc/openstack_deploy/openstack_user_config.yml
-      tags:
-        - object_stand_alone
-
     - name: Update OpenStack User Config File
       lineinfile: "dest=/etc/openstack_deploy/openstack_user_config.yml regexp='         ( #)? - swift_proxy' line='          - swift_proxy' state=present"
-
-    - name: Update OpenStack User Variables File
-      lineinfile: dest=/etc/openstack_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
-      with_items:
-        - { regexp: '^glance_default_store:', line: 'glance_default_store: swift' }
-      tags:
-        - object
 
 - name: Configure MaaS
   hosts: infra[0]
