@@ -375,7 +375,7 @@
       with_items:
         - { regexp: '^(# )?nova_virt_type:', line: 'nova_virt_type: qemu' }
       tags:
-        - !object_stand_alone
+        - compute
 
     - name: Run Password Token Generation Script
       command: ./scripts/pw-token-gen.py --file /etc/openstack_deploy/{{ item }} chdir=/opt/rpc-openstack/os-ansible-deployment
@@ -453,6 +453,7 @@
     - block
     - object
     - object_stand_alone
+    - maas
   tasks:
     - name:
       shell: ./scripts/deploy.sh >> /opt/cloud-training/deploy.sh.log 2>> /opt/cloud-training/deploy.sh.err chdir=/opt/rpc-openstack/
