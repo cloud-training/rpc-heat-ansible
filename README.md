@@ -1,12 +1,12 @@
-# Deploy A Rackspace Private Cloud v10.1 Reference Architecture Environment
+# Deploy A Rackspace Private Cloud v11.0 Reference Architecture Environment
 
-`heat stack-create -f rpc-10.1-template.yml -t 240 -P ansible_tags=<comma-separated-ansible-tags> [-e rpc-10.1-environment.yml] <stack-name>`
+`heat stack-create -f rpc-11.0-template.yml -t 240 -P ansible_tags=<comma-separated-ansible-tags> [-e rpc-11.0-environment.yml] <stack-name>`
 
 ### Environment
 
 Some settings should be private, and may be passed in through the use of a Heat Environment file. Below is an example of passing in Rackspace Cloud credentials for MaaS configuration.
 
-**`rpc-10.1-environment.yml`**
+**`rpc-11.0-environment.yml`**
 
 ```
 parameters:
@@ -21,7 +21,8 @@ parameters:
 
 * `nothing` - Do Nothing
 * `prepare` - Prepare Environment
-* `compute` - Install Compute v10.1
-* `block` - Install Block v10.1
-* `object` - Install Object v10.1
-* `maas` - Install MaaS v10.1
+* `compute` - Install Compute v11.0
+* `block` - Install Block v11.0
+* `object` - Install Object v11.0
+* `object_stand_alone` - Install Stand Alone Object v11.0
+* `maas` - Install MaaS v11.0
