@@ -179,11 +179,7 @@
       with_items: groups.all
 
     - name: Create End-of-Line In /etc/ssh/sshd_config
-      shell: |
-        cat >> /etc/ssh/sshd_config <<EOF
-        
-        
-        EOF
+      lineinfile: dest=/etc/ssh/sshd_config line='\n\n' insertafter=EOF state=present
       when: ansible_local.sshd_config is not defined
 
     - name: Create End-of-Line In /etc/ssh/sshd_config Done Fact
@@ -298,13 +294,18 @@
         - xfsprogs
 
     - name: XFS Format Volumes
-      filesystem: dev=/dev/{{ item }} fstype=xfs opts='-i size=1024 -L {{ item }}'
+      filesystem: dev=/dev/{{ item.device }} fstype=xfs opts='-i size=1024 -L {{ item.label }}'
       with_items:
-        - xvdz5
-        - xvdz6
-        - xvdz7
-        - xvdz8
-        - xvdz9
+        - device: xvdz5
+          label: swift1
+        - device: xvdz6
+          label: swift2
+        - device: xvdz7
+          label: swift3
+        - device: xvdz8
+          label: swift4
+        - device: xvdz9
+          label: swift5
 
     - name: Create Root Mount Points Directory
       file: path=/srv/node state=directory owner=root group=root
@@ -312,29 +313,20 @@
     - name: Create Device Mount Point Directories
       file: path=/srv/node/{{ item }} state=directory
       with_items:
-        - xvdz5
-        - xvdz6
-        - xvdz7
-        - xvdz8
-        - xvdz9
+        - swift1
+        - swift2
+        - swift3
+        - swift4
+        - swift5
 
-    - name: Mount Loop Device
-      mount: name=/srv/node/{{ item }} src='LABEL={{ item }}' state=mounted fstype=xfs opts='noauto,noatime,nodiratime,nobarrier,logbufs=8' passno=0
+    - name: Mount Device
+      mount: name=/srv/node/{{ item }} src='LABEL={{ item }}' state=mounted fstype=xfs opts='noatime,nodiratime,nobarrier,logbufs=8' passno=0
       with_items:
-        - xvdz5
-        - xvdz6
-        - xvdz7
-        - xvdz8
-        - xvdz9
-
-    - name: Mount Loop Device At Boot
-      lineinfile: dest=/etc/rc.local line='mount /srv/node/{{ item }}' insertafter=EOF state=present
-      with_items:
-        - xvdz5
-        - xvdz6
-        - xvdz7
-        - xvdz8
-        - xvdz9
+        - swift1
+        - swift2
+        - swift3
+        - swift4
+        - swift5
 
 - name: Configure Common
   hosts: infra[0]
