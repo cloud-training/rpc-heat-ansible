@@ -10,7 +10,6 @@
 # object  - Install Object v10.1
 # maas    - Install MaaS v10.1
 
-
 - name: Do Nothing
   hosts: all
   tags:
@@ -179,7 +178,13 @@
       with_items: groups.all
 
     - name: Create End-of-Line In /etc/ssh/sshd_config
-      lineinfile: dest=/etc/ssh/sshd_config line='\n\n' insertafter=EOF state=present
+      lineinfile:
+        dest: /etc/ssh/sshd_config
+        line: |
+          
+          
+        insertafter: EOF
+        state: present
       when: ansible_local.sshd_config is not defined
 
     - name: Create End-of-Line In /etc/ssh/sshd_config Done Fact
