@@ -111,7 +111,7 @@
       with_items:
         - group: infra
           device: /dev/xvdz
-          size: 130
+          size: 140
         - group: logger
           device: /dev/xvdz
           size: 30
@@ -176,19 +176,6 @@
       command: fping {{ item }}
       changed_when: False
       with_items: groups.all
-
-    - name: Create End-of-Line In /etc/ssh/sshd_config
-      lineinfile:
-        dest: /etc/ssh/sshd_config
-        line: |
-          
-          
-        insertafter: EOF
-        state: present
-      when: ansible_local.sshd_config is not defined
-
-    - name: Create End-of-Line In /etc/ssh/sshd_config Done Fact
-      ini_file: dest=/etc/ansible/facts.d/sshd_config.fact section=state option=done value=true
 
     - name: Genereate SSH Keypair
       command: ssh-keygen -f ~/.ssh/id_rsa -t rsa -q -N "" creates=/root/.ssh/id_rsa.pub
