@@ -49,7 +49,11 @@ keystone_auth_admin_password: {{ heat_stack_password }}
 keystone_service_password: {{ heat_stack_password }}
 # Set the "public_endpoint" var in keystone.conf
 #keystone_public_endpoint:
-
+#
+# uncomment the following if using ldap
+#keystone_ldap: True
+#keystone_ldap_identity_driver: keystone.identity.backends.ldap.Identity
+#keystone_ldap_domain_config_dir: /etc/keystone/domains
 
 ## Cinder Options
 cinder_container_mysql_password: {{ heat_stack_password }}
@@ -58,6 +62,9 @@ cinder_v2_service_password: {{ heat_stack_password }}
 
 
 ## Glance Options
+# To disable Glance's cache, remove the +cachemanagement portion of default
+# value below.
+#glance_flavor: keystone+cachemanagement
 # Set default_store to "swift" if using Cloud Files or swift backend
 glance_default_store: file
 glance_container_mysql_password: {{ heat_stack_password }}
@@ -110,6 +117,8 @@ maas_scheme: https
 # maas_nova_scheme: http
 maas_keystone_user: maas
 maas_keystone_password: {{ heat_stack_password }}
+maas_rabbitmq_user: maas_user
+maas_rabbitmq_password: {{ heat_stack_password }}
 # Check this number of times before registering state change
 maas_alarm_local_consecutive_count: 3
 maas_alarm_remote_consecutive_count: 1
@@ -130,7 +139,8 @@ maas_monitoring_zones:
 # Set the following to skip creating alarms for this device
 #maas_excluded_devices: ['xvde']
 # Set the threshold for filesystem monitoring when you are not specifying specific filesystems.
-maas_filesystem_threshold: 90.0
+maas_filesystem_warning_threshold: 80.0
+maas_filesystem_critical_threshold: 90.0
 # Explicitly set the filesystems to set up monitors/alerts for.
 # NB You can override these in rpc_user_config per device using "maas_filesystem_overrides"
 #maas_filesystem_monitors:
@@ -157,7 +167,7 @@ nova_service_password: {{ heat_stack_password }}
 nova_v3_service_password: {{ heat_stack_password }}
 nova_s3_service_password: {{ heat_stack_password }}
 
-# Uncomment "nova_console_endpoint" to define a specific nova console URI or 
+# Uncomment "nova_console_endpoint" to define a specific nova console URI or
 # IP address this will construct the specific proxy endpoint for the console.
 # nova_console_endpoint: console.company_domain.name
 
@@ -191,3 +201,39 @@ swift_dispersion_password: {{ heat_stack_password }}
 # values, they are set in the main config file and are only used by services
 # that don't set their own values (default: 90s)
 #haproxy_timeout: 90s
+
+
+## Repositories for pinned / extra repos. Adding any of these variables will override the default
+## and set the repository for the given services to what has been defined.
+# mariadb_repo_url: "http://mirror.rackspace.com/rackspaceprivatecloud/mirror/mariadb/mariadb-5.5.41/repo/ubuntu/"
+# elasticsearch_repo_url: "http://packages.elasticsearch.org/elasticsearch/1.2/debian"
+# logstash_repo_url: "http://packages.elasticsearch.org/logstash/1.4/debian"
+# rsyslog_repo_url: "ppa:adiscon/v8-stable"
+# raxmon_repo_url: "http://stable.packages.cloudmonitoring.rackspace.com/ubuntu-14.04-x86_64"
+
+
+## Additional pinning generator that will allow for more packages to be pinned as you see fit.
+## All pins allow for the a package and version to be defined. Be careful using this as versions
+## are always subject to change and updates regarding security will become your problem from this
+## point on.
+# apt_pinned_packages:
+#   - { package: "lxc", version: "1.0.7-0ubuntu0.1" }
+#   - { package: "libvirt-bin", version: "1.2.2-0ubuntu13.1.9" }
+#   - { package: "logstash", version: "1.4.2-1-2c0f5a1" }
+#   - { package: "logstash-contrib", version: "1.4.2-1-efd53ef" }
+#   - { package: "elasticsearch", version: "1.2.4" }
+
+## Environment variable settings
+# This allows users to specify the additional environment variables to be set
+# which is useful in setting where you working behind a proxy. If working behind
+# a proxy It's important to always specify the scheme as "http://". This is what
+# the underlying python libraries will handle best. This proxy information will be
+# placed both on the hosts and inside the containers.
+
+## Example environment variable setup:
+# proxy_env_url: http://username:pa$$w0rd@10.10.10.9:9000/
+# no_proxy_env: "localhost,127.0.0.1,{% for host in groups['all_containers'] %}{{ hostvars[host]['container_address'] }}{% if not loop.last %},{% endif %}{% endfor %}"
+# global_environment_variables:
+#   HTTP_PROXY: "{{ proxy_env_url }}"
+#   HTTPS_PROXY: "{{ proxy_env_url }}"
+#   NO_PROXY: "{{ no_proxy_env }}"
