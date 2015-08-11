@@ -67,6 +67,10 @@ infra_hosts:
 {% for host in groups.infra %}
   {{ heat_stack_prefix|string }}-{{ host }}:
     ip: 172.29.236.{{ hostvars[ host ].node_id }}
+{% if groups.infra|length == 1 %}
+    affinity:
+      rabbit_mq_container: 3
+{% endif %}
 {% endfor %}
 {% endif %}
 
