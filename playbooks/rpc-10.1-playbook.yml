@@ -408,6 +408,17 @@
         - { regexp: '^maas_scheme:', line: 'maas_scheme: http' }
         - { regexp: '^(# )?maas_(nova|horizon)_scheme:', line: 'maas_horizon_scheme: https' }
 
+    - name: PIP Install Rackspace Monitoring CLI
+      pip: name=rackspace-monitoring-cli state=present
+
+    - name: Get IP Address Alias
+      shell: raxmon-entities-list --details --username={{ rackspace_cloud_username }} --api-key={{ rackspace_cloud_api_key }} | grep {{ hostvars[inventory_hostname].ansible_eth0.ipv4.address }}
+      register: infra1_maas_target_alias
+
+    - name: Get MaaS Target Alias - Public 1
+      lineinfile: "dest=/etc/openstack_deploy/user_variables.yml regexp='maas_target_alias:' line='maas_target_alias: public1_v4' state=present"
+      when: "'public1_v4' in infra1_maas_target_alias.stdout"
+
 - name: Install Common - Play 1 of 2
   hosts: infra[0]
   tags:
