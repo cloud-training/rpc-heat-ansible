@@ -232,7 +232,7 @@ swift_dispersion_password: {{ heat_stack_password }}
 
 ## Example environment variable setup:
 # proxy_env_url: http://username:pa$$w0rd@10.10.10.9:9000/
-# no_proxy_env: "localhost,127.0.0.1,{% for host in groups['all_containers'] %}{{ hostvars[host]['container_address'] }}{% if not loop.last %},{% endif %}{% endfor %}"
+# no_proxy_env: "localhost,127.0.0.1,{% for host in groups['all_containers'] %}{{ "{{ hostvars[host]['container_address'] }}" }}{% if not loop.last %},{% endif %}{% endfor %}"
 # global_environment_variables:
 #   HTTP_PROXY: "{{ proxy_env_url }}"
 #   HTTPS_PROXY: "{{ proxy_env_url }}"
