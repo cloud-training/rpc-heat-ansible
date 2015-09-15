@@ -10,7 +10,7 @@ parameters:
   rpc_release:
     type: string
     label: RPC Release
-    default: '10.1.12'
+    default: '10.1.14'
   rackspace_cloud_auth_url:
     type: string
     label: Rackspace Cloud Auth URL

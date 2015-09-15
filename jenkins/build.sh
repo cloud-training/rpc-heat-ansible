@@ -10,7 +10,7 @@ $PUBLIC_CLOUD_CREDENTIALS
 
 HEAT_TEMPLATE=${HEAT_TEMPLATE-"compute"}
 ANSIBLE_TAGS=${ANSIBLE_TAGS:-"prepare"}
-RPC_RELEASE=${RPC_RELEASE:-"10.1.12"}
+RPC_RELEASE=${RPC_RELEASE:-"10.1.14"}
 STACK_NAME=rpc-jenkins-$BUILD_NUMBER-$HEAT_TEMPLATE-install-`echo $RPC_RELEASE | sed 's/\./-/g'`-$ANSIBLE_TAGS
 
 heat stack-create -f rpc-10.1-$HEAT_TEMPLATE-template.yml -t 240 -P rpc_release=$RPC_RELEASE -P ansible_tags=`echo $ANSIBLE_TAGS | sed 's/-/,/g'` -e $HEAT_ENVIRONMENT $STACK_NAME
