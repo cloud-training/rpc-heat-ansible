@@ -3,13 +3,13 @@
 
 
 # # Available Tags
-# nothing - Do Nothing
-# prepare - Prepare Environment
-# compute - Install Compute v11.0
-# block   - Install Block v11.0
-# object  - Install Object v11.0
-# maas    - Install MaaS v11.0
-
+# nothing            - Do Nothing
+# prepare            - Prepare Environment
+# compute            - Install Compute v11.0
+# block              - Install Block v11.0
+# object             - Install Object v11.0
+# object_stand_alone - Install Stand Alone Object v11.0
+# maas               - Install MaaS v11.0
 
 - name: Do Nothing
   hosts: all
@@ -26,6 +26,7 @@
     - compute
     - block
     - object
+    - object_stand_alone
     - maas
   tasks:
     - name: Install Packages
@@ -112,7 +113,7 @@
       with_items:
         - group: infra
           device: /dev/xvdz
-          size: 130
+          size: 140
         - group: logger
           device: /dev/xvdz
           size: 30
@@ -171,23 +172,13 @@
     - compute
     - block
     - object
+    - object_stand_alone
     - maas
   tasks:
     - name: Check Connectivity
       command: fping {{ item }}
       changed_when: False
       with_items: groups.all
-
-    - name: Create End-of-Line In /etc/ssh/sshd_config
-      shell: |
-        cat >> /etc/ssh/sshd_config <<EOF
-        
-        
-        EOF
-      when: ansible_local.sshd_config is not defined
-
-    - name: Create End-of-Line In /etc/ssh/sshd_config Done Fact
-      ini_file: dest=/etc/ansible/facts.d/sshd_config.fact section=state option=done value=true
 
     - name: Genereate SSH Keypair
       command: ssh-keygen -f ~/.ssh/id_rsa -t rsa -q -N "" creates=/root/.ssh/id_rsa.pub
@@ -291,6 +282,7 @@
   hosts: object
   tags:
     - object
+    - object_stand_alone
   tasks:
     - name: Install Necessary Base Packages
       apt: pkg={{ item }} state=present update_cache=yes force=yes
@@ -298,13 +290,18 @@
         - xfsprogs
 
     - name: XFS Format Volumes
-      filesystem: dev=/dev/{{ item }} fstype=xfs opts='-i size=1024 -L {{ item }}'
+      filesystem: dev=/dev/{{ item.device }} fstype=xfs opts='-i size=1024 -L {{ item.label }}'
       with_items:
-        - xvdz5
-        - xvdz6
-        - xvdz7
-        - xvdz8
-        - xvdz9
+        - device: xvdz5
+          label: swift1
+        - device: xvdz6
+          label: swift2
+        - device: xvdz7
+          label: swift3
+        - device: xvdz8
+          label: swift4
+        - device: xvdz9
+          label: swift5
 
     - name: Create Root Mount Points Directory
       file: path=/srv/node state=directory owner=root group=root
@@ -312,29 +309,20 @@
     - name: Create Device Mount Point Directories
       file: path=/srv/node/{{ item }} state=directory
       with_items:
-        - xvdz5
-        - xvdz6
-        - xvdz7
-        - xvdz8
-        - xvdz9
+        - swift1
+        - swift2
+        - swift3
+        - swift4
+        - swift5
 
-    - name: Mount Loop Device
-      mount: name=/srv/node/{{ item }} src='LABEL={{ item }}' state=mounted fstype=xfs opts='noauto,noatime,nodiratime,nobarrier,logbufs=8' passno=0
+    - name: Mount Device
+      mount: name=/srv/node/{{ item }} src='LABEL={{ item }}' state=mounted fstype=xfs opts='noatime,nodiratime,nobarrier,logbufs=8' passno=0
       with_items:
-        - xvdz5
-        - xvdz6
-        - xvdz7
-        - xvdz8
-        - xvdz9
-
-    - name: Mount Loop Device At Boot
-      lineinfile: dest=/etc/rc.local line='mount /srv/node/{{ item }}' insertafter=EOF state=present
-      with_items:
-        - xvdz5
-        - xvdz6
-        - xvdz7
-        - xvdz8
-        - xvdz9
+        - swift1
+        - swift2
+        - swift3
+        - swift4
+        - swift5
 
 - name: Configure Common
   hosts: infra[0]
@@ -342,70 +330,82 @@
     - compute
     - block
     - object
+    - object_stand_alone
     - maas
   tasks:
     - name: Create /opt
       file: dest=/opt state=directory
 
     - name: Clone RPC Repo
-      git: repo=https://github.com/stackforge/os-ansible-deployment.git dest=/opt/os-ansible-deployment version="{{ rpc_release }}"
+      command: git clone --recursive https://github.com/rcbops/rpc-openstack -b {{ rpc_release }} chdir=/opt
+      ignore_errors: yes
 
-    - name: Patch RPC Repo Version
-      lineinfile: "dest=/opt/os-ansible-deployment/rpc_deployment/inventory/group_vars/all.yml regexp='^rpc_release: ' line='rpc_release: {{ rpc_release }}' state=present"
-
-    - name: Get Modern PIP
-      command: curl -O http://mirror.rackspace.com/rackspaceprivatecloud/downloads/get-pip.py chdir=/opt creates=/opt/get-pip.py
-      changed_when: False
-
-    - name: Install Modern PIP
-      command: python get-pip.py chdir=/opt
-      changed_when: False
-
-    - name: PIP Install Requirements
-      pip: requirements=/opt/os-ansible-deployment/requirements.txt
-      when: ansible_local.pip_install_requirements is not defined
-
-    - name: PIP Install Requirements Done Fact
-      ini_file: dest=/etc/ansible/facts.d/pip_install_requirements.fact section=state option=done value=true
-
-    - name: Create /etc/rpc_deploy/conf.d
-      file: dest=/etc/rpc_deploy/conf.d state=directory
+    - name: Create /etc/openstack_deploy
+      file: dest=/etc/openstack_deploy state=directory
 
     - name: Copy Default Configuration Files
-      command: cp /opt/os-ansible-deployment/etc/rpc_deploy/{{ item }} /etc/rpc_deploy/{{ item }} creates=/etc/rpc_deploy/{{ item }}
+      command: cp -R /opt/rpc-openstack/{{ item }}/etc/openstack_deploy /etc
+      when: ansible_local.default_configs is not defined
       with_items:
-        - rpc_environment.yml
+        - openstack-ansible
+        - rpcd
 
-    - name: Copy RPC User Config File
-      template: src=templates/etc/rpc_deploy/rpc_user_config-11.0.yml.j2 dest=/etc/rpc_deploy/rpc_user_config.yml
+    - name: Copy Default Configuration Files Done Fact
+      ini_file: dest=/etc/ansible/facts.d/default_configs.fact section=state option=done value=true
 
-    - name: Copy RPC User Variables File
-      template: src=templates/etc/rpc_deploy/user_variables-11.0.yml.j2 dest=/etc/rpc_deploy/user_variables.yml
+    - name: Copy OpenStack User Config File
+      template: src=templates/etc/openstack_deploy/openstack_user_config-11.0.yml.j2 dest=/etc/openstack_deploy/openstack_user_config.yml
+
+    - name: Update OpenStack User Variables File
+      lineinfile: dest=/etc/openstack_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
+      with_items:
+        - { regexp: '^(# )?nova_virt_type:', line: 'nova_virt_type: qemu' }
+
+    - name: Run Password Token Generation Script
+      command: ./scripts/pw-token-gen.py --file /etc/openstack_deploy/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible
+      when: ansible_local.pw_token_gen is not defined
+      with_items:
+        - user_secrets.yml
+        - user_extras_secrets.yml
+
+    - name: Run Password Token Generation Script Done Fact
+      ini_file: dest=/etc/ansible/facts.d/pw_token_gen.fact section=state option=done value=true
+
+    - name: Fix - Increase Repo Container Size
+      lineinfile: "dest=/etc/openstack_deploy/env.d/pkg_repo.yml line='      container_fs_size: 10G' insertafter='      container_release: trusty' state=present"
+
+    - name: Set Deploy Environment HAProxy Fact
+      ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=deploy_haproxy value=yes
 
 - name: Configure Object
   hosts: infra[0]
   tags:
     - object
   tasks:
-    - name: Copy RPC Swift Config File
-      template: src=templates/etc/rpc_deploy/conf.d/swift-11.0.yml.j2 dest=/etc/rpc_deploy/conf.d/swift.yml
-    
-    - name: Update RPC User Config File
-      lineinfile: "dest=/etc/rpc_deploy/rpc_user_config.yml regexp='         ( #)? - swift_proxy' line='          - swift_proxy' state=present"
-
-    - name: Update RPC User Variables File
-      lineinfile: dest=/etc/rpc_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
+    - name: Update OpenStack User Variables File
+      lineinfile: dest=/etc/openstack_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
       with_items:
         - { regexp: '^glance_default_store:', line: 'glance_default_store: swift' }
-        - { regexp: '^glance_swift_store_user:', line: 'glance_swift_store_user: service:glance' }
-        - { regexp: '^glance_swift_store_container:', line: 'glance_swift_store_container: glance_images' }
-        - { regexp: '^glance_swift_store_region:', line: 'glance_swift_store_region: RegionOne' }
 
-    - name: Update RPC User Variables File - Cause Escaping - Copy Script
-      copy: src=files/tmp/cause-escaping.sh dest=/tmp/cause-escaping.sh mode=0700
+- name: Configure Stand Alone Object
+  hosts: infra[0]
+  tags:
+    - object_stand_alone
+  tasks:
+    - name: Copy OpenStack User Config File
+      template: src=templates/etc/openstack_deploy/openstack_user_config-11.0-object-stand-alone.yml.j2 dest=/etc/openstack_deploy/openstack_user_config.yml
 
-    - name: Update RPC User Variables File - Cause Escaping - Run Script
-      command: /tmp/cause-escaping.sh
+- name: Configure Object Common
+  hosts: infra[0]
+  tags:
+    - object
+    - object_stand_alone
+  tasks:
+    - name: Copy OpenStack Swift Config File
+      template: src=templates/etc/openstack_deploy/conf.d/swift-11.0.yml.j2 dest=/etc/openstack_deploy/conf.d/swift.yml
+
+    - name: Update OpenStack User Config File
+      lineinfile: "dest=/etc/openstack_deploy/openstack_user_config.yml regexp='         ( #)? - swift_proxy' line='          - swift_proxy' state=present"
 
 - name: Configure MaaS
   hosts: infra[0]
@@ -413,7 +413,7 @@
     - maas
   tasks:
     - name: Update RPC User Variables File
-      lineinfile: dest=/etc/rpc_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
+      lineinfile: dest=/etc/openstack_deploy/user_extras_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
       with_items:
         - { regexp: '^rackspace_cloud_auth_url:', line: 'rackspace_cloud_auth_url: {{ rackspace_cloud_auth_url }}' }
         - { regexp: '^rackspace_cloud_tenant_id:', line: 'rackspace_cloud_tenant_id: {{ rackspace_cloud_tenant_id }}' }
@@ -421,266 +421,39 @@
         - { regexp: '^rackspace_cloud_password:', line: 'rackspace_cloud_password: {{ rackspace_cloud_password }}' }
         - { regexp: '^rackspace_cloud_api_key:', line: 'rackspace_cloud_api_key: {{ rackspace_cloud_api_key }}' }
         - { regexp: '^maas_notification_plan:', line: 'maas_notification_plan: npTechnicalContactsEmail' }
-        - { regexp: '^maas_scheme:', line: 'maas_scheme: http' }
+        - { regexp: "^lb_name:", line: "lb_name: '{{ heat_stack_prefix|string }}-{{ groups.infra|first }}'" }
         - { regexp: '^(# )?maas_(nova|horizon)_scheme:', line: 'maas_horizon_scheme: https' }
 
-- name: Install Common - Play 1 of 2
+    - name: PIP Install Rackspace Monitoring CLI
+      pip: name=rackspace-monitoring-cli state=present
+
+    - name: Get IP Address Alias
+      shell: raxmon-entities-list --details --username={{ rackspace_cloud_username }} --api-key={{ rackspace_cloud_api_key }} | grep {{ hostvars[inventory_hostname].ansible_eth0.ipv4.address }}
+      register: infra1_maas_target_alias
+
+    - name: Get MaaS Target Alias - Public 1
+      lineinfile: "dest=/etc/openstack_deploy/user_extras_variables.yml regexp='maas_target_alias:' line='maas_target_alias: public1_v4' state=present"
+      when: "'public1_v4' in infra1_maas_target_alias.stdout"
+
+    - name: Set Deploy Environment MaaS Fact
+      ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=deploy_maas value=yes
+
+- name: Install RPC
   hosts: infra[0]
   tags:
     - compute
     - block
     - object
-  tasks:
-    - name: Run 'Setup - Setup Common' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/setup/setup-common.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'Setup - Build Containers' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/setup/build-containers.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'Setup - Restart Containers' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/setup/restart-containers.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'Setup - Containers Common' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/setup/containers-common.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'Infrastructure - HAProxy Install' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/haproxy-install.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'Infrastructure - Memcached Install' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/memcached-install.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'Infrastructure - Galera Install' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/galera-install.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'Infrastructure - Rabbit Install' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/rabbit-install.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'Infrastructure - Rsyslog Install' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/rsyslog-install.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'Infrastructure - Elasticsearch Install' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/elasticsearch-install.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'Infrastructure - Logstash Install' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/logstash-install.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'Infrastructure - Kibana Install' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/kibana-install.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'Infrastructure - Elasticsearch CLI Install' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/es2unix-install.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'Infrastructure - Rsyslog Config' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/rsyslog-config.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-- name: Install Compute - Play 1 of 2
-  hosts: infra[0]
-  tags:
-    - compute
-  tasks:
-    - name: Run 'OpenStack - Keystone All' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/keystone-all.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'OpenStack - Glance All' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/glance-all.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'OpenStack - Heat All' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/heat-all.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'OpenStack - Nova All' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/nova-all.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'OpenStack - Neutron All' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/neutron-all.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-- name: Install Block
-  hosts: infra[0]
-  tags:
-    - block
-  tasks:
-    - name: Run 'OpenStack - Cinder All' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/cinder-all.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-- name: Install Object
-  hosts: infra[0]
-  tags:
-    - object
-  tasks:
-    - name: Run 'OpenStack - Swift All' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/swift-all.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-- name: Install Compute - Play 2 of 2
-  hosts: infra[0]
-  tags:
-    - compute
-  tasks:
-    - name: Run 'OpenStack - Horizon All' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/horizon-all.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'OpenStack - Utility All' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/utility-all.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'OpenStack - RPC Support All' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/rpc-support-all.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-- name: Install Common - Play 2 of 2
-  hosts: infra[0]
-  tags:
-    - compute
-    - block
-    - object
-  tasks:
-    - name: Run 'Infrastructure - Rsyslog Config' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/rsyslog-config.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-- name: Install MaaS - Play 1 of 2
-  hosts: infra[0]
-  tags:
+    - object_stand_alone
     - maas
   tasks:
-    - name: Run 'Monitoring - Raxmon All' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/monitoring/raxmon-all.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
+    - name:
+      shell: ./scripts/deploy.sh >> /opt/cloud-training/deploy.sh.log 2>> /opt/cloud-training/deploy.sh.err chdir=/opt/rpc-openstack/
+      environment:
+        DEPLOY_HAPROXY: "{{ ansible_local.deploy_environment.option.deploy_haproxy }}"
+        DEPLOY_MAAS: "{{ ansible_local.deploy_environment.option.deploy_maas }}"
 
-    - name: Run 'Monitoring - MaaS Local' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/monitoring/maas_local.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'Monitoring - MaaS Remote' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/monitoring/maas_remote.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'Monitoring - MaaS CDM' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/monitoring/maas_cdm.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'Monitoring - MaaS SSL Check' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/monitoring/maas_ssl_check.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-    - name: Run 'Monitoring - MaaS Swift' Playbook
-      command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/monitoring/swift_maas.yml chdir=/opt/os-ansible-deployment/rpc_deployment/
-      register: playbook_result
-      until: playbook_result.rc == 0
-      retries: 5
-      delay: 10
-
-- name: Install MaaS - Play 2 of 2
+- name: Restart MaaS
   hosts: all
   tags:
     - maas
@@ -688,7 +461,24 @@
     - name: Check If Rackspace Monitoring Agent Is Install
       stat: path=/usr/bin/rackspace-monitoring-agent
       register: agent_installed
-      
+
     - name: Restart Rackspace Monitoring Agent
       service: name=rackspace-monitoring-agent state=restarted
       when: agent_installed.stat.exists
+
+- name: Update LibVirt CPU Map
+  hosts: compute
+  tags:
+    - compute
+  tasks:
+    - name: Create /usr/share/libvirt
+      file: path=/usr/share/libvirt state=directory
+
+    - name: Copy LibVirt CPU Map
+      copy: src=files/usr/share/libvirt/cpu_map.xml dest=/usr/share/libvirt/cpu_map.xml
+
+    - name: Restart LibVirt
+      service: name=libvirt-bin state=restarted
+
+    - name: Restart Nova Compute
+      service: name=nova-compute state=restarted
