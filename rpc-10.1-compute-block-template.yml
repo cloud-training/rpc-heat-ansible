@@ -14,7 +14,7 @@ parameters:
   rpc_heat_ansible_release:
     type: string
     label: RPC Heat Ansible Release
-    default: 'kilo'
+    default: 'kilo-2015-09-16'
   rackspace_cloud_auth_url:
     type: string
     label: Rackspace Cloud Auth URL
