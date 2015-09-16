@@ -334,9 +334,6 @@
     - name: Clone RPC Repo
       git: repo=https://github.com/openstack/openstack-ansible.git dest=/opt/openstack-ansible version="{{ rpc_release }}"
 
-    - name: Patch RPC Repo Version
-      lineinfile: "dest=/opt/openstack-ansible/rpc_deployment/inventory/group_vars/all.yml regexp='^rpc_release: ' line='rpc_release: {{ rpc_release }}' state=present"
-
     - name: Get Modern PIP
       command: curl -O http://mirror.rackspace.com/rackspaceprivatecloud/downloads/get-pip.py chdir=/opt creates=/opt/get-pip.py
       changed_when: False
