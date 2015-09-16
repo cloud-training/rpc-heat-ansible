@@ -11,6 +11,10 @@ parameters:
     type: string
     label: RPC Release
     default: '10.1.14'
+  rpc_heat_ansible_release:
+    type: string
+    label: RPC Heat Ansible Release
+    default: 'kilo'
   rackspace_cloud_auth_url:
     type: string
     label: Rackspace Cloud Auth URL
@@ -250,7 +254,7 @@ resources:
                   export MY_PUBLIC_IP=`curl -s http://ipv4.icanhazip.com/`
                   sed -i "s/ansible_connection=local/ansible_ssh_host=$MY_PUBLIC_IP/" inventory
                   # END - Terrible Chicken Egg Hack
-                  git clone https://github.com/cloud-training/rpc-heat-ansible.git -b kilo || exit_failure "Git Clone Failure"
+                  git clone https://github.com/cloud-training/rpc-heat-ansible.git -b {{ rpc_heat_ansible_release }} || exit_failure "Git Clone Failure"
                   cd /opt/cloud-training/rpc-heat-ansible/playbooks
                   ansible-playbook rpc-10.1-playbook.yml -v --tags %ansible_tags% || exit_failure "Ansible Playbook Run Failure"
                   exit_success
