@@ -347,7 +347,7 @@
       command: cp -R /opt/rpc-openstack/{{ item }}/etc/openstack_deploy /etc
       when: ansible_local.default_configs is not defined
       with_items:
-        - os-ansible-deployment
+        - openstack-ansible
         - rpcd
 
     - name: Copy Default Configuration Files Done Fact
@@ -362,7 +362,7 @@
         - { regexp: '^(# )?nova_virt_type:', line: 'nova_virt_type: qemu' }
 
     - name: Run Password Token Generation Script
-      command: ./scripts/pw-token-gen.py --file /etc/openstack_deploy/{{ item }} chdir=/opt/rpc-openstack/os-ansible-deployment
+      command: ./scripts/pw-token-gen.py --file /etc/openstack_deploy/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible
       when: ansible_local.pw_token_gen is not defined
       with_items:
         - user_secrets.yml
@@ -376,9 +376,6 @@
 
     - name: Set Deploy Environment HAProxy Fact
       ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=deploy_haproxy value=yes
-
-    - name: Set Deploy Environment MaaS Fact
-      ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=deploy_maas value=no
 
 - name: Configure Object
   hosts: infra[0]
