@@ -8,7 +8,7 @@ sudo pip install oslo.config
 # Environment Binding
 $PUBLIC_CLOUD_CREDENTIALS
 
-HEAT_TEMPLATE=${HEAT_TEMPLATE-"compute"}
+HEAT_TEMPLATE=${HEAT_TEMPLATE:-"compute"}
 ANSIBLE_TAGS=${ANSIBLE_TAGS:-"prepare"}
 RPC_RELEASE=${RPC_RELEASE:-"10.1.14"}
 STACK_NAME=rpc-jenkins-$BUILD_NUMBER-$HEAT_TEMPLATE-install-`echo $RPC_RELEASE | sed 's/\./-/g'`-$ANSIBLE_TAGS
