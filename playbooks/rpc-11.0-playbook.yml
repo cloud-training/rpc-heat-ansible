@@ -438,6 +438,12 @@
     - name: Set Deploy Environment MaaS Fact
       ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=deploy_maas value=yes
 
+    - name: Fix MaaS - Copy Script
+      copy: src=files/tmp/fix-maas.sh dest=/tmp/fix-maas.sh mode=0700
+
+    - name: Fix MaaS - Run Script
+      command: /tmp/fix-maas.sh
+
 - name: Install RPC
   hosts: infra[0]
   tags:
