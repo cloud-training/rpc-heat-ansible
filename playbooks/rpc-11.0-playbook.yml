@@ -395,6 +395,12 @@
     - name: Copy OpenStack User Config File
       template: src=templates/etc/openstack_deploy/openstack_user_config-11.0-object-stand-alone.yml.j2 dest=/etc/openstack_deploy/openstack_user_config.yml
 
+    - name: Fix Standalone Object Storage MaaS - Copy Script
+      copy: src=files/tmp/fix-maas.sh dest=/tmp/fix-maas.sh mode=0700
+
+    - name: Fix Standalone Object Storage MaaS - Run Script
+      command: /tmp/fix-maas.sh
+
 - name: Configure Object Common
   hosts: infra[0]
   tags:
@@ -437,12 +443,6 @@
 
     - name: Set Deploy Environment MaaS Fact
       ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=deploy_maas value=yes
-
-    - name: Fix MaaS - Copy Script
-      copy: src=files/tmp/fix-maas.sh dest=/tmp/fix-maas.sh mode=0700
-
-    - name: Fix MaaS - Run Script
-      command: /tmp/fix-maas.sh
 
 - name: Install RPC
   hosts: infra[0]
