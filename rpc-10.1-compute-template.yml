@@ -10,7 +10,7 @@ parameters:
   rpc_release:
     type: string
     label: RPC Release
-    default: '10.1.14'
+    default: '10.1.15'
   rpc_heat_ansible_release:
     type: string
     label: RPC Heat Ansible Release
@@ -247,7 +247,7 @@ resources:
             "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
       flavor: 8 GB Performance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
-      diskConfig: MANUAL
+      diskConfig: AUTO
       block_device_mapping:
         - device_name: /dev/xvdz
           volume_id: { get_resource: volume_infra1 }
@@ -271,7 +271,7 @@ resources:
             "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
       flavor: 4 GB Performance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
-      diskConfig: MANUAL
+      diskConfig: AUTO
       block_device_mapping:
         - device_name: /dev/xvdz
           volume_id: { get_resource: volume_logger1 }
@@ -295,7 +295,7 @@ resources:
             "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
       flavor: 4 GB Performance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
-      diskConfig: MANUAL
+      diskConfig: AUTO
       block_device_mapping:
         - device_name: /dev/xvdz
           volume_id: { get_resource: volume_compute1 }
