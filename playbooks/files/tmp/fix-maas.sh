@@ -1,7 +1,10 @@
 #!/bin/bash
 
 # Fix MaaS
-sed -i '42,56s/^/#/' /opt/rpc-openstack/rpcd/playbooks/roles/rpc_support/tasks/main.yml
+sed -i "44s/^    .+$/    groups['nova_api_os_compute']|length > 0 and inventory_hostname == groups['utility'][0]/g" /opt/rpc-openstack/rpcd/playbooks/roles/rpc_support/tasks/main.yml
+sed -i "48s/^    .+$/    groups['neutron_server']|length > 0 and inventory_hostname == groups['utility'][0]/g" /opt/rpc-openstack/rpcd/playbooks/roles/rpc_support/tasks/main.yml
+sed -i "52s/^    .+$/    groups['nova_api_os_compute']|length > 0 and inventory_hostname == groups['utility'][0]/g" /opt/rpc-openstack/rpcd/playbooks/roles/rpc_support/tasks/main.yml
+sed -i "56s/^    .+$/    groups['nova_api_os_compute']|length > 0 and inventory_hostname != groups['utility'][0] and (inventory_hostname in groups['utility'] or inventory_hostname in groups['neutron_all'])/g" /opt/rpc-openstack/rpcd/playbooks/roles/rpc_support/tasks/main.yml
 sed -i "35s/inventory_hostname == groups\['cinder_api'\]\[0\]/groups['cinder_api']|length > 0 and inventory_hostname == groups['cinder_api'][0]/g" /opt/rpc-openstack/rpcd/playbooks/roles/rpc_maas/tasks/remote.yml
 sed -i "56s/inventory_hostname == groups\['glance_api'\]\[0\]/groups['glance_api']|length > 0 and inventory_hostname == groups['glance_api'][0]/g" /opt/rpc-openstack/rpcd/playbooks/roles/rpc_maas/tasks/remote.yml
 sed -i "77s/inventory_hostname == groups\['keystone'\]\[0\]/groups['keystone']|length > 0 and inventory_hostname == groups['keystone'][0]/g" /opt/rpc-openstack/rpcd/playbooks/roles/rpc_maas/tasks/remote.yml
