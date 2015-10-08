@@ -20,12 +20,12 @@ parameters:
 ### Available Ansible Tags
 
 * `nothing` - Do Nothing
-* `prepare` - Prepare Environment
-* `compute` - Install Compute v11.0
-* `block` - Install Block v11.0
-* `object` - Install Object v11.0
-* `object_stand_alone` - Install Stand Alone Object v11.0
-* `maas` - Install MaaS v11.0
+* `prepare` - Prepare Environment (Default, Assumed If Using Any Below)
+* `compute` - Install Compute
+* `block` - Install Block
+* `object` - Install Object
+* `object_stand_alone` - Install Stand Alone Object (v11.0+ Only)
+* `maas` - Install MaaS
 
 ### Sample Deployments v11.0
 
