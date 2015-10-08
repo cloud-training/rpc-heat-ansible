@@ -1,4 +1,4 @@
-# Deploy A Rackspace Private Cloud v11.0 Reference Architecture Environment
+# Deploy A Rackspace Private Cloud Environment
 
 `heat stack-create -f rpc-11.0-*-template.yml -t 240 -P ansible_tags=<comma-separated-ansible-tags> [-e rpc-11.0-environment.yml] <stack-name>`
 
