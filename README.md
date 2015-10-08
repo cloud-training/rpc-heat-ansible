@@ -27,7 +27,7 @@ parameters:
 * `object_stand_alone` - Install Stand Alone Object v11.0
 * `maas` - Install MaaS v11.0
 
-### Sample Deployments
+### Sample Deployments v11.0
 
 #### RPC v11.0 Full + MaaS
 
@@ -44,3 +44,21 @@ parameters:
 #### RPC v11.0 Standalone Swift
 
 `heat stack-create -f rpc-11.0-compute-template.yml -t 240 -P ansible_tags=object_stand_alone <stack-name>`
+
+### Sample Deployments v10.1
+
+#### RPC v10.1 Full (HA) + MaaS
+
+`heat stack-create -f rpc-10.1-ha-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,object,maas -e rpc-10.1-environment.yml <stack-name>`
+
+#### RPC v10.1 Full + MaaS
+
+`heat stack-create -f rpc-10.1-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,object,maas -e rpc-10.1-environment.yml <stack-name>`
+
+#### RPC v10.1 Full (HA)
+
+`heat stack-create -f rpc-10.1-ha-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,object <stack-name>`
+
+#### RPC v10.1 Full
+
+`heat stack-create -f rpc-10.1-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,object <stack-name>`
