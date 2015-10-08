@@ -39,11 +39,11 @@ parameters:
 
 #### RPC v11.0 Standalone Swift + MaaS
 
-`heat stack-create -f rpc-11.0-compute-template.yml -t 240 -P ansible_tags=object_stand_alone,maas -e rpc-11.0-environment.yml <stack-name>`
+`heat stack-create -f rpc-11.0-object-template.yml -t 240 -P ansible_tags=object_stand_alone,maas -e rpc-11.0-environment.yml <stack-name>`
 
 #### RPC v11.0 Standalone Swift
 
-`heat stack-create -f rpc-11.0-compute-template.yml -t 240 -P ansible_tags=object_stand_alone <stack-name>`
+`heat stack-create -f rpc-11.0-object-template.yml -t 240 -P ansible_tags=object_stand_alone <stack-name>`
 
 ### Sample Deployments v10.1
 
