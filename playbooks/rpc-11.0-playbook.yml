@@ -113,7 +113,7 @@
       with_items:
         - group: infra
           device: /dev/xvdz
-          size: 140
+          size: 160
         - group: logger
           device: /dev/xvdz
           size: 30
@@ -370,9 +370,6 @@
 
     - name: Run Password Token Generation Script Done Fact
       ini_file: dest=/etc/ansible/facts.d/pw_token_gen.fact section=state option=done value=true
-
-    - name: Fix - Increase Repo Container Size
-      lineinfile: "dest=/etc/openstack_deploy/env.d/pkg_repo.yml line='      container_fs_size: 10G' insertafter='      container_release: trusty' state=present"
 
     - name: Set Deploy Environment HAProxy Fact
       ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=deploy_haproxy value=yes

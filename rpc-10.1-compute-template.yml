@@ -317,7 +317,7 @@ resources:
           template: "%heat_stack_prefix%-infra1"
           params:
             "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-      size: 150
+      size: 170
       volume_type: SSD
 
   volume_logger1:

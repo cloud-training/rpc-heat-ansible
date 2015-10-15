@@ -111,7 +111,7 @@
       with_items:
         - group: infra
           device: /dev/xvdz
-          size: 140
+          size: 160
         - group: logger
           device: /dev/xvdz
           size: 30
