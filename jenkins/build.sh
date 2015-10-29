@@ -24,6 +24,7 @@ BUILD_COMPLETED=0
 BUILD_FAILED=0
 
 until [[ $BUILD_COMPLETED -eq 1 ]]; do
+  sleep 120
   STACK_STATUS=`heat stack-list | awk '/ '$STACK_NAME' / { print $6 }'`
   RESOURCES_FAILED=`heat resource-list $STACK_NAME | grep CREATE_FAILED | wc -l`
   SWIFT_SIGNAL_FAILED=`heat event-list $STACK_NAME | grep SwiftSignalFailure | wc -l`
@@ -39,7 +40,6 @@ until [[ $BUILD_COMPLETED -eq 1 ]]; do
   echo "Build Failed:        $BUILD_FAILED"
   echo "Resources Failed:    $RESOURCES_FAILED"
   echo "Swift Signal Failed: $SWIFT_SIGNAL_FAILED"
-  sleep 120
 done
 
 if [[ $BUILD_FAILED -eq 1 ]]; then
@@ -63,6 +63,7 @@ BUILD_DELETED=1
 heat stack-delete $STACK_NAME
 
 until [[ $BUILD_DELETED -eq 0 ]]; do
+  sleep 30
   STACK_STATUS=`heat stack-list | awk '/ '$STACK_NAME' / { print $6 }'`
   BUILD_DELETED=`heat stack-list | awk '/ '$STACK_NAME' / { print $6 }' | wc -l`
   echo "===================================================="
@@ -71,7 +72,6 @@ until [[ $BUILD_DELETED -eq 0 ]]; do
   if [[ "$STACK_STATUS" == 'DELETE_FAILED' ]]; then
     heat stack-delete $STACK_NAME
   fi
-  sleep 120
 done
 
 exit $BUILD_FAILED
