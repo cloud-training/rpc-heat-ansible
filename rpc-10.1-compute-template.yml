@@ -10,7 +10,7 @@ parameters:
   rpc_release:
     type: string
     label: RPC Release
-    default: '10.1.15'
+    default: '10.1.16'
   rpc_heat_ansible_release:
     type: string
     label: RPC Heat Ansible Release
@@ -101,6 +101,7 @@ resources:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
         packages:
+          - linux-image-extra-virtual
           - tmux
           - htop
           - multitail

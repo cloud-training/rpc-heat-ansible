@@ -121,6 +121,7 @@ resources:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
         packages:
+          - linux-image-extra-virtual
           - tmux
           - htop
           - multitail
