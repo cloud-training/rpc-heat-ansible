@@ -341,10 +341,10 @@
       ignore_errors: yes
 
     - name: Bug 1508517 - Fetch Patch
-      shell: git fetch https://review.openstack.org/openstack/openstack-ansible refs/changes/93/241293/1 && git format-patch -1 --stdout FETCH_HEAD >> /opt/cloud-training/bug-1508517.patch
+      shell: git fetch https://review.openstack.org/openstack/openstack-ansible refs/changes/93/241293/1 && git format-patch -1 --stdout FETCH_HEAD >> /opt/cloud-training/bug-1508517.patch chdir=/opt/rpc-openstack/openstack-ansible
 
     - name: Bug 1508517 - Apply Patch
-      command: git apply /opt/cloud-training/bug-1508517.patch chdir=/opt/rpc-openstack/openstack-ansible/playbooks
+      command: git apply /opt/cloud-training/bug-1508517.patch chdir=/opt/rpc-openstack/openstack-ansible
 
     - name: Create /etc/openstack_deploy
       file: dest=/etc/openstack_deploy state=directory
