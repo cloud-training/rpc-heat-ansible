@@ -20,7 +20,7 @@ index e620331..5a40e0f 100644
      tags: "ha-mode=all"
    register: rabbitmq_queue_mirror
 +  until: rabbitmq_queue_mirror | success
-+  retries: 3
++  retries: 10
 +  delay: 30
    tags:
      - rabbitmq-config
