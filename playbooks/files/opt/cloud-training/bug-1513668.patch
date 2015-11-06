@@ -1,14 +1,18 @@
-From f4e0b3ae05db5e310edaebdfcd4643fd40c4d3dd Mon Sep 17 00:00:00 2001
-From: Your Name <you@example.com>
-Date: Thu, 5 Nov 2015 22:00:14 +0000
-Subject: [PATCH] Add retries to rabbitmq queue mirroring setup.
+From 4d4fff438cd3705c4e750a384f50211eac7cc428 Mon Sep 17 00:00:00 2001
+From: Byron McCollum <byron.mccollum@rackspace.com>
+Date: Thu, 05 Nov 2015 20:07:23 -0600
+Subject: [PATCH] Add retry and delay to RabbitMQ queue mirroring setup.
 
+Occasionally, RabbitMQ will not be fully up before trying to setup queue
+mirroring. This change adds a retry with delay to the task to help coax
+it into being successful.
+
+Change-Id: Ifee971176dc9649131778f7fe2fe16144509a1b1
+Closes-bug: #1513668
 ---
- playbooks/roles/rabbitmq_server/tasks/rabbitmq_post_install.yml | 2 ++
- 1 file changed, 2 insertions(+)
 
 diff --git a/playbooks/roles/rabbitmq_server/tasks/rabbitmq_post_install.yml b/playbooks/roles/rabbitmq_server/tasks/rabbitmq_post_install.yml
-index 6712425..1ce6507 100644
+index e620331..3a8c46f 100644
 --- a/playbooks/roles/rabbitmq_server/tasks/rabbitmq_post_install.yml
 +++ b/playbooks/roles/rabbitmq_server/tasks/rabbitmq_post_install.yml
 @@ -28,6 +28,9 @@
@@ -21,5 +25,3 @@ index 6712425..1ce6507 100644
    tags:
      - rabbitmq-config
      - rabbitmq-cluster
----
-1.9.1

@@ -1,6 +1,6 @@
 From aef4e7a891fac8c54bb0996aab825b48eb095f26 Mon Sep 17 00:00:00 2001
 From: Kevin Carter <kevin.carter@rackspace.com>
-Date: Tue, 3 Nov 2015 10:46:59 -0600
+Date: Tue, 03 Nov 2015 10:46:59 -0600
 Subject: [PATCH] Deployment fix when container_networks are not set
 
 The change updates the logic within nova such to it will
@@ -16,9 +16,6 @@ Change-Id: I157a6ecd0ad99000369d786a649c7b40d791d917
 Closes-Bug: #1508517
 Signed-off-by: Kevin Carter <kevin.carter@rackspace.com>
 ---
- playbooks/os-nova-install.yml                      | 47 +++++++++-------------
- .../tasks/container_create.yml                     |  6 +--
- 2 files changed, 23 insertions(+), 30 deletions(-)
 
 diff --git a/playbooks/os-nova-install.yml b/playbooks/os-nova-install.yml
 index 62b5130..3481b36 100644
@@ -148,5 +145,3 @@ index 71b8e2e..a9a56a8 100644
    when: >
      item.value.interface is defined
    notify:
--- 
-1.9.1
