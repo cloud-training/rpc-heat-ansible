@@ -340,11 +340,17 @@
       command: git clone --recursive https://github.com/rcbops/rpc-openstack -b {{ rpc_release }} chdir=/opt
       ignore_errors: yes
 
-    - name: Bug 1508517 - Fetch Patch
-      shell: git fetch https://review.openstack.org/openstack/openstack-ansible refs/changes/93/241293/1 && git format-patch -1 --stdout FETCH_HEAD >> /opt/cloud-training/bug-1508517.patch chdir=/opt/rpc-openstack/openstack-ansible
+    - name: Bugs - Fetch Patches
+      copy: src=files/opt/cloud-training/{{ item }} dest=/opt/cloud-training/{{ item }}
+      with_items:
+        - bug-1508517.patch
+        - bug-rabbitmq-queue-mirroring-retry.patch
 
-    - name: Bug 1508517 - Apply Patch
-      command: git apply /opt/cloud-training/bug-1508517.patch chdir=/opt/rpc-openstack/openstack-ansible
+    - name: Bugs - Apply Patches
+      command: git apply /opt/cloud-training/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible
+      with_items:
+        - bug-1508517.patch
+        - bug-rabbitmq-queue-mirroring-retry.patch
 
     - name: Create /etc/openstack_deploy
       file: dest=/etc/openstack_deploy state=directory

@@ -1,0 +1,25 @@
+From f4e0b3ae05db5e310edaebdfcd4643fd40c4d3dd Mon Sep 17 00:00:00 2001
+From: Your Name <you@example.com>
+Date: Thu, 5 Nov 2015 22:00:14 +0000
+Subject: [PATCH] Add retries to rabbitmq queue mirroring setup.
+
+---
+ playbooks/roles/rabbitmq_server/tasks/rabbitmq_post_install.yml | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/playbooks/roles/rabbitmq_server/tasks/rabbitmq_post_install.yml b/playbooks/roles/rabbitmq_server/tasks/rabbitmq_post_install.yml
+index 6712425..1ce6507 100644
+--- a/playbooks/roles/rabbitmq_server/tasks/rabbitmq_post_install.yml
++++ b/playbooks/roles/rabbitmq_server/tasks/rabbitmq_post_install.yml
+@@ -28,6 +28,9 @@
+     pattern: '^(?!amq\.).*'
+     tags: "ha-mode=all"
+   register: rabbitmq_queue_mirror
++  until: rabbitmq_queue_mirror | success
++  retries: 3
++  delay: 10
+   tags:
+     - rabbitmq-config
+     - rabbitmq-cluster
+-- 
+1.9.1

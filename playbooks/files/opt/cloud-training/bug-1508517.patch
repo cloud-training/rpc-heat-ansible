@@ -1,0 +1,152 @@
+From aef4e7a891fac8c54bb0996aab825b48eb095f26 Mon Sep 17 00:00:00 2001
+From: Kevin Carter <kevin.carter@rackspace.com>
+Date: Tue, 3 Nov 2015 10:46:59 -0600
+Subject: [PATCH] Deployment fix when container_networks are not set
+
+The change updates the logic within nova such to it will
+now correctly set the management interface when using
+a dynamic inventory without the container_networks options
+within it.
+
+This also updates the container create play so that it too
+will properly skip a host that also may not have the container
+networks entries within it's inventory configs.
+
+Change-Id: I157a6ecd0ad99000369d786a649c7b40d791d917
+Closes-Bug: #1508517
+Signed-off-by: Kevin Carter <kevin.carter@rackspace.com>
+---
+ playbooks/os-nova-install.yml                      | 47 +++++++++-------------
+ .../tasks/container_create.yml                     |  6 +--
+ 2 files changed, 23 insertions(+), 30 deletions(-)
+
+diff --git a/playbooks/os-nova-install.yml b/playbooks/os-nova-install.yml
+index 62b5130..3481b36 100644
+--- a/playbooks/os-nova-install.yml
++++ b/playbooks/os-nova-install.yml
+@@ -60,9 +60,9 @@
+       changed_when: >
+         'added' in device_add.stdout.lower()
+       delegate_to: "{{ physical_host }}"
+-      when: >
+-        inventory_hostname in groups['nova_compute'] and
+-        (is_metal == false or is_metal == "False")
++      when:
++        - "inventory_hostname in groups['nova_compute']"
++        - "not is_metal | bool"
+       tags:
+         - nova-kvm
+         - nova-kvm-container-devices
+@@ -70,9 +70,9 @@
+       shell: |
+         lxc-device -n {{ container_name }} add /dev/net/tun /dev/net/tun
+       delegate_to: "{{ physical_host }}"
+-      when: >
+-        inventory_hostname in groups['nova_compute'] and
+-        not is_metal | bool
++      when:
++        - "inventory_hostname in groups['nova_compute']"
++        - "not is_metal | bool"
+       tags:
+         - nova-kvm
+         - nova-kvm-container-devices
+@@ -84,10 +84,10 @@
+       failed_when: false
+       changed_when: >
+         'added' in device_add.stdout.lower()
+-      when: >
+-        inventory_hostname in groups['nova_compute'] and
+-        not is_metal | bool and
+-        nova_virt_type == 'kvm'
++      when:
++        - "inventory_hostname in groups['nova_compute']"
++        - "not is_metal | bool"
++        - "nova_virt_type == 'kvm'"
+       tags:
+         - nova-kvm
+         - nova-kvm-container-devices
+@@ -114,41 +114,34 @@
+         - nova-logs
+     - name: Set nova management bridge (is_metal)
+       set_fact:
+-        management_bridge: "{{ 'ansible_' + hostvars[inventory_hostname]['container_networks']['container_address']['bridge'] | replace('-', '_') }}"
++        management_bridge: "{{ 'ansible_' + hostvars[inventory_hostname]['management_bridge'] | replace('-', '_') }}"
+       when:
+-        - hostvars[inventory_hostname]['container_networks']['container_address']['bridge'] is defined
+-        - is_metal | bool
++        - "hostvars[inventory_hostname]['management_bridge'] is defined"
++        - "is_metal | bool"
+       tags:
+         - nova-config
+     - name: Set nova management address (is_metal)
+       set_fact:
+         management_address: "{{ hostvars[inventory_hostname][management_bridge]['ipv4']['address'] }}"
+       when:
+-        - is_metal | bool
+-      tags:
+-        - nova-config
+-    - name: Set nova management bridge (is_metal no container network)
+-      set_fact:
+-        management_address: "{{ ansible_ssh_host }}"
+-      when:
+-        - hostvars[inventory_hostname]['container_networks']['container_address']['bridge'] is undefined
+-        - is_metal | bool
++        - "hostvars[inventory_hostname][management_bridge]['ipv4']['address'] is defined"
++        - "is_metal | bool"
+       tags:
+         - nova-config
+     - name: Set nova management address (container)
+       set_fact:
+         management_address: "{{ hostvars[inventory_hostname]['container_networks']['container_address']['address'] }}"
+       when:
+-        - hostvars[inventory_hostname]['container_networks']['container_address']['address'] is defined
+-        - not is_metal | bool
++        - "management_address is undefined"
++        - "hostvars[inventory_hostname]['container_networks']['container_address']['address'] is defined"
++        - "not is_metal | bool"
+       tags:
+         - nova-config
+-    - name: Set nova management address (container no container network)
++    - name: Set nova management address (unknown management network)
+       set_fact:
+         management_address: "{{ ansible_ssh_host }}"
+       when:
+-        - hostvars[inventory_hostname]['container_networks']['container_address']['address'] is undefined
+-        - not is_metal | bool
++        - "management_address is undefined"
+       tags:
+         - nova-config
+   roles:
+diff --git a/playbooks/roles/lxc_container_create/tasks/container_create.yml b/playbooks/roles/lxc_container_create/tasks/container_create.yml
+index 71b8e2e..a9a56a8 100644
+--- a/playbooks/roles/lxc_container_create/tasks/container_create.yml
++++ b/playbooks/roles/lxc_container_create/tasks/container_create.yml
+@@ -107,7 +107,7 @@
+         mkdir -p /etc/network/interfaces.d
+       fi
+       echo -e '{{ lxc_container_interface }}' | tee /etc/network/interfaces.d/{{ item.value.interface }}.cfg
+-  with_dict: container_networks
++  with_dict: container_networks|default({})
+   delegate_to: "{{ physical_host }}"
+   tags:
+     - lxc-container-networks
+@@ -119,7 +119,7 @@
+     owner: "root"
+     group: "root"
+     mode: "0644"
+-  with_dict: container_networks
++  with_dict: container_networks|default({})
+   notify:
+     - Lxc container restart
+   delegate_to: "{{ physical_host }}"
+@@ -144,7 +144,7 @@
+     dest: "/var/lib/lxc/{{ inventory_hostname }}/config"
+     line: "lxc.include = /var/lib/lxc/{{ inventory_hostname }}/{{ item.value.interface }}.ini"
+     backup: "true"
+-  with_dict: container_networks
++  with_dict: container_networks|default({})
+   when: >
+     item.value.interface is defined
+   notify:
+-- 
+1.9.1
