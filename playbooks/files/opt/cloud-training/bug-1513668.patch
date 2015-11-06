@@ -1,4 +1,4 @@
-From 4d4fff438cd3705c4e750a384f50211eac7cc428 Mon Sep 17 00:00:00 2001
+From b09d1e1e6ff7d2c79fa1e442265db68b8a747e2b Mon Sep 17 00:00:00 2001
 From: Byron McCollum <byron.mccollum@rackspace.com>
 Date: Thu, 05 Nov 2015 20:07:23 -0600
 Subject: [PATCH] Add retry and delay to RabbitMQ queue mirroring setup.
@@ -12,7 +12,7 @@ Closes-bug: #1513668
 ---
 
 diff --git a/playbooks/roles/rabbitmq_server/tasks/rabbitmq_post_install.yml b/playbooks/roles/rabbitmq_server/tasks/rabbitmq_post_install.yml
-index e620331..3a8c46f 100644
+index e620331..5a40e0f 100644
 --- a/playbooks/roles/rabbitmq_server/tasks/rabbitmq_post_install.yml
 +++ b/playbooks/roles/rabbitmq_server/tasks/rabbitmq_post_install.yml
 @@ -28,6 +28,9 @@
@@ -21,7 +21,7 @@ index e620331..3a8c46f 100644
    register: rabbitmq_queue_mirror
 +  until: rabbitmq_queue_mirror | success
 +  retries: 3
-+  delay: 10
++  delay: 30
    tags:
      - rabbitmq-config
      - rabbitmq-cluster
