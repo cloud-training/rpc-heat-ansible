@@ -346,7 +346,6 @@
         - bug-1508517.patch
         - bug-1513668.patch
         - bug-1426254.patch
-        - bug-pause.patch
 
     - name: Bugs - Apply Patches
       command: git apply /opt/cloud-training/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible
@@ -354,7 +353,6 @@
         - bug-1508517.patch
         - bug-1513668.patch
         - bug-1426254.patch
-        - bug-pause.patch
 
     - name: Create /etc/openstack_deploy
       file: dest=/etc/openstack_deploy state=directory
