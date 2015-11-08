@@ -1,0 +1,27 @@
+From 3feee010b9ccd784a4fb193e223031148c1a15fa Mon Sep 17 00:00:00 2001
+From: Byron McCollum <byron.mccollum@rackspace.com>
+Date: Sat, 7 Nov 2015 23:27:39 -0600
+Subject: [PATCH] Pause.
+
+Change-Id: I7fe59a925c68f958c6fb4cdeaec4ef639e309ee4
+---
+ playbooks/lxc-containers-create.yml | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/playbooks/lxc-containers-create.yml b/playbooks/lxc-containers-create.yml
+index 0b5110a..030953a 100644
+--- a/playbooks/lxc-containers-create.yml
++++ b/playbooks/lxc-containers-create.yml
+@@ -24,3 +24,9 @@
+     ansible_hostname: "{{ container_name }}"
+     is_metal: "{{ properties.is_metal|default(false) }}"
+     lxc_container_release: "{{ properties.container_release|default('trusty') }}"
++
++- name: Pause
++  hosts: hosts
++  tasks:
++    - name: Pause
++      pause: minutes=1
+-- 
+2.6.0
+
