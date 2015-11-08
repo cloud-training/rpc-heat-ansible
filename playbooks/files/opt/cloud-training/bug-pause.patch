@@ -1,27 +1,24 @@
-From 3feee010b9ccd784a4fb193e223031148c1a15fa Mon Sep 17 00:00:00 2001
+From 72c3e5c934f7491866f96af99e4751f50d9399f9 Mon Sep 17 00:00:00 2001
 From: Byron McCollum <byron.mccollum@rackspace.com>
-Date: Sat, 7 Nov 2015 23:27:39 -0600
+Date: Sun, 8 Nov 2015 11:12:13 -0600
 Subject: [PATCH] Pause.
 
-Change-Id: I7fe59a925c68f958c6fb4cdeaec4ef639e309ee4
+Change-Id: I104ddb9708aaa7ae80b6664a4f125351d0d609f4
 ---
- playbooks/lxc-containers-create.yml | 6 ++++++
- 1 file changed, 6 insertions(+)
+ playbooks/roles/lxc_container_create/tasks/container_create.yml | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/playbooks/lxc-containers-create.yml b/playbooks/lxc-containers-create.yml
-index 0b5110a..030953a 100644
---- a/playbooks/lxc-containers-create.yml
-+++ b/playbooks/lxc-containers-create.yml
-@@ -24,3 +24,9 @@
-     ansible_hostname: "{{ container_name }}"
-     is_metal: "{{ properties.is_metal|default(false) }}"
-     lxc_container_release: "{{ properties.container_release|default('trusty') }}"
+diff --git a/playbooks/roles/lxc_container_create/tasks/container_create.yml b/playbooks/roles/lxc_container_create/tasks/container_create.yml
+index bf6bfd1..f47f063 100644
+--- a/playbooks/roles/lxc_container_create/tasks/container_create.yml
++++ b/playbooks/roles/lxc_container_create/tasks/container_create.yml
+@@ -188,3 +188,6 @@
+   delegate_to: "{{ physical_host }}"
+   tags:
+     - lxc-container-proxy
 +
-+- name: Pause
-+  hosts: hosts
-+  tasks:
-+    - name: Pause
-+      pause: minutes=1
++- name: Pause For Containers To Start
++  pause: minutes=2
 -- 
 2.6.0
 
