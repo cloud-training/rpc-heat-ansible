@@ -347,6 +347,8 @@
         - bug-1513668.patch
         - bug-1426254.patch
         - bug-pause.patch
+        - bug-492.patch
+        - bug-556.patch
 
     - name: Bugs - Apply Patches (OpenStack Ansible)
       command: git apply /opt/cloud-training/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible
