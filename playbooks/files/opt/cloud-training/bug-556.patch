@@ -1,0 +1,26 @@
+From 7b82a05c347437decf440b676abf01a65d1c75cb Mon Sep 17 00:00:00 2001
+From: Byron McCollum <byron.mccollum@rackspace.com>
+Date: Mon, 9 Nov 2015 20:28:11 -0800
+Subject: [PATCH] Prevent race creating Holland DB users by limiting creation
+ to the first Galera node.
+
+Fixes #556
+---
+ rpcd/playbooks/roles/rpc_support/tasks/holland_config.yml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/rpcd/playbooks/roles/rpc_support/tasks/holland_config.yml b/rpcd/playbooks/roles/rpc_support/tasks/holland_config.yml
+index d1616f3..5a1f40a 100644
+--- a/rpcd/playbooks/roles/rpc_support/tasks/holland_config.yml
++++ b/rpcd/playbooks/roles/rpc_support/tasks/holland_config.yml
+@@ -31,6 +31,7 @@
+       password: "{{ rpc_support_holland_password }}"
+       priv: "*.*:ALL"
+       state: present
++  when: inventory_hostname == groups['galera'][0]
+   tags:
+     - holland_sql_user
+     - holland_all
+-- 
+2.6.0
+

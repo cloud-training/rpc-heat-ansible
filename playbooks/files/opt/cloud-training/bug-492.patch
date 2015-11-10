@@ -1,0 +1,23 @@
+From 11a20f3ec71da385c13c73ed92e5ef75d9157266 Mon Sep 17 00:00:00 2001
+From: Byron McCollum <byron.mccollum@rackspace.com>
+Date: Sat, 7 Nov 2015 11:23:37 -0600
+Subject: [PATCH] Do not setup Ceph monitoring when Ceph is not present.
+
+Fixes #492
+---
+ rpcd/playbooks/roles/rpc_maas/tasks/main.yml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/rpcd/playbooks/roles/rpc_maas/tasks/main.yml b/rpcd/playbooks/roles/rpc_maas/tasks/main.yml
+index bd84399..a44becd 100644
+--- a/rpcd/playbooks/roles/rpc_maas/tasks/main.yml
++++ b/rpcd/playbooks/roles/rpc_maas/tasks/main.yml
+@@ -51,4 +51,4 @@
+ 
+ - include: ceph.yml
+   when:
+-    inventory_hostname in groups['ceph_all']
++    groups['ceph_all'] is defined and inventory_hostname in groups['ceph_all']
+-- 
+2.6.0
+
