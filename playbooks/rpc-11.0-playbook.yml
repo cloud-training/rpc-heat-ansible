@@ -352,6 +352,7 @@
 
     - name: Bugs - Apply Patches (OpenStack Ansible)
       command: git apply /opt/cloud-training/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible
+      ignore_errors: yes
       with_items:
         - bug-1508517.patch
         - bug-1513668.patch
@@ -360,6 +361,7 @@
 
     - name: Bugs - Apply Patches (RPC OpenStack)
       command: git apply /opt/cloud-training/{{ item }} chdir=/opt/rpc-openstack
+      ignore_errors: yes
       with_items:
         - bug-492.patch
         - bug-556.patch
