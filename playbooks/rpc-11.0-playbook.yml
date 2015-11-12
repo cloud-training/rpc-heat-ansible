@@ -349,6 +349,7 @@
         - bug-wait-for-container-ssh.patch
         - bug-492.patch
         - bug-556.patch
+        - repo-build.patch
 
     - name: Bugs - Apply Patches (OpenStack Ansible)
       command: git apply /opt/cloud-training/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible
@@ -358,6 +359,7 @@
         - bug-1513668.patch
         - bug-1426254.patch
         - bug-wait-for-container-ssh.patch
+        - repo-build.patch
 
     - name: Bugs - Apply Patches (RPC OpenStack)
       command: git apply /opt/cloud-training/{{ item }} chdir=/opt/rpc-openstack
