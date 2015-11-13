@@ -1,22 +1,22 @@
-From 61d11391080d0e5665250729b4bdf18a79a9c1ec Mon Sep 17 00:00:00 2001
+From e622fd6bc8d077936c0b221803d310cd9aa37420 Mon Sep 17 00:00:00 2001
 From: Kevin Carter <kevin.carter@rackspace.com>
 Date: Wed, 11 Nov 2015 10:32:03 -0600
-Subject: [PATCH] Functional back port of the Liberty repo-build process
+Subject: [PATCH] Functional backport for the new repo-build process
 
-The change back ports the repo-build role into kilo such that
-we're allowing the Kilo build process to benefit from the changes
-made in Liberty+. This will also allow for the Kilo playbooks
+The change backports the repo-build role into kilo such that
+we're allowing the Kilo build process to benifit from the changes
+we've made upstream. This will also allow for the kilo playbooks
 to clone from a repo using a generated manifest file. This will
-ensure that the build process is more repeatable, creating an
-environment with faster build times and drop the dependency
+ensure that the build process is more repatable, creating an
+environment with faster build times, and dropping our dependency
 on the yaprt library.
 
-This change brings with it all of the associated updates that have been
+This change brings with it all of the assosiated updates that have been
 made to the various plugins and playbooks to ensure a better repo-env.
 
-* the repo-* plays have been back ported from Liberty
-* the repo-build role has been back ported
-* the py_pkg lookup plugin changes have been back ported
+* In the change the repo-* plays have been backported from liberty
+* the repo-build role has been backported
+* the py_pkg lookup plugin changes has been backported
 
 Change-Id: I5a3a1506bf3df8b5812d9131248d0156a8dd7dd6
 Signed-off-by: Kevin Carter <kevin.carter@rackspace.com>
@@ -57,11 +57,31 @@ index 1fce9c1..118ba81 100644
  heat_git_dest: "/opt/heat_{{ heat_git_install_branch | replace('/', '_') }}"
  heat_repo_plugins:
    - { path: "contrib", package: "extraroute" }
+diff --git a/playbooks/defaults/repo_packages/readme.rst b/playbooks/defaults/repo_packages/readme.rst
+index f487dd4..acba251 100644
+--- a/playbooks/defaults/repo_packages/readme.rst
++++ b/playbooks/defaults/repo_packages/readme.rst
+@@ -19,9 +19,15 @@
+   * If you add clients to this file please do so in alphabetical order.
+   * Every entry should be name spaced with the name of the client followed by an "_"
+ 
++Repository data can be set in any of the following locations by default.
++    - <MAIN REPO LOCATION>
++    - /etc/ansible/roles
++    - /etc/openstack_deploy
++
+ The basic structure of all of these files:
+   * git_repo: ``string`` URI to the git repository to clone from.
+   * git_fallback_repo: ``string`` URI to an alternative git repository to clone from when **git_repo** fails.
+   * git_dest: ``string`` full path to place a cloned git repository. This will normally incorporate the **repo_path** variable for consistency purposes.
+   * git_install_branch: ``string`` branch, tag or SHA of a git repository to clone into.
+   * git_repo_plugins: ``list`` of ``hashes`` with keys: path, package | This is used to install additional packages which may be installable from the same base repository.
++  * git_package_name: ``string`` that will override the "egg" name given for the repo.
 diff --git a/playbooks/plugins/filters/osa-filters.py b/playbooks/plugins/filters/osa-filters.py
-index e532d14..61ca112 100644
+index e532d14..76ce8a4 100644
 --- a/playbooks/plugins/filters/osa-filters.py
 +++ b/playbooks/plugins/filters/osa-filters.py
-@@ -14,6 +14,13 @@
+@@ -14,10 +14,39 @@
  #
  # (c) 2015, Kevin Carter <kevin.carter@rackspace.com>
  
@@ -75,7 +95,33 @@ index e532d14..61ca112 100644
  """Filter usage:
  
  Simple filters that may be useful from within the stack
-@@ -30,11 +37,170 @@
+ """
++
++
++def _pip_requirement_split(requirement):
++    version_descriptors = "(>=|<=|>|<|==|~=|!=)"
++    requirement = requirement.split(';')
++    requirement_info = re.split(r'%s\s*' % version_descriptors, requirement[0])
++    name = requirement_info[0]
++    marker = None
++    if len(requirement) > 1:
++        marker = requirement[1]
++    versions = None
++    if len(requirement_info) > 1:
++        versions = requirement_info[1]
++
++    return name, versions, marker
++
++
++def _lower_set_lists(list_one, list_two):
++
++    _list_one = set([i.lower() for i in list_one])
++    _list_two = set([i.lower() for i in list_two])
++    return _list_one, _list_two
+ 
+ 
+ def bit_length_power_of_2(value):
+@@ -30,11 +59,186 @@
      return 2**(int(value)-1).bit_length()
  
  
@@ -162,15 +208,31 @@ index e532d14..61ca112 100644
 +    :return: ``str``
 +    """
 +
-+    version_descriptors = "(>=|<=|>|<|==|~=|!=)"
 +    named_requirements = list()
 +    for requirement in requirements:
-+        requirement = requirement.split(';')[0]
-+        name = re.split(r'%s\s*' % version_descriptors, requirement)[0]
++        name = _pip_requirement_split(requirement)[0]
 +        if name and not name.startswith('#'):
 +            named_requirements.append(name.lower())
 +
 +    return sorted(set(named_requirements))
++
++
++def pip_constraint_update(list_one, list_two):
++
++    _list_one, _list_two = _lower_set_lists(list_one, list_two)
++    _list_one, _list_two = list(_list_one), list(_list_two)
++    for item2 in _list_two:
++        item2_name, item2_versions, _ = _pip_requirement_split(item2)
++        if item2_versions:
++            for item1 in _list_one:
++                if item2_name == _pip_requirement_split(item1)[0]:
++                    item1_index = _list_one.index(item1)
++                    _list_one[item1_index] = item2
++                    break
++            else:
++                _list_one.append(item2)
++
++    return sorted(_list_one)
 +
 +
 +def splitlines(string_with_lines):
@@ -181,8 +243,7 @@ index e532d14..61ca112 100644
 +
 +def filtered_list(list_one, list_two):
 +
-+    _list_one = set([i.lower() for i in list_one])
-+    _list_two = set([i.lower() for i in list_two])
++    _list_one, _list_two = _lower_set_lists(list_one, list_two)
 +    return list(_list_one-_list_two)
 +
 +
@@ -242,29 +303,43 @@ index e532d14..61ca112 100644
 +            'netorigin': get_netorigin,
 +            'string_2_int': string_2_int,
 +            'pip_requirement_names': pip_requirement_names,
++            'pip_constraint_update': pip_constraint_update,
 +            'splitlines': splitlines,
 +            'filtered_list': filtered_list,
 +            'git_link_parse': git_link_parse,
 +            'git_link_parse_name': git_link_parse_name
          }
 diff --git a/playbooks/plugins/lookups/py_pkgs.py b/playbooks/plugins/lookups/py_pkgs.py
-index ac1ffb6..004ad31 100644
+index ac1ffb6..8c95cf2 100644
 --- a/playbooks/plugins/lookups/py_pkgs.py
 +++ b/playbooks/plugins/lookups/py_pkgs.py
-@@ -26,10 +26,10 @@
+@@ -15,6 +15,7 @@
+ # (c) 2014, Kevin Carter <kevin.carter@rackspace.com>
+ 
+ import os
++import re
+ import traceback
+ 
+ from ansible import errors
+@@ -22,14 +23,12 @@
+ import yaml
  
  
+-VERSION_DESCRIPTORS = ['>=', '<=', '==', '!=', '<', '>']
+-
+-
  REQUIREMENTS_FILE_TYPES = [
 -    'requirements.txt',
      'global-requirements.txt',
      'test-requirements.txt',
 -    'dev-requirements.txt'
 +    'dev-requirements.txt',
++    'requirements.txt',
 +    'global-requirement-pins.txt'
  ]
  
  
-@@ -43,6 +43,61 @@
+@@ -43,6 +42,82 @@
  ]
  
  
@@ -284,7 +359,7 @@ index ac1ffb6..004ad31 100644
 +      ...     'git+https://github.com/username/repo@tag#egg=plugin.name'
 +      ...     '&subdirectory=remote_path/plugin.name'
 +      ... )
-+      ('repo',
++      ('plugin.name',
 +       'tag',
 +       'remote_path/plugin.name',
 +       'https://github.com/username/repo',
@@ -303,7 +378,10 @@ index ac1ffb6..004ad31 100644
 +        _git_url = _git_url[0]
 +
 +    git_branch_sha = _git_url.split('@')
-+    if len(git_branch_sha) > 1:
++    if len(git_branch_sha) > 2:
++        branch = git_branch_sha.pop()
++        url = '@'.join(git_branch_sha)
++    elif len(git_branch_sha) > 1:
 +        url, branch = git_branch_sha
 +    else:
 +        url = git_branch_sha[0]
@@ -316,17 +394,35 @@ index ac1ffb6..004ad31 100644
 +    plugin_path = None
 +    # Determine if the package is a plugin type
 +    if len(_branch) > 1:
-+        if 'subdirectory' in _branch[-1]:
-+            plugin_path = _branch[1].split('subdirectory=')[1].split('&')[0]
++        if 'subdirectory=' in _branch[-1]:
++            plugin_path = _branch[-1].split('subdirectory=')[1].split('&')[0]
 +            name = os.path.basename(plugin_path)
 +
++        if 'egg=' in _branch[-1]:
++            name = _branch[-1].split('egg=')[1].split('&')[0]
++
 +    return name.lower(), branch, plugin_path, url, repo
++
++
++def _pip_requirement_split(requirement):
++    version_descriptors = "(>=|<=|>|<|==|~=|!=)"
++    requirement = requirement.split(';')
++    requirement_info = re.split(r'%s\s*' % version_descriptors, requirement[0])
++    name = requirement_info[0]
++    marker = None
++    if len(requirement) > 1:
++        marker = requirement[1]
++    versions = None
++    if len(requirement_info) > 1:
++        versions = requirement_info[1]
++
++    return name, versions, marker
 +
 +
  class DependencyFileProcessor(object):
      def __init__(self, local_path):
          """Find required files.
-@@ -53,6 +108,7 @@
+@@ -53,13 +128,24 @@
          self.pip = dict()
          self.pip['git_package'] = list()
          self.pip['py_package'] = list()
@@ -334,46 +430,105 @@ index ac1ffb6..004ad31 100644
          self.git_pip_install = 'git+%s@%s'
          self.file_names = self._get_files(path=local_path)
  
-@@ -67,9 +123,10 @@
+         # Process everything simply by calling the method
+-        self._process_files(ext=('yaml', 'yml'))
++        self._process_files()
+ 
+-    def _filter_files(self, file_names, ext):
++    def _py_pkg_extend(self, packages):
++        for pkg in packages:
++            pkg_name = _pip_requirement_split(pkg)[0]
++            for py_pkg in self.pip['py_package']:
++                py_pkg_name = _pip_requirement_split(py_pkg)[0]
++                if pkg_name == py_pkg_name:
++                    self.pip['py_package'].remove(py_pkg)
++        self.pip['py_package'].extend(packages)
++
++    @staticmethod
++    def _filter_files(file_names, ext):
+         """Filter the files and return a sorted list.
+ 
+         :type file_names:
+@@ -67,20 +153,12 @@
          :returns: ``list``
          """
          _file_names = list()
 +        file_name_words = ['/defaults/', '/vars/', '/user_']
++        file_name_words.extend(REQUIREMENTS_FILE_TYPES)
          for file_name in file_names:
              if file_name.endswith(ext):
 -                if '/defaults/' in file_name or '/vars/' in file_name:
 +                if any(i in file_name for i in file_name_words):
                      _file_names.append(file_name)
-                 else:
-                     continue
-@@ -122,6 +179,7 @@
+-                else:
+-                    continue
+-            elif os.path.basename(file_name) in REQUIREMENTS_FILE_TYPES:
+-                with open(file_name, 'rb') as f:
+-                    packages = [
+-                        i.split()[0] for i in f.read().splitlines()
+-                        if i
+-                        if not i.startswith('#')
+-                    ]
+-                    self.pip['py_package'].extend(packages)
+         else:
+             return sorted(_file_names, reverse=True)
  
-             if git_data['fragments']:
-                 package = '%s&%s' % (package, git_data['fragments'])
-+                name = os.path.basename(plugin_path)
- 
-             self.pip['git_package'].append(package)
- 
-@@ -151,7 +209,9 @@
-         package = self.git_pip_install % (
+@@ -115,7 +193,7 @@
+                 git_data['repo'],
+                 '%s#egg=%s&subdirectory=%s' % (
+                     git_data['branch'],
+-                    repo_plugin['package'].strip('/'),
++                    os.path.basename(repo_plugin['package'].strip('/')),
+                     plugin
+                 )
+             )
+@@ -152,6 +230,13 @@
              git_data['repo'], git_data['branch']
          )
--
-+        package = '%s#egg=%s' % (
-+            package, git_pip_link_parse(package)[0].replace('-', '_')
+ 
++        git_data['name'] = loaded_yaml.get(
++            '%s_git_package_name' % var_name.replace('.', '_')
 +        )
++        if not git_data['name']:
++            git_data['name'] = git_pip_link_parse(package)[0].replace('-', '_')
++
++        package = '%s#egg=%s' % (package, git_data['name'])
          git_data['fragments'] = loaded_yaml.get(
              '%s_git_install_fragments' % var_name.replace('.', '_')
          )
-@@ -177,6 +237,7 @@
-             ext=ext
-         )
+@@ -159,7 +244,6 @@
+             package = '%s#%s' % (package, git_data['fragments'])
  
+         self.pip['git_package'].append(package)
+-
+         git_repo_plugins = loaded_yaml.get('%s_repo_plugins' % var_name)
+         if git_repo_plugins:
+             self._check_plugins(
+@@ -167,18 +251,12 @@
+                 git_data=git_data
+             )
+ 
+-    def _process_files(self, ext):
+-        """Process files.
++    def _process_files(self):
++        """Process files."""
+ 
+-        :type ext: ``tuple``
+-        """
+-        file_names = self._filter_files(
+-            file_names=self.file_names,
+-            ext=ext
+-        )
+-
+-        for file_name in file_names:
+-            with open(file_name, 'rb') as f:
 +        role_name = None
-         for file_name in file_names:
-             with open(file_name, 'rb') as f:
++        for file_name in self._filter_files(self.file_names, ('yaml', 'yml')):
++            with open(file_name, 'r') as f:
                  # If there is an exception loading the file continue
-@@ -190,15 +251,35 @@
+                 #  and if the loaded_config is None continue. This makes
+                 #  no bad config gets passed to the rest of the process.
+@@ -190,15 +268,44 @@
                      if not loaded_config:
                          continue
  
@@ -381,17 +536,16 @@ index ac1ffb6..004ad31 100644
 +                        _role_name = file_name.split('roles%s' % os.sep)[-1]
 +                        role_name = _role_name.split(os.sep)[0]
 +
-+
              for key, values in loaded_config.items():
 -                if key.endswith('git_repo'):
 -                    self._process_git(
 -                        loaded_yaml=loaded_config,
 -                        git_item=key
 -                    )
-+                # This conditional is set to ensure we're not processes git repos
-+                #  from the defaults file which may conflict with what is being set
-+                #  in the repo_packages files.
-+                if not '/defaults/main' in file_name:
++                # This conditional is set to ensure we're not processes git
++                #  repos from the defaults file which may conflict with what is
++                #  being set in the repo_packages files.
++                if '/defaults/main' not in file_name:
 +                    if key.endswith('git_repo'):
 +                        self._process_git(
 +                            loaded_yaml=loaded_config,
@@ -399,10 +553,11 @@ index ac1ffb6..004ad31 100644
 +                        )
  
                  if [i for i in BUILT_IN_PIP_PACKAGE_VARS if i in key]:
-                     self.pip['py_package'].extend(values)
+-                    self.pip['py_package'].extend(values)
++                    self._py_pkg_extend(values)
 +
 +                    if role_name:
-+                        if not role_name in self.pip['role_packages']:
++                        if role_name not in self.pip['role_packages']:
 +                            self.pip['role_packages'][role_name] = values
 +                        else:
 +                            self.pip['role_packages'][role_name].extend(values)
@@ -411,10 +566,20 @@ index ac1ffb6..004ad31 100644
 +                                    self.pip['role_packages'][role_name]
 +                                )
 +                            )
++
++        for file_name in self._filter_files(self.file_names, 'txt'):
++            if os.path.basename(file_name) in REQUIREMENTS_FILE_TYPES:
++                with open(file_name, 'r') as f:
++                    packages = [
++                        i.split()[0] for i in f.read().splitlines()
++                        if i
++                        if not i.startswith('#')
++                    ]
++                    self._py_pkg_extend(packages)
  
  
  def _abs_path(path):
-@@ -231,8 +312,14 @@
+@@ -231,8 +338,14 @@
          if isinstance(terms, basestring):
              terms = [terms]
  
@@ -430,7 +595,7 @@ index ac1ffb6..004ad31 100644
              try:
                  dfp = DependencyFileProcessor(
                      local_path=_abs_path(str(term))
-@@ -247,27 +334,55 @@
+@@ -247,27 +360,54 @@
                          traceback.format_exc()
                      )
                  )
@@ -503,7 +668,6 @@ index ac1ffb6..004ad31 100644
 +    import sys
 +    import json
 +    print(json.dumps(LookupModule().run(terms=sys.argv[1:]), indent=4))
-+
 diff --git a/playbooks/repo-build.yml b/playbooks/repo-build.yml
 index 0858b09..e11019e 100644
 --- a/playbooks/repo-build.yml
@@ -1078,7 +1242,7 @@ index 0000000..5252a47
 +        - { role: "repo_build", tags: [ "repo-build" ] }
 diff --git a/playbooks/roles/repo_build/defaults/main.yml b/playbooks/roles/repo_build/defaults/main.yml
 new file mode 100644
-index 0000000..2a866c8
+index 0000000..3dece84
 --- /dev/null
 +++ b/playbooks/roles/repo_build/defaults/main.yml
 @@ -0,0 +1,48 @@
@@ -1098,7 +1262,7 @@ index 0000000..2a866c8
 +# limitations under the License.
 +
 +# This is disabled in Kilo due to the upper-constraints file not be fully backed in kilo
-+repo_build_use_upper_constraints: false 
++repo_build_use_upper_constraints: false
 +
 +repo_build_service_user_name: "nginx"
 +
@@ -1477,10 +1641,10 @@ index 0000000..4f3ccfe
 +    - repo-build-constraints-file
 diff --git a/playbooks/roles/repo_build/tasks/repo_set_facts.yml b/playbooks/roles/repo_build/tasks/repo_set_facts.yml
 new file mode 100644
-index 0000000..fc7e5cd
+index 0000000..6c523f2
 --- /dev/null
 +++ b/playbooks/roles/repo_build/tasks/repo_set_facts.yml
-@@ -0,0 +1,64 @@
+@@ -0,0 +1,72 @@
 +---
 +# Copyright 2015, Rackspace US, Inc.
 +#
@@ -1540,11 +1704,20 @@ index 0000000..fc7e5cd
 +
 +- name: Set upper constraints
 +  set_fact:
-+    upper_constraints: "{{ slurp_upper_constraints.content | b64decode | splitlines }}"
++    _upper_constraints: "{{ slurp_upper_constraints.content | b64decode | splitlines }}"
 +  when: slurp_upper_constraints | success
 +  tags:
 +    - repo-set-constraints
 +    - repo-build-constraints-file
++
++- name: Set upper constraints
++  set_fact:
++    upper_constraints: "{{ _upper_constraints | pip_constraint_update(local_packages.results.0.item.packages) }}"
++  when: slurp_upper_constraints | success
++  tags:
++    - repo-set-constraints
++    - repo-build-constraints-file
+\ No newline at end of file
 diff --git a/playbooks/roles/repo_build/tasks/repo_venv.yml b/playbooks/roles/repo_build/tasks/repo_venv.yml
 new file mode 100644
 index 0000000..12cd64b
@@ -1803,7 +1976,7 @@ index 0000000..9183186
 \ No newline at end of file
 diff --git a/playbooks/roles/repo_build/templates/requirements_constraints.txt.j2 b/playbooks/roles/repo_build/templates/requirements_constraints.txt.j2
 new file mode 100644
-index 0000000..11a75c6
+index 0000000..853a19d
 --- /dev/null
 +++ b/playbooks/roles/repo_build/templates/requirements_constraints.txt.j2
 @@ -0,0 +1,21 @@
@@ -1821,10 +1994,10 @@ index 0000000..11a75c6
 +{%- set constraint_name = constraint_split[0] %}
 +{%- set constraint_name_normalized = constraint_name | replace('-', '_') | lower %}
 +{% if constraint_name_normalized not in constraint_pkgs %}
-+{% if repo_build_use_upper_constraints | bool %}
++{% if repo_build_use_upper_constraints | bool and (constraint_split | length) > 1 %}
 +{{ constraint_split[0] | replace('-', '_') | lower }}<={{ constraint_split[1] }}
-+{% else %}
-+# {{ constraint_split[0] | replace('-', '_') | lower }}<={{ constraint_split[1] }}
++{% elif (constraint_split | length) == 1 %}
++{{ constraint_item }}
 +{% endif %}
 +{% endif %}
 +{% endfor %}
