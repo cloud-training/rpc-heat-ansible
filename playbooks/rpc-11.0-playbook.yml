@@ -477,6 +477,7 @@
       environment:
         DEPLOY_HAPROXY: "{{ ansible_local.deploy_environment.option.deploy_haproxy }}"
         DEPLOY_MAAS: "{{ ansible_local.deploy_environment.option.deploy_maas }}"
+        FORKS: "10"
 
 - name: Restart MaaS
   hosts: all
