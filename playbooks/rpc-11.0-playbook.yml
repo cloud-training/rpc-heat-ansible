@@ -349,6 +349,7 @@
         - bug-wait-for-container-ssh.patch
         - bug-492.patch
         - bug-556.patch
+        - bug-558.patch
         - repo-build.patch
 
     - name: Bugs - Apply Patches (OpenStack Ansible)
@@ -367,6 +368,7 @@
       with_items:
         - bug-492.patch
         - bug-556.patch
+        - bug-558.patch
 
     - name: Create /etc/openstack_deploy
       file: dest=/etc/openstack_deploy state=directory
