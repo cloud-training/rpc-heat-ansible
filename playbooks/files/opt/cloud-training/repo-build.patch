@@ -1,4 +1,4 @@
-From e622fd6bc8d077936c0b221803d310cd9aa37420 Mon Sep 17 00:00:00 2001
+From 136d44f6bb4027ecb9a5e202c62af8005a289230 Mon Sep 17 00:00:00 2001
 From: Kevin Carter <kevin.carter@rackspace.com>
 Date: Wed, 11 Nov 2015 10:32:03 -0600
 Subject: [PATCH] Functional backport for the new repo-build process
@@ -310,7 +310,7 @@ index e532d14..76ce8a4 100644
 +            'git_link_parse_name': git_link_parse_name
          }
 diff --git a/playbooks/plugins/lookups/py_pkgs.py b/playbooks/plugins/lookups/py_pkgs.py
-index ac1ffb6..8c95cf2 100644
+index ac1ffb6..5c37788 100644
 --- a/playbooks/plugins/lookups/py_pkgs.py
 +++ b/playbooks/plugins/lookups/py_pkgs.py
 @@ -15,6 +15,7 @@
@@ -339,7 +339,7 @@ index ac1ffb6..8c95cf2 100644
  ]
  
  
-@@ -43,6 +42,82 @@
+@@ -43,6 +42,85 @@
  ]
  
  
@@ -347,12 +347,13 @@ index ac1ffb6..8c95cf2 100644
 +    """Return a tuple containing the parts of a git repository.
 +
 +    Example parsing a standard git repo:
-+      >>> git_pip_link_parse('git+https://github.com/username/repo@tag')
-+      ('repo',
++      >>> git_pip_link_parse('git+https://github.com/username/repo-name@tag')
++      ('repo-name',
 +       'tag',
 +       None,
 +       'https://github.com/username/repo',
-+       'git+https://github.com/username/repo@tag')
++       'git+https://github.com/username/repo@tag',
++       'repo_name')
 +
 +    Example parsing a git repo that uses an installable from a subdirectory:
 +      >>> git_pip_link_parse(
@@ -364,7 +365,8 @@ index ac1ffb6..8c95cf2 100644
 +       'remote_path/plugin.name',
 +       'https://github.com/username/repo',
 +       'git+https://github.com/username/repo@tag#egg=plugin.name&'
-+       'subdirectory=remote_path/plugin.name')
++       'subdirectory=remote_path/plugin.name',
++       'plugin.name')
 +
 +    :param repo: git repo string to parse.
 +    :type repo: ``str``
@@ -387,7 +389,7 @@ index ac1ffb6..8c95cf2 100644
 +        url = git_branch_sha[0]
 +        branch = 'master'
 +
-+    name = os.path.basename(url.rstrip('/'))
++    egg_name = name = os.path.basename(url.rstrip('/'))
 +    _branch = branch.split('#')
 +    branch = _branch[0]
 +
@@ -399,9 +401,10 @@ index ac1ffb6..8c95cf2 100644
 +            name = os.path.basename(plugin_path)
 +
 +        if 'egg=' in _branch[-1]:
-+            name = _branch[-1].split('egg=')[1].split('&')[0]
++            egg_name = _branch[-1].split('egg=')[1].split('&')[0]
++            egg_name = egg_name.replace('-', '_')
 +
-+    return name.lower(), branch, plugin_path, url, repo
++    return name.lower(), branch, plugin_path, url, repo, egg_name
 +
 +
 +def _pip_requirement_split(requirement):
@@ -422,7 +425,7 @@ index ac1ffb6..8c95cf2 100644
  class DependencyFileProcessor(object):
      def __init__(self, local_path):
          """Find required files.
-@@ -53,13 +128,24 @@
+@@ -53,13 +131,24 @@
          self.pip = dict()
          self.pip['git_package'] = list()
          self.pip['py_package'] = list()
@@ -449,7 +452,7 @@ index ac1ffb6..8c95cf2 100644
          """Filter the files and return a sorted list.
  
          :type file_names:
-@@ -67,20 +153,12 @@
+@@ -67,20 +156,12 @@
          :returns: ``list``
          """
          _file_names = list()
@@ -473,30 +476,45 @@ index ac1ffb6..8c95cf2 100644
          else:
              return sorted(_file_names, reverse=True)
  
-@@ -115,7 +193,7 @@
+@@ -106,16 +187,19 @@
+         :type git_data: ``dict``
+         """
+         for repo_plugin in git_repo_plugins:
++            strip_plugin_path = repo_plugin['package'].lstrip('/')
+             plugin = '%s/%s' % (
+                 repo_plugin['path'].strip('/'),
+-                repo_plugin['package'].lstrip('/')
++                strip_plugin_path
+             )
+ 
++            plugin_egg_name = os.path.basename(strip_plugin_path)
++            plugin_egg_name = plugin_egg_name.replace('-', '_')
+             package = self.git_pip_install % (
                  git_data['repo'],
                  '%s#egg=%s&subdirectory=%s' % (
                      git_data['branch'],
 -                    repo_plugin['package'].strip('/'),
-+                    os.path.basename(repo_plugin['package'].strip('/')),
++                    plugin_egg_name,
                      plugin
                  )
              )
-@@ -152,6 +230,13 @@
+@@ -152,6 +236,15 @@
              git_data['repo'], git_data['branch']
          )
  
 +        git_data['name'] = loaded_yaml.get(
 +            '%s_git_package_name' % var_name.replace('.', '_')
 +        )
-+        if not git_data['name']:
-+            git_data['name'] = git_pip_link_parse(package)[0].replace('-', '_')
 +
-+        package = '%s#egg=%s' % (package, git_data['name'])
++        parsed_git_pkg = git_pip_link_parse(package)
++        if not git_data['name']:
++            git_data['name'] = parsed_git_pkg[0]
++
++        package = '%s#egg=%s' % (package, parsed_git_pkg[-1])
          git_data['fragments'] = loaded_yaml.get(
              '%s_git_install_fragments' % var_name.replace('.', '_')
          )
-@@ -159,7 +244,6 @@
+@@ -159,7 +252,6 @@
              package = '%s#%s' % (package, git_data['fragments'])
  
          self.pip['git_package'].append(package)
@@ -504,7 +522,7 @@ index ac1ffb6..8c95cf2 100644
          git_repo_plugins = loaded_yaml.get('%s_repo_plugins' % var_name)
          if git_repo_plugins:
              self._check_plugins(
-@@ -167,18 +251,12 @@
+@@ -167,18 +259,12 @@
                  git_data=git_data
              )
  
@@ -528,7 +546,7 @@ index ac1ffb6..8c95cf2 100644
                  # If there is an exception loading the file continue
                  #  and if the loaded_config is None continue. This makes
                  #  no bad config gets passed to the rest of the process.
-@@ -190,15 +268,44 @@
+@@ -190,15 +276,44 @@
                      if not loaded_config:
                          continue
  
@@ -579,7 +597,7 @@ index ac1ffb6..8c95cf2 100644
  
  
  def _abs_path(path):
-@@ -231,8 +338,14 @@
+@@ -231,8 +346,14 @@
          if isinstance(terms, basestring):
              terms = [terms]
  
@@ -595,7 +613,7 @@ index ac1ffb6..8c95cf2 100644
              try:
                  dfp = DependencyFileProcessor(
                      local_path=_abs_path(str(term))
-@@ -247,27 +360,54 @@
+@@ -247,27 +368,61 @@
                          traceback.format_exc()
                      )
                  )
@@ -638,7 +656,14 @@ index ac1ffb6..8c95cf2 100644
  
 -                return_data['remote_packages'] = ' '.join(
 -                    ['"%s"' % i for i in set(return_data['remote_packages'])]
-+                keys = ['name', 'version', 'fragment', 'url', 'original']
++                keys = [
++                    'name',
++                    'version',
++                    'fragment',
++                    'url',
++                    'original',
++                    'egg_name'
++                ]
 +                remote_pkg_parts = [
 +                    dict(
 +                        zip(
