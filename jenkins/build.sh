@@ -12,6 +12,8 @@ if [[ "$RPC_RELEASE" == "juno" ]]; then
     HEAT_TEMPLATE_VERSION="10.1"
 elif [[ "$RPC_RELEASE" == "kilo" ]]; then
     HEAT_TEMPLATE_VERSION="11.0"
+elif [[ "$RPC_RELEASE" == "master" ]]; then
+    HEAT_TEMPLATE_VERSION="11.1"
 else
     HEAT_TEMPLATE_VERSION=`echo $RPC_RELEASE | sed 's/^r//g' | awk -F '[\.]' '{ print $1 "." $2 }'`
 fi
