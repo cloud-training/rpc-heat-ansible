@@ -10,7 +10,7 @@ parameters:
   rpc_release:
     type: string
     label: RPC Release
-    default: '10.1.16'
+    default: '10.1.17'
   rpc_heat_ansible_release:
     type: string
     label: RPC Heat Ansible Release
