@@ -342,31 +342,17 @@
 
     - name: Bugs - Fetch Patches
       copy: src=files/opt/cloud-training/{{ item }} dest=/opt/cloud-training/{{ item }}
-      with_items:
-        - bug-1508517.patch
-        - bug-1513668.patch
-        - bug-1426254.patch
-        - bug-wait-for-container-ssh.patch
-        - bug-492.patch
-        - bug-556.patch
-        - bug-558.patch
+      with_items: []
 
     - name: Bugs - Apply Patches (OpenStack Ansible)
       command: git apply /opt/cloud-training/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible
       ignore_errors: yes
-      with_items:
-        - bug-1508517.patch
-        - bug-1513668.patch
-        - bug-1426254.patch
-        - bug-wait-for-container-ssh.patch
+      with_items: []
 
     - name: Bugs - Apply Patches (RPC OpenStack)
       command: git apply /opt/cloud-training/{{ item }} chdir=/opt/rpc-openstack
       ignore_errors: yes
-      with_items:
-        - bug-492.patch
-        - bug-556.patch
-        - bug-558.patch
+      with_items: []
 
     - name: Create /etc/openstack_deploy
       file: dest=/etc/openstack_deploy state=directory
