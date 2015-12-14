@@ -148,6 +148,14 @@ maas_filesystem_critical_threshold: 90.0
 #    threshold: 90.0
 #  - filesystem: /boot
 #    threshold: 90.0
+rabbitmq_queued_messages_excluding_notifications_threshold: 100
+# queued messages per check period (default period = 60s)
+rabbitmq_queue_growth_rate_threshold: 15
+
+
+# mysql monitoring thresholds
+mysql_connection_critical_threshold: 90.0
+mysql_connection_warning_threshold: 80.0
 
 ## Neutron Options
 neutron_container_mysql_password: {{ heat_stack_password }}
@@ -229,3 +237,11 @@ swift_dispersion_password: {{ heat_stack_password }}
 # a proxy It's important to always specify the scheme as "http://". This is what
 # the underlying python libraries will handle best. This proxy information will be
 # placed both on the hosts and inside the containers.
+
+## Example environment variable setup:
+# proxy_env_url: http://username:pa$$w0rd@10.10.10.9:9000/
+# no_proxy_env: "localhost,127.0.0.1,{% for host in groups['all_containers'] %}{{ hostvars[host]['container_address'] }}{% if not loop.last %},{% endif %}{% endfor %}"
+# global_environment_variables:
+#   HTTP_PROXY: "{{ proxy_env_url }}"
+#   HTTPS_PROXY: "{{ proxy_env_url }}"
+#   NO_PROXY: "{{ no_proxy_env }}"
