@@ -334,7 +334,7 @@
       <feature name='pse'/>
     </model>
 
-    <model name='IvyBridge'>
+    <model name='RackspaceCloud'>
         <feature name='aes'/>
         <feature name='apic'/>
         <!-- <feature name='arat'/> -->
