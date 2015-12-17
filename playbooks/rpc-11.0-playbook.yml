@@ -340,6 +340,9 @@
       command: git clone --recursive https://github.com/rcbops/rpc-openstack -b {{ rpc_release }} chdir=/opt
       ignore_errors: yes
 
+    - name: Create /opt/cloud-training/patches
+      file: dest=/opt/cloud-training/patches state=directory
+
     - name: Bugs - Fetch Patches
       copy: src=files/opt/cloud-training/patches/{{ item }} dest=/opt/cloud-training/patches/{{ item }}
       with_items:
