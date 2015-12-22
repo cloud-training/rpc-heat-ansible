@@ -54,12 +54,22 @@ resources:
       save_private_key: True
 
   network:
-    type: Rackspace::Cloud::Network
+    type: OS::Neutron::Net
     properties:
-      cidr: 192.168.2.0/24
-      label:
+      name:
         str_replace:
           template: "%heat_stack_prefix%-rpc-network"
+          params:
+            "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
+
+  subnet:
+    type: OS::Neutron::Subnet
+    properties:
+      network: { get_resource: network }
+      cidr: 192.168.2.0/24
+      name:
+        str_replace:
+          template: "%heat_stack_prefix%-rpc-subnet"
           params:
             "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
 
