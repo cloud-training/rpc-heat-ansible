@@ -74,6 +74,9 @@ shared-infra_hosts:
     ip: 172.29.236.{{ hostvars[ host ].node_id }}
     affinity:
       rabbit_mq_container: 0
+{% if groups.infra|length == 1 %}
+      galera_container: 2
+{% endif %}
 {% endfor %}
 {% endif %}
 
