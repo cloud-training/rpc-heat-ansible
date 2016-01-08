@@ -11,7 +11,7 @@ $PUBLIC_CLOUD_CREDENTIALS
 if [[ "$RPC_RELEASE" == "juno" ]]; then
     HEAT_TEMPLATE_VERSION="10.1"
 elif [[ "$RPC_RELEASE" == "kilo" ]]; then
-    HEAT_TEMPLATE_VERSION="11.0"
+    HEAT_TEMPLATE_VERSION="11.1"
 elif [[ "$RPC_RELEASE" == "master" ]]; then
     HEAT_TEMPLATE_VERSION="11.1"
 else
