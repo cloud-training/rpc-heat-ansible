@@ -334,6 +334,20 @@
     - name: Clone RPC Repo
       git: repo=https://github.com/openstack/openstack-ansible.git dest=/opt/openstack-ansible version="{{ rpc_release }}"
 
+    - name: Create /opt/cloud-training/patches
+      file: dest=/opt/cloud-training/patches state=directory
+
+    - name: Bugs - Fetch Patches
+      copy: src=files/opt/cloud-training/patches/{{ item }} dest=/opt/cloud-training/patches/{{ item }}
+      with_items:
+        - bug-1522897.patch
+
+    - name: Bugs - Apply Patches (OpenStack Ansible)
+      command: git apply /opt/cloud-training/patches/{{ item }} chdir=/opt/openstack-ansible
+      ignore_errors: yes
+      with_items:
+        - bug-1522897.patch
+
     - name: Get Modern PIP
       command: curl -O http://mirror.rackspace.com/rackspaceprivatecloud/downloads/get-pip.py chdir=/opt creates=/opt/get-pip.py
       changed_when: False
