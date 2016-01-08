@@ -130,7 +130,7 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: http://dfw.mirror.rackspace.com/ubuntu/
+        apt_mirror: https://dfw.mirror.rackspace.com/ubuntu/
         packages:
           - linux-image-extra-virtual
           - tmux
@@ -245,7 +245,7 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: http://dfw.mirror.rackspace.com/ubuntu/
+        apt_mirror: https://dfw.mirror.rackspace.com/ubuntu/
         packages:
           - tmux
           - htop
@@ -264,7 +264,7 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: http://dfw.mirror.rackspace.com/ubuntu/
+        apt_mirror: https://dfw.mirror.rackspace.com/ubuntu/
         packages:
           - tmux
           - htop
@@ -283,7 +283,7 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: http://dfw.mirror.rackspace.com/ubuntu/
+        apt_mirror: https://dfw.mirror.rackspace.com/ubuntu/
         packages:
           - tmux
           - htop
@@ -302,7 +302,7 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: http://dfw.mirror.rackspace.com/ubuntu/
+        apt_mirror: https://dfw.mirror.rackspace.com/ubuntu/
         packages:
           - tmux
           - htop
