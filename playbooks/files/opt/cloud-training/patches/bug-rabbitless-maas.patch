@@ -1,0 +1,28 @@
+From 347bee859d4c7be6b4f027fcc166390742f4fa94 Mon Sep 17 00:00:00 2001
+From: Byron McCollum <byron.mccollum@rackspace.com>
+Date: Thu, 7 Jan 2016 20:33:49 -0600
+Subject: [PATCH] Do not create RabbitMQ monitoring user if RabbitMQ is not
+ installed.
+
+This is needed when deploying stand alone Swift, and the RabbitMQ
+affinity is set to 0 to prevent its installation.
+---
+ rpcd/playbooks/roles/rpc_maas/tasks/main.yml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/rpcd/playbooks/roles/rpc_maas/tasks/main.yml b/rpcd/playbooks/roles/rpc_maas/tasks/main.yml
+index 215b06f..f6892fe 100644
+--- a/rpcd/playbooks/roles/rpc_maas/tasks/main.yml
++++ b/rpcd/playbooks/roles/rpc_maas/tasks/main.yml
+@@ -23,7 +23,7 @@
+ 
+ - include: rabbitmq_user.yml
+   when: >
+-    groups['rabbitmq_all']|length > 0 and inventory_hostname == groups['rabbitmq_all'][0]
++    groups['rabbitmq_all'] is defined and groups['rabbitmq_all']|length > 0 and inventory_hostname == groups['rabbitmq_all'][0]
+ 
+ - include: create_my_cnf.yml
+   when: >
+-- 
+2.6.4
+

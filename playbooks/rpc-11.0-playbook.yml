@@ -347,6 +347,7 @@
       copy: src=files/opt/cloud-training/patches/{{ item }} dest=/opt/cloud-training/patches/{{ item }}
       with_items:
         - bug-621.patch
+        - bug-rabbitless-maas.patch
 
     - name: Bugs - Apply Patches (OpenStack Ansible)
       command: git apply /opt/cloud-training/patches/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible
@@ -358,6 +359,7 @@
       ignore_errors: yes
       with_items:
         - bug-621.patch
+        - bug-rabbitless-maas.patch
 
     - name: Create /etc/openstack_deploy
       file: dest=/etc/openstack_deploy state=directory
