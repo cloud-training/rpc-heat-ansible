@@ -160,7 +160,7 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: https://dfw.mirror.rackspace.com/ubuntu/
+        apt_mirror: "https://dfw.mirror.rackspace.com/ubuntu/"
         packages:
           - linux-image-extra-virtual
           - tmux
@@ -275,6 +275,7 @@ resources:
                   "%ansible_tags%": { get_param: "ansible_tags" }
                   "%rpc_heat_ansible_release%": { get_param: "rpc_heat_ansible_release" }
         runcmd:
+          - echo '74.205.112.120    mirror.rackspace.com' >> /etc/hosts
           - /opt/cloud-training/runcmd-bash >> /opt/cloud-training/runcmd-bash.log 2>> /opt/cloud-training/runcmd-bash.err
 
   cloud_config_infra2:
@@ -284,7 +285,7 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: https://dfw.mirror.rackspace.com/ubuntu/
+        apt_mirror: "https://dfw.mirror.rackspace.com/ubuntu/"
         packages:
           - tmux
           - htop
@@ -303,7 +304,7 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: https://dfw.mirror.rackspace.com/ubuntu/
+        apt_mirror: "https://dfw.mirror.rackspace.com/ubuntu/"
         packages:
           - tmux
           - htop
@@ -322,7 +323,7 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: https://dfw.mirror.rackspace.com/ubuntu/
+        apt_mirror: "https://dfw.mirror.rackspace.com/ubuntu/"
         packages:
           - tmux
           - htop
@@ -341,7 +342,7 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: https://dfw.mirror.rackspace.com/ubuntu/
+        apt_mirror: "https://dfw.mirror.rackspace.com/ubuntu/"
         packages:
           - tmux
           - htop
@@ -360,7 +361,7 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: https://dfw.mirror.rackspace.com/ubuntu/
+        apt_mirror: "https://dfw.mirror.rackspace.com/ubuntu/"
         packages:
           - tmux
           - htop
@@ -379,7 +380,7 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: https://dfw.mirror.rackspace.com/ubuntu/
+        apt_mirror: "https://dfw.mirror.rackspace.com/ubuntu/"
         packages:
           - tmux
           - htop
@@ -398,7 +399,7 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: https://dfw.mirror.rackspace.com/ubuntu/
+        apt_mirror: "https://dfw.mirror.rackspace.com/ubuntu/"
         packages:
           - tmux
           - htop
