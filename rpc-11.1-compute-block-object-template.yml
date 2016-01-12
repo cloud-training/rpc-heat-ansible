@@ -273,7 +273,6 @@ resources:
         runcmd:
           - str_replace:
               template: |
-                echo '74.205.112.120    mirror.rackspace.com' >> /etc/hosts
                 %swift_signal_notify% --data-binary '{"status": "SUCCESS"}'
               params:
                 "%swift_signal_notify%": { get_attr: [ swift_signal_handle_logger1, curl_cli ] }
@@ -292,7 +291,6 @@ resources:
         runcmd:
           - str_replace:
               template: |
-                echo '74.205.112.120    mirror.rackspace.com' >> /etc/hosts
                 %swift_signal_notify% --data-binary '{"status": "SUCCESS"}'
               params:
                 "%swift_signal_notify%": { get_attr: [ swift_signal_handle_compute1, curl_cli ] }
@@ -311,7 +309,6 @@ resources:
         runcmd:
           - str_replace:
               template: |
-                echo '74.205.112.120    mirror.rackspace.com' >> /etc/hosts
                 %swift_signal_notify% --data-binary '{"status": "SUCCESS"}'
               params:
                 "%swift_signal_notify%": { get_attr: [ swift_signal_handle_block1, curl_cli ] }
@@ -330,7 +327,6 @@ resources:
         runcmd:
           - str_replace:
               template: |
-                echo '74.205.112.120    mirror.rackspace.com' >> /etc/hosts
                 %swift_signal_notify% --data-binary '{"status": "SUCCESS"}'
               params:
                 "%swift_signal_notify%": { get_attr: [ swift_signal_handle_object1, curl_cli ] }
@@ -349,7 +345,6 @@ resources:
         runcmd:
           - str_replace:
               template: |
-                echo '74.205.112.120    mirror.rackspace.com' >> /etc/hosts
                 %swift_signal_notify% --data-binary '{"status": "SUCCESS"}'
               params:
                 "%swift_signal_notify%": { get_attr: [ swift_signal_handle_ceph1, curl_cli ] }
