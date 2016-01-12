@@ -1,16 +1,6 @@
 ---
-# This playbook installs Rackspace Private Cloud v11
+# This playbook installs Rackspace Private Cloud v11.1
 
-
-# # Available Tags
-# nothing            - Do Nothing
-# prepare            - Prepare Environment
-# compute            - Install Compute v11.0
-# block              - Install Block v11.0
-# ceph               - Install Ceph v11.1
-# object             - Install Object v11.0
-# object_stand_alone - Install Stand Alone Object v11.0
-# maas               - Install MaaS v11.0
 
 - name: Do Nothing
   hosts: all

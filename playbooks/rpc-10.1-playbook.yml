@@ -2,14 +2,6 @@
 # This playbook installs Rackspace Private Cloud v10.1
 
 
-# # Available Tags
-# nothing - Do Nothing
-# prepare - Prepare Environment
-# compute - Install Compute v10.1
-# block   - Install Block v10.1
-# object  - Install Object v10.1
-# maas    - Install MaaS v10.1
-
 - name: Do Nothing
   hosts: all
   tags:
