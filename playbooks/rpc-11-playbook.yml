@@ -358,7 +358,7 @@
       with_items:
         - bug-621.patch
         - bug-675.patch
-        -  bug-rabbitless-maas.patch
+        - bug-rabbitless-maas.patch
         - ceph-448.patch
 
     - name: Bugs - Apply Patches (OpenStack Ansible)
