@@ -2,7 +2,7 @@
 
 `heat stack-create -f rpc-11.1-*-template.yml -t 240 -P ansible_tags=<comma-separated-ansible-tags> [-e rpc-11.1-environment.yml] <stack-name>`
 
-### Environment ###
+### Environment
 
 Some settings should be private, and may be passed in through the use of a Heat Environment file. Below is an example of passing in Rackspace Cloud credentials for MaaS configuration.
 
@@ -17,7 +17,7 @@ parameters:
   rackspace_cloud_api_key: SomeAPIKey
 ```
 
-### Available Ansible Tags ###
+### Available Ansible Tags
 
 * `nothing`            - Do Nothing
 * `prepare`            - Prepare Environment (Default, Assumed If Using Any Below)
@@ -28,7 +28,7 @@ parameters:
 * `object_stand_alone` - Install Stand Alone Object (v11.0+ Only)
 * `ceph`               - Install Ceph MON & OSD (v11.1+ Only)
 
-### Sample Deployments v11.1 ###
+### Sample Deployments v11.1
 
 #### RPC v11.1 Full + MaaS
 
@@ -46,9 +46,7 @@ parameters:
 
 `heat stack-create -f rpc-11.1-object-template.yml -t 240 -P ansible_tags=object_stand_alone -e rpc-11.1-environment.yml <stack-name>`
 
-
-
-### Sample Deployments v11.0 ###
+### Sample Deployments v11.0
 
 #### RPC v11.0 Full + MaaS
 
@@ -66,8 +64,7 @@ parameters:
 
 `heat stack-create -f rpc-11.0-object-template.yml -t 240 -P ansible_tags=object_stand_alone -e rpc-11.0-environment.yml <stack-name>`
 
-
-### Sample Deployments v10.1 ###
+### Sample Deployments v10.1
 
 #### RPC v10.1 Full (HA) + MaaS
 
