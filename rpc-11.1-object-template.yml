@@ -17,7 +17,7 @@ parameters:
     default: 'master'
   rpc_heat_ansible_repo:
     type: string
-    label: RPC Heat URL to access Git repository
+    label: RPC Heat Ansible Repo
     default : 'https://github.com/cloud-training/rpc-heat-ansible.git'
   rackspace_cloud_auth_url:
     type: string
@@ -232,7 +232,9 @@ resources:
                   # END - Terrible Chicken Egg Hack
                   git clone %rpc_heat_ansible_repo% -b %rpc_heat_ansible_release% || exit_failure "Git Clone Failure"
                   cd /opt/cloud-training/rpc-heat-ansible/playbooks
-                  git remote add upstream https://github.com/cloud-training/rpc-heat-ansible.git
+                  if [[ "%rpc_heat_ansible_repo%" != "https://github.com/cloud-training/rpc-heat-ansible.git" ]]; then
+                    git remote add upstream https://github.com/cloud-training/rpc-heat-ansible.git
+                  fi
                   ansible-playbook rpc-11.1-playbook.yml -v --tags %ansible_tags% || exit_failure "Ansible Playbook Run Failure"
                   exit_success
                 params:

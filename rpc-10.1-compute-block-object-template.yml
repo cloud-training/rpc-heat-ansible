@@ -15,6 +15,10 @@ parameters:
     type: string
     label: RPC Heat Ansible Release
     default: 'master'
+  rpc_heat_ansible_repo:
+    type: string
+    label: RPC Heat Ansible Repo
+    default : 'https://github.com/cloud-training/rpc-heat-ansible.git'
   rackspace_cloud_auth_url:
     type: string
     label: Rackspace Cloud Auth URL
@@ -226,14 +230,18 @@ resources:
                   export MY_PUBLIC_IP=`curl -s http://ipv4.icanhazip.com/`
                   sed -i "s/ansible_connection=local/ansible_ssh_host=$MY_PUBLIC_IP/" inventory
                   # END - Terrible Chicken Egg Hack
-                  git clone https://github.com/cloud-training/rpc-heat-ansible.git -b %rpc_heat_ansible_release% || exit_failure "Git Clone Failure"
+                  git clone %rpc_heat_ansible_repo% -b %rpc_heat_ansible_release% || exit_failure "Git Clone Failure"
                   cd /opt/cloud-training/rpc-heat-ansible/playbooks
+                  if [[ "%rpc_heat_ansible_repo%" != "https://github.com/cloud-training/rpc-heat-ansible.git" ]]; then
+                    git remote add upstream https://github.com/cloud-training/rpc-heat-ansible.git
+                  fi
                   ansible-playbook rpc-10.1-playbook.yml -v --tags %ansible_tags% || exit_failure "Ansible Playbook Run Failure"
                   exit_success
                 params:
                   "%swift_signal_notify%": { get_attr: [ swift_signal_handle_infra1, curl_cli ] }
                   "%ansible_tags%": { get_param: "ansible_tags" }
                   "%rpc_heat_ansible_release%": { get_param: "rpc_heat_ansible_release" }
+                  "%rpc_heat_ansible_repo%": { get_param: "rpc_heat_ansible_repo" }
         runcmd:
           - /opt/cloud-training/runcmd-bash >> /opt/cloud-training/runcmd-bash.log 2>> /opt/cloud-training/runcmd-bash.err
 
