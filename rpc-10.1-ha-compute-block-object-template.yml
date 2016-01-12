@@ -160,7 +160,6 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: "https://dfw.mirror.rackspace.com/ubuntu/"
         packages:
           - linux-image-extra-virtual
           - tmux
@@ -258,8 +257,7 @@ resources:
                   function exit_success {
                     %swift_signal_notify% --data-binary '{"status": "SUCCESS"}'
                   }
-                  echo '74.205.112.120    mirror.rackspace.com' >> /etc/hosts
-                  /usr/bin/pip install --upgrade pip || exit_failure "PIP Upgrade PIP Failure"
+                    /usr/bin/pip install --upgrade pip || exit_failure "PIP Upgrade PIP Failure"
                   /usr/local/bin/pip install pip==1.5.6 || exit_failure "PIP Install PIP Failure"
                   /usr/local/bin/pip install ansible==1.6.10 || exit_failure "PIP Install Ansible Failure"
                   cd /opt/cloud-training
@@ -285,7 +283,6 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: "https://dfw.mirror.rackspace.com/ubuntu/"
         packages:
           - tmux
           - htop
@@ -293,7 +290,6 @@ resources:
         runcmd:
           - str_replace:
               template: |
-                echo '74.205.112.120    mirror.rackspace.com' >> /etc/hosts
                 %swift_signal_notify% --data-binary '{"status": "SUCCESS"}'
               params:
                 "%swift_signal_notify%": { get_attr: [ swift_signal_handle_infra2, curl_cli ] }
@@ -305,7 +301,6 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: "https://dfw.mirror.rackspace.com/ubuntu/"
         packages:
           - tmux
           - htop
@@ -313,7 +308,6 @@ resources:
         runcmd:
           - str_replace:
               template: |
-                echo '74.205.112.120    mirror.rackspace.com' >> /etc/hosts
                 %swift_signal_notify% --data-binary '{"status": "SUCCESS"}'
               params:
                 "%swift_signal_notify%": { get_attr: [ swift_signal_handle_infra3, curl_cli ] }
@@ -325,7 +319,6 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: "https://dfw.mirror.rackspace.com/ubuntu/"
         packages:
           - tmux
           - htop
@@ -333,7 +326,6 @@ resources:
         runcmd:
           - str_replace:
               template: |
-                echo '74.205.112.120    mirror.rackspace.com' >> /etc/hosts
                 %swift_signal_notify% --data-binary '{"status": "SUCCESS"}'
               params:
                 "%swift_signal_notify%": { get_attr: [ swift_signal_handle_logger1, curl_cli ] }
@@ -345,7 +337,6 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: "https://dfw.mirror.rackspace.com/ubuntu/"
         packages:
           - tmux
           - htop
@@ -353,7 +344,6 @@ resources:
         runcmd:
           - str_replace:
               template: |
-                echo '74.205.112.120    mirror.rackspace.com' >> /etc/hosts
                 %swift_signal_notify% --data-binary '{"status": "SUCCESS"}'
               params:
                 "%swift_signal_notify%": { get_attr: [ swift_signal_handle_compute1, curl_cli ] }
@@ -365,7 +355,6 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: "https://dfw.mirror.rackspace.com/ubuntu/"
         packages:
           - tmux
           - htop
@@ -373,7 +362,6 @@ resources:
         runcmd:
           - str_replace:
               template: |
-                echo '74.205.112.120    mirror.rackspace.com' >> /etc/hosts
                 %swift_signal_notify% --data-binary '{"status": "SUCCESS"}'
               params:
                 "%swift_signal_notify%": { get_attr: [ swift_signal_handle_compute2, curl_cli ] }
@@ -385,7 +373,6 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: "https://dfw.mirror.rackspace.com/ubuntu/"
         packages:
           - tmux
           - htop
@@ -393,7 +380,6 @@ resources:
         runcmd:
           - str_replace:
               template: |
-                echo '74.205.112.120    mirror.rackspace.com' >> /etc/hosts
                 %swift_signal_notify% --data-binary '{"status": "SUCCESS"}'
               params:
                 "%swift_signal_notify%": { get_attr: [ swift_signal_handle_block1, curl_cli ] }
@@ -405,7 +391,6 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: "https://dfw.mirror.rackspace.com/ubuntu/"
         packages:
           - tmux
           - htop
@@ -413,7 +398,6 @@ resources:
         runcmd:
           - str_replace:
               template: |
-                echo '74.205.112.120    mirror.rackspace.com' >> /etc/hosts
                 %swift_signal_notify% --data-binary '{"status": "SUCCESS"}'
               params:
                 "%swift_signal_notify%": { get_attr: [ swift_signal_handle_object1, curl_cli ] }
