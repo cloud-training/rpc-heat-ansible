@@ -80,4 +80,4 @@ parameters:
 
 #### RPC v10.1 Full
 
-`peat stack-create -f rpc-10.1-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,object -e rpc-10.1-environment.yml <stack-name>`
+`heat stack-create -f rpc-10.1-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,object -e rpc-10.1-environment.yml <stack-name>`
