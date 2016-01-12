@@ -224,7 +224,7 @@
       when: inventory_hostname not in groups['ceph']
 
     - name: Create Logical Volume Groups
-      lvg: vg={{ item.vg }} pvs={{ item.pvs }} state=present
+      lvg: vg={{ item.vg }} pvs={{ item.pvs }} state=present vg_options=''
       with_items:
         - vg: lxc
           pvs: /dev/xvdz1
