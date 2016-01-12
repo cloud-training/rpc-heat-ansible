@@ -36,7 +36,7 @@ parameters:
 
 #### RPC v11.1 Full
 
-`heat stack-create -f rpc-11.1-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,ceph,object -e rpc-11.1-environment.yml <stack-name>`
+`heat stack-create -f rpc-11.1-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,ceph,object <stack-name>`
 
 #### RPC v11.1 Standalone Swift + MaaS
 
@@ -44,7 +44,7 @@ parameters:
 
 #### RPC v11.1 Standalone Swift
 
-`heat stack-create -f rpc-11.1-object-template.yml -t 240 -P ansible_tags=object_stand_alone -e rpc-11.1-environment.yml <stack-name>`
+`heat stack-create -f rpc-11.1-object-template.yml -t 240 -P ansible_tags=object_stand_alone <stack-name>`
 
 ### Sample Deployments v11.0
 
@@ -54,7 +54,7 @@ parameters:
 
 #### RPC v11.0 Full
 
-`heat stack-create -f rpc-11.0-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,object -e rpc-11.0-environment.yml <stack-name>`
+`heat stack-create -f rpc-11.0-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,object <stack-name>`
 
 #### RPC v11.0 Standalone Swift + MaaS
 
@@ -62,7 +62,7 @@ parameters:
 
 #### RPC v11.0 Standalone Swift
 
-`heat stack-create -f rpc-11.0-object-template.yml -t 240 -P ansible_tags=object_stand_alone -e rpc-11.0-environment.yml <stack-name>`
+`heat stack-create -f rpc-11.0-object-template.yml -t 240 -P ansible_tags=object_stand_alone <stack-name>`
 
 ### Sample Deployments v10.1
 
@@ -76,8 +76,8 @@ parameters:
 
 #### RPC v10.1 Full (HA)
 
-`heat stack-create -f rpc-10.1-ha-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,object -e rpc-10.1-environment.yml <stack-name>`
+`heat stack-create -f rpc-10.1-ha-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,object <stack-name>`
 
 #### RPC v10.1 Full
 
-`heat stack-create -f rpc-10.1-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,object -e rpc-10.1-environment.yml <stack-name>`
+`heat stack-create -f rpc-10.1-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,object <stack-name>`
