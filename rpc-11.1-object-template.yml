@@ -135,7 +135,6 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: "https://dfw.mirror.rackspace.com/ubuntu/"
         packages:
           - linux-image-extra-virtual
           - tmux
@@ -224,7 +223,6 @@ resources:
                   function exit_success {
                     %swift_signal_notify% --data-binary '{"status": "SUCCESS"}'
                   }
-                  echo '74.205.112.120    mirror.rackspace.com' >> /etc/hosts
                   /usr/bin/pip install --upgrade pip || exit_failure "PIP Upgrade PIP Failure"
                   /usr/local/bin/pip install pip==1.5.6 || exit_failure "PIP Install PIP Failure"
                   /usr/local/bin/pip install ansible==1.9.2 || exit_failure "PIP Install Ansible Failure"
@@ -253,7 +251,6 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: "https://dfw.mirror.rackspace.com/ubuntu/"
         packages:
           - tmux
           - htop
@@ -273,7 +270,6 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: "https://dfw.mirror.rackspace.com/ubuntu/"
         packages:
           - tmux
           - htop
@@ -313,7 +309,6 @@ resources:
         output:
           all: '| tee -a /var/log/cloud-init-output.log'
         apt_upgrade: true
-        apt_mirror: "https://dfw.mirror.rackspace.com/ubuntu/"
         packages:
           - tmux
           - htop
