@@ -221,14 +221,18 @@
       changed_when: False
       with_items:
         - device: /dev/xvdz1
-      when: inventory_hostname not in groups['ceph']
+      when:
+        - groups['ceph'] is defined
+        - inventory_hostname not in groups['ceph']
 
     - name: Create Logical Volume Groups
       lvg: vg={{ item.vg }} pvs={{ item.pvs }} state=present vg_options=''
       with_items:
         - vg: lxc
           pvs: /dev/xvdz1
-      when: inventory_hostname not in groups['ceph']
+      when:
+        - groups['ceph'] is defined
+        - inventory_hostname not in groups['ceph']
 
     - name: Create /etc/network/interfaces.d/
       file: dest=/etc/network/interfaces.d/ state=directory
