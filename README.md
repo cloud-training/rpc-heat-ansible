@@ -19,16 +19,14 @@ parameters:
 
 ### Available Ansible Tags ###
 
-* `nothing` - Do Nothing
-* `prepare` - Prepare Environment (Default, Assumed If Using Any Below)
-* `compute` - Install Compute
-* `block`   - Install Block
-* `ceph`    - Install Ceph MON & OSD 
-* `object`  - Install Object
+* `nothing`            - Do Nothing
+* `prepare`            - Prepare Environment (Default, Assumed If Using Any Below)
+* `compute`            - Install Compute
+* `block`              - Install Block
+* `object`             - Install Object
+* `maas`               - Install MaaS
 * `object_stand_alone` - Install Stand Alone Object (v11.0+ Only)
-* `maas`    - Install MaaS
-
-
+* `ceph`               - Install Ceph MON & OSD (v11.1+ Only)
 
 ### Sample Deployments v11.1 ###
 
