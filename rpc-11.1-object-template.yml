@@ -233,7 +233,7 @@ resources:
                   git clone %rpc_heat_ansible_repo% -b %rpc_heat_ansible_release% || exit_failure "Git Clone Failure"
                   cd /opt/cloud-training/rpc-heat-ansible/playbooks
                   git remote add upstream https://github.com/cloud-training/rpc-heat-ansible.git
-                  ansible-playbook rpc-11.0-playbook.yml -v --tags %ansible_tags% || exit_failure "Ansible Playbook Run Failure"
+                  ansible-playbook rpc-11.1-playbook.yml -v --tags %ansible_tags% || exit_failure "Ansible Playbook Run Failure"
                   exit_success
                 params:
                   "%swift_signal_notify%": { get_attr: [ swift_signal_handle_infra1, curl_cli ] }
