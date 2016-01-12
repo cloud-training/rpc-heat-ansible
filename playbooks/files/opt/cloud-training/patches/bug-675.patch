@@ -1,0 +1,43 @@
+From 9fbeb5e7e3fdaf5bbced437bb1d635f6cdb6f25f Mon Sep 17 00:00:00 2001
+From: Andy McCrae <andy.mccrae@gmail.com>
+Date: Tue, 15 Dec 2015 15:13:34 +0000
+Subject: [PATCH 572/572] Fix ceph_osd stats template file
+
+The ceph_osd checks/alarms were not returning metrics because of
+additional quoting around the OSD number list.
+
+Additionally, the metric requested should be "osd.x_up" rather than just
+"osd.x".
+
+This patch fixes both those issues.
+
+Fixes-Issue: #675
+---
+ rpcd/playbooks/roles/rpc_maas/templates/ceph_osd_stats.yaml.j2 | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/rpcd/playbooks/roles/rpc_maas/templates/ceph_osd_stats.yaml.j2 b/rpcd/playbooks/roles/rpc_maas/templates/ceph_osd_stats.yaml.j2
+index 92eb94f..a442730 100644
+--- a/rpcd/playbooks/roles/rpc_maas/templates/ceph_osd_stats.yaml.j2
++++ b/rpcd/playbooks/roles/rpc_maas/templates/ceph_osd_stats.yaml.j2
+@@ -5,7 +5,7 @@ period      : "{{ maas_check_period }}"
+ timeout     : "{{ maas_check_timeout }}"
+ details     :
+     file    : ceph_monitoring.py
+-    args    : ["--name", "client.raxmon", "--keyring", "/etc/ceph/ceph.client.raxmon.keyring", "osd", "--osd_ids", "{{ ceph_osd_host['osd_ids'] | join(' ') | quote }}"]
++    args    : ["--name", "client.raxmon", "--keyring", "/etc/ceph/ceph.client.raxmon.keyring", "osd", "--osd_ids", "{{ ceph_osd_host['osd_ids'] | join(' ') }}"]
+ alarms      :
+ {% for osd_id in ceph_osd_host['osd_ids'] %}
+     ceph_warn_osd.{{ osd_id }} :
+@@ -13,7 +13,7 @@ alarms      :
+         notification_plan_id    : "{{ maas_notification_plan }}"
+         criteria                : |
+             :set consecutiveCount={{ maas_alarm_local_consecutive_count }}
+-            if (metric["osd.{{ osd_id }}"] == 0) {
++            if (metric["osd.{{ osd_id }}_up"] == 0) {
+                 return new AlarmStatus(CRITICAL, "Ceph osd error.");
+             }
+ {% endfor %}
+-- 
+2.5.4 (Apple Git-61)
+

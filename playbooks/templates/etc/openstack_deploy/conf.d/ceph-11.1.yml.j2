@@ -1,0 +1,51 @@
+{% if groups.infra|length > 0 %}
+mons_hosts:
+{% for host in groups.infra %}
+  {{ heat_stack_prefix|string }}-{{ host }}:
+      ip: 172.29.236.{{ hostvars[ host ].node_id }}
+      {% if groups.infra|length == 1 %}
+affinity:
+        ceph_mon_container: 3
+      {% endif %}
+{% endfor %}
+{% endif %}
+
+{% if groups.ceph|length > 0 %}
+osds_hosts:
+{% for host in groups.ceph %}
+  {{ heat_stack_prefix|string }}-{{ host }}:
+      ip: 172.29.236.{{ hostvars[ host ].node_id }}
+      container_vars:
+        devices:
+          - /dev/xvdx
+          - /dev/xvdy
+          - /dev/xvdz
+        raw_journal_devices:
+          - /dev/xvdx
+          - /dev/xvdy
+          - /dev/xvdz
+{% endfor %}
+{% endif %}
+
+{% if groups.ceph|length > 0 %}
+storage_hosts:
+{% for host in groups.ceph %}
+  {{ heat_stack_prefix|string }}-{{ host }}:
+      ip: 172.29.236.{{ hostvars[ host ].node_id }}
+      container_vars:
+        cinder_backends:
+          limit_container_types: cinder_volume
+          ceph:
+            volume_driver: cinder.volume.drivers.rbd.RBDDriver
+            rbd_pool: volumes
+            rbd_ceph_conf: /etc/ceph/ceph.conf
+            rbd_flatten_volume_from_snapshot: 'false'
+            rbd_max_clone_depth: 5
+            rbd_store_chunk_size: 4
+            rados_connect_timeout: -1
+            glance_api_version: 2
+            volume_backend_name: ceph
+{% raw %}            rbd_user: "{{ cinder_ceph_client }}"
+            rbd_secret_uuid: "{{ cinder_ceph_client_uuid }}"{% endraw %}
+{% endfor %}
+{% endif %}

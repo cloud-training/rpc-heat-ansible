@@ -1,0 +1,635 @@
+---
+# This playbook installs Rackspace Private Cloud v11
+
+
+# # Available Tags
+# nothing            - Do Nothing
+# prepare            - Prepare Environment
+# compute            - Install Compute v11.0
+# block              - Install Block v11.0
+# ceph               - Install Ceph v11.1
+# object             - Install Object v11.0
+# object_stand_alone - Install Stand Alone Object v11.0
+# maas               - Install MaaS v11.0
+
+- name: Do Nothing
+  hosts: all
+  tags:
+    - nothing
+  tasks:
+    - name: Ping Nodes
+      ping:
+
+- name: Prepare Environment
+  hosts: all
+  tags:
+    - prepare
+    - compute
+    - block
+    - object
+    - object_stand_alone
+    - maas
+    - ceph
+  tasks:
+    - name: Install Packages
+      apt: name={{ item }} state=present
+      with_items:
+        - colordiff
+        - fping
+
+    - name: Add Nodes Hosts File Entries (Long)
+      lineinfile: dest=/etc/hosts line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ heat_stack_prefix|string }}-{{ item }}' insertafter=EOF state=present
+      with_items: groups.all
+
+    - name: Add Nodes Hosts File Entries (Short)
+      lineinfile: dest=/etc/hosts line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }}' insertafter=EOF state=present
+      with_items: groups.all
+
+    - name: Add Nodes Hosts File Entries (Node)
+      lineinfile: dest=/etc/hosts line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ "n%02d"|format(hostvars[item].node_id) }}' insertafter=EOF state=present
+      with_items: groups.all
+
+    - name: Check Connectivity
+      command: fping {{ item }}
+      changed_when: False
+      with_items: groups.all
+
+    - name: Create /etc/ansible/facts.d
+      file: path=/etc/ansible/facts.d state=directory
+
+    - name: Create Dummy Fact
+      ini_file: dest=/etc/ansible/facts.d/dummy.fact section=dummy option=dummy value=dummy
+
+    - name: Gather Facts
+      setup:
+
+    - name: Set Environment Variables and Force Color Prompt
+      lineinfile: dest=/root/.bashrc regexp='{{ item.regexp }}' line='{{ item.line }}' insertafter=EOF state=present
+      with_items:
+        - { regexp: '^(#)?force_color_prompt',      line: 'force_color_prompt=yes' }
+        - { regexp: '^export MY_HEAT_STACK_PREFIX', line: 'export MY_HEAT_STACK_PREFIX={{ heat_stack_prefix|string }}' }
+        - { regexp: '^export MY_NODE_ID',           line: 'export MY_NODE_ID={{ node_id }}' }
+        - { regexp: '^export MY_IP',                line: 'export MY_IP={{ hostvars[inventory_hostname].ansible_eth2.ipv4.address }}' }
+        - { regexp: '^export MY_PRIVATE_IP',        line: 'export MY_PRIVATE_IP={{ hostvars[inventory_hostname].ansible_eth2.ipv4.address }}' }
+        - { regexp: '^export MY_PUBLIC_IP',         line: 'export MY_PUBLIC_IP={{ hostvars[inventory_hostname].ansible_eth0.ipv4.address }}' }
+
+    - name: Create Swap File
+      command: dd if=/dev/zero of=/mnt/4GB.swap bs=1024 count=4194304 creates=/mnt/4GB.swap
+
+    - name: Format Swap File
+      command: mkswap /mnt/4GB.swap
+      changed_when: false
+
+    - name: Check Swap File
+      command: swapon -s
+      register: check_swap_file_result
+      changed_when: false
+
+    - name: Enable Swap File
+      command: swapon /mnt/4GB.swap
+      when: "'/mnt/4GB.swap' not in check_swap_file_result.stdout"
+
+    - name: Add Swap To /etc/fstab
+      lineinfile: dest=/etc/fstab line='/mnt/4GB.swap  none  swap  sw 0  0' insertafter=EOF state=present
+
+    - name: Set Swappiness
+      sysctl: name=vm.swappiness value=90 state=present
+
+    - name: Create Partition Table
+      shell: |
+        parted -s {{ item.device }} mktable {{ item.type }} && partprobe {{ item.device }}
+      when: ansible_local.partitions is not defined
+      with_items:
+        - device: /dev/xvdz
+          type: msdos
+
+    - name: Create Primary Partitions
+      shell: |
+        export PARTITION_START=`parted {{ item.device }} unit GB print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
+        if [[ $PARTITION_START -lt 1 ]]; then
+          PARTITION_START=1
+        fi
+        export PARTITION_END=`awk "BEGIN { print $PARTITION_START + {{ item.size }} }"`
+        parted -s -a optimal {{ item.device }} unit GB mkpart primary ${PARTITION_START} ${PARTITION_END} && partprobe {{ item.device }}
+      when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
+      with_items:
+        - group: infra
+          device: /dev/xvdz
+          size: 160
+        - group: logger
+          device: /dev/xvdz
+          size: 30
+        - group: compute
+          device: /dev/xvdz
+          size: 15
+        - group: block
+          device: /dev/xvdz
+          size: 20
+        - group: block
+          device: /dev/xvdz
+          size: 10
+        - group: object
+          device: /dev/xvdz
+          size: 15
+
+    - name: Create Extended Partitions (Extended Partition Will Consume All Free Space)
+      shell: |
+        export PARTITION_START=`parted {{ item.device }} unit GB print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
+        export PARTITION_END=`parted {{ item.device }} unit GB print free | awk '/Free Space/ { print $2 }' | tail -n 1 | sed 's/GB//'`
+        parted -s -a optimal {{ item.device }} unit GB mkpart extended ${PARTITION_START} ${PARTITION_END} && partprobe {{ item.device }}
+      when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
+      with_items:
+        - group: object
+          device: /dev/xvdz
+
+    - name: Create Logical Partitions
+      shell: |
+        export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
+        export PARTITION_END=`awk "BEGIN { print $PARTITION_START + {{ item.size }} }"`
+        parted -s -a optimal {{ item.device }} unit GB mkpart logical ${PARTITION_START} ${PARTITION_END} && partprobe {{ item.device }}
+      when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
+      with_items:
+        - group: object
+          device: /dev/xvdz
+          size: 20
+        - group: object
+          device: /dev/xvdz
+          size: 20
+        - group: object
+          device: /dev/xvdz
+          size: 20
+        - group: object
+          device: /dev/xvdz
+          size: 20
+        - group: object
+          device: /dev/xvdz
+          size: 20
+
+    - name: Create Partitions Done Fact
+      ini_file: dest=/etc/ansible/facts.d/partitions.fact section=state option=done value=true
+
+- name: Setup Common
+  hosts: all
+  tags:
+    - compute
+    - block
+    - object
+    - object_stand_alone
+    - maas
+    - ceph
+  tasks:
+    - name: Check Connectivity
+      command: fping {{ item }}
+      changed_when: False
+      with_items: groups.all
+
+    - name: Genereate SSH Keypair
+      command: ssh-keygen -f ~/.ssh/id_rsa -t rsa -q -N "" creates=/root/.ssh/id_rsa.pub
+      when: inventory_hostname == groups.infra|first
+
+    - name: Get SSH Public Key
+      command: cat /root/.ssh/id_rsa.pub
+      register: public_key_result
+      changed_when: False
+      when: inventory_hostname == groups.infra|first
+
+    - name: Distribute SSH Public Key
+      authorized_key: user=root key='{{ hostvars[ groups.infra|first ].public_key_result.stdout }}' state=present
+
+    - name: Test SSH Connectivity
+      command: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no {{ item }} hostname
+      changed_when: False
+      when: inventory_hostname == groups.infra|first
+      with_items: groups.all
+
+    - name: Update and Upgrade System
+      apt: upgrade=safe update_cache=yes cache_valid_time=3600
+
+    - name: Install Necessary Base Packages
+      apt: pkg={{ item }} state=present update_cache=yes force=yes
+      with_items:
+        - aptitude
+        - build-essential
+        - git
+        - python-dev
+        - bridge-utils
+        - debootstrap
+        - ifenslave
+        - lsof
+        - lvm2
+        - ntp
+        - ntpdate
+        - openssh-server
+        - sudo
+        - tcpdump
+        - vlan
+
+    - name: Create Physical Volumes
+      command: pvcreate --metadatasize 2048 {{ item.device }}
+      register: pvcreate_result
+      failed_when: pvcreate_result.rc != 0 and pvcreate_result.rc != 5
+      changed_when: False
+      with_items:
+        - device: /dev/xvdz1
+      when: inventory_hostname not in groups['ceph']
+
+    - name: Create Logical Volume Groups
+      lvg: vg={{ item.vg }} pvs={{ item.pvs }} state=present
+      with_items:
+        - vg: lxc
+          pvs: /dev/xvdz1
+      when: inventory_hostname not in groups['ceph']
+
+    - name: Create /etc/network/interfaces.d/
+      file: dest=/etc/network/interfaces.d/ state=directory
+
+    - name: Source /etc/network/interfaces.d/*.cfg
+      lineinfile: dest=/etc/network/interfaces line='source /etc/network/interfaces.d/*.cfg' insertafter=EOF state=present
+
+    - name: Create /etc/network/interfaces.d/rpc.cfg
+      template: src=templates/etc/network/interfaces.d/rpc-11.0.cfg.j2 dest=/etc/network/interfaces.d/rpc.cfg
+
+    - name: Bring Up VXLANs
+      command: ifup vxlan-{{ item }}
+      register: ifup_vxlans_result
+      changed_when: "ifup_vxlans_result.rc == 0 and ifup_vxlans_result.stderr != 'ifup: interface vxlan-{{ item }} already configured'"
+      with_items:
+        - mgmt
+        - vxlan
+        - vlan
+        - storage
+
+    - name: Check Connectivity
+      command: fping 172.29.236.{{ hostvars[item].node_id }}
+      changed_when: False
+      with_items: groups.all
+
+- name: Setup Block
+  hosts: block
+  tags:
+    - block
+  tasks:
+    - name: Create Physical Volumes
+      command: pvcreate --metadatasize 2048 {{ item.device }}
+      register: pvcreate_result
+      failed_when: pvcreate_result.rc != 0 and pvcreate_result.rc != 5
+      changed_when: False
+      with_items:
+        - device: /dev/xvdz2
+
+    - name: Create Logical Volume Groups
+      lvg: vg={{ item.vg }} pvs={{ item.pvs }} state=present vg_options=''
+      with_items:
+        - vg: cinder-volumes
+          pvs: /dev/xvdz2
+
+- name: Setup Object
+  hosts: object
+  tags:
+    - object
+    - object_stand_alone
+  tasks:
+    - name: Install Necessary Base Packages
+      apt: pkg={{ item }} state=present update_cache=yes force=yes
+      with_items:
+        - xfsprogs
+
+    - name: XFS Format Volumes
+      filesystem: dev=/dev/{{ item.device }} fstype=xfs opts='-i size=1024 -L {{ item.label }}'
+      with_items:
+        - device: xvdz5
+          label: swift1
+        - device: xvdz6
+          label: swift2
+        - device: xvdz7
+          label: swift3
+        - device: xvdz8
+          label: swift4
+        - device: xvdz9
+          label: swift5
+
+    - name: Create Root Mount Points Directory
+      file: path=/srv/node state=directory owner=root group=root
+
+    - name: Create Device Mount Point Directories
+      file: path=/srv/node/{{ item }} state=directory
+      with_items:
+        - swift1
+        - swift2
+        - swift3
+        - swift4
+        - swift5
+
+    - name: Mount Device
+      mount: name=/srv/node/{{ item }} src='LABEL={{ item }}' state=mounted fstype=xfs opts='noatime,nodiratime,nobarrier,logbufs=8' passno=0
+      with_items:
+        - swift1
+        - swift2
+        - swift3
+        - swift4
+        - swift5
+
+- name: Configure Common
+  hosts: infra[0]
+  tags:
+    - compute
+    - block
+    - ceph
+    - object
+    - object_stand_alone
+    - maas
+  tasks:
+    - name: Create /opt
+      file: dest=/opt state=directory
+
+    - name: Clone RPC Repo
+      git:
+        repo=https://github.com/rcbops/rpc-openstack
+        dest=/opt/rpc-openstack
+        recursive=yes
+        version={{ rpc_release }}
+      ignore_errors: no
+
+    - name: Create /opt/cloud-training/patches
+      file: dest=/opt/cloud-training/patches state=directory
+
+    - name: Bugs - Fetch Patches
+      copy: src=files/opt/cloud-training/patches/{{ item }} dest=/opt/cloud-training/patches/{{ item }}
+      with_items:
+        - bug-621.patch
+        - bug-675.patch
+        -  bug-rabbitless-maas.patch
+        - ceph-448.patch
+
+    - name: Bugs - Apply Patches (OpenStack Ansible)
+      command: git apply /opt/cloud-training/patches/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible
+      ignore_errors: yes
+      with_items: []
+
+    - name: Bugs - Apply Patches (RPC OpenStack)
+      command: git apply /opt/cloud-training/patches/{{ item }} chdir=/opt/rpc-openstack
+      ignore_errors: yes
+      with_items:
+        - bug-621.patch
+        - bug-675.patch
+        - bug-rabbitless-maas.patch
+
+    - name: Bugs - Apply Patches (Ceph-mon)
+      command: git apply /opt/cloud-training/patches/{{ item }} chdir=/opt/rpc-openstack/rpcd/playbooks/roles/ceph-mon
+      ignore_errors: yes
+      with_items:
+        - ceph-448.patch
+
+    - name: Bugs - Apply Patches (Ceph-osd)
+      command: git apply /opt/cloud-training/patches/{{ item }} chdir=/opt/rpc-openstack/rpcd/playbooks/roles/ceph-osd
+      ignore_errors: yes
+      with_items: []
+
+    - name: Create /etc/openstack_deploy
+      file: dest=/etc/openstack_deploy state=directory
+
+    - name: Copy Default Configuration Files
+      command: cp -R /opt/rpc-openstack/{{ item }}/etc/openstack_deploy /etc
+      when: ansible_local.default_configs is not defined
+      with_items:
+        - openstack-ansible
+        - rpcd
+
+    - name: Copy Default Configuration Files Done Fact
+      ini_file: dest=/etc/ansible/facts.d/default_configs.fact section=state option=done value=true
+
+    - name: Copy OpenStack User Config File
+      template: src=templates/etc/openstack_deploy/openstack_user_config-11.0.yml.j2 dest=/etc/openstack_deploy/openstack_user_config.yml
+
+    - name: Update OpenStack User Variables File
+      lineinfile: dest=/etc/openstack_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
+      with_items:
+        - { regexp: '^(# )?nova_virt_type:', line: 'nova_virt_type: qemu' }
+
+    - name: Run Password Token Generation Script
+      command: ./scripts/pw-token-gen.py --file /etc/openstack_deploy/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible
+      when: ansible_local.pw_token_gen is not defined
+      with_items:
+        - user_secrets.yml
+        - user_extras_secrets.yml
+
+    - name: Run Password Token Generation Script Done Fact
+      ini_file: dest=/etc/ansible/facts.d/pw_token_gen.fact section=state option=done value=true
+
+    - name: Set Deploy Environment HAProxy Fact
+      ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=deploy_haproxy value=yes
+
+- name: Configure Object
+  hosts: infra[0]
+  tags:
+    - object
+  tasks:
+    - name: Update OpenStack User Variables File
+      lineinfile: dest=/etc/openstack_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
+      with_items:
+        - { regexp: '^glance_default_store:', line: 'glance_default_store: swift' }
+
+- name: Configure Stand Alone Object
+  hosts: infra[0]
+  tags:
+    - object_stand_alone
+  tasks:
+    - name: Copy OpenStack User Config File
+      template: src=templates/etc/openstack_deploy/openstack_user_config-11.0-object-stand-alone.yml.j2 dest=/etc/openstack_deploy/openstack_user_config.yml
+
+- name: Configure Object Common
+  hosts: infra[0]
+  tags:
+    - object
+    - object_stand_alone
+  tasks:
+    - name: Copy OpenStack Swift Config File
+      template: src=templates/etc/openstack_deploy/conf.d/swift-11.0.yml.j2 dest=/etc/openstack_deploy/conf.d/swift.yml
+
+    - name: Update OpenStack User Config File
+      lineinfile: "dest=/etc/openstack_deploy/openstack_user_config.yml regexp='         ( #)? - swift_proxy' line='          - swift_proxy' state=present"
+
+- name: Configure Ceph
+  hosts: infra[0]
+  tags:
+    - ceph
+  tasks:
+    - name: Copy Ceph OSA Config File
+      template: src=templates/etc/openstack_deploy/conf.d/ceph-11.1.yml.j2 dest=/etc/openstack_deploy/conf.d/ceph.yml
+
+    - name: Configure Ceph Openstack Settings
+      lineinfile: dest=/etc/openstack_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
+      with_items:
+        - { regexp: '^glance_default_store:', line: 'glance_default_store: rbd' } #Use RBD (Ceph) as glance backend
+        - { regexp: '^nova_libvirt_images_rbd_pool:', line: 'nova_libvirt_images_rbd_pool: vms' } #Switch nova instance storage to the Ceph pool vms
+        - { regexp: '^nova_force_config_drive:', line: 'nova_force_config_drive: False' } #Disable nova config drives so live migration of intances work
+        - { regexp: '^nova_libvirtd_listen_tls:', line: 'nova_libvirtd_listen_tls: 0' } #Disabling TLS for libvirt live migration tunneling
+        - { regexp: '^nova_libvirtd_listen_tcp:', line: 'nova_libvirtd_listen_tcp: 1' } #Enable TCP for libvirt live migration tunneling
+        - { regexp: '^nova_libvirtd_auth_tcp:', line: 'nova_libvirtd_auth_tcp: none' } #Disable authentication for libvirt live migration tunneling
+
+    - name: Configure Ceph Settings
+      lineinfile: dest=/etc/openstack_deploy/user_extras_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
+      with_items:
+        - { regexp: '^monitor_interface:', line: 'monitor_interface: eth1' } #Set ceph monitoring interface to eth1 (inside container) which used br-mgmt
+        - { regexp: '^cluster_network:', line: 'cluster_network: 172.29.236.0/22' } #The cluster network used for monitoring set to br-mgmt
+        - { regexp: '^public_network:', line: 'public_network: 172.29.244.0/22' } #The replication/data network is set to br-storage
+        - { regexp: '^journal_size:', line: 'journal_size: 1000' } #Configure 1G journal size
+        - { regexp: '^raw_multi_journal:', line: 'raw_multi_journal: true' } #Don't use filesystem for OSD journals
+        - { regexp: '^openstack_config:', line: 'openstack_config: true' } #Enabling openstrack support inside the ceph-ansible playbooks
+        - { regexp: '^pool_default_size:', line: 'pool_default_size: 2' } #Create 2 objects upon write
+        - { regexp: '^pool_default_min_size:', line: 'pool_default_min_size: 1' } #Allow writing 1 copy in a degraded state
+        - { regexp: '^pool_default_crush_rule:', line: 'pool_default_crush_rule: 0' } #Set to 1-node cluster, see below
+        - { regexp: '^pool_default_pg_num:', line: 'pool_default_pg_num: 150' } #(100 * OSDs) / pool_default_size. If you plan to extend the cluster use 300 * OSDs ...
+        - { regexp: '^pool_default_pgp_num:', line: 'pool_default_pgp_num: 150' } #Same as pool_default_pg_num
+
+        #pool_default_crush_rule:
+        #0 for a 1-node cluster.
+        #1 for a multi node cluster in a single rack
+        #2 for a multi node, multi chassis cluster with multiple hosts in a chassis
+        #3 for a multi node cluster with hosts across racks, etc
+
+    - name: Set Deploy Environment Ceph Fact
+      ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=deploy_ceph value=yes
+
+- name: Configure MaaS
+  hosts: infra[0]
+  tags:
+    - maas
+  tasks:
+    - name: Update RPC User Variables File
+      lineinfile: dest=/etc/openstack_deploy/user_extras_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
+      with_items:
+        - { regexp: '^rackspace_cloud_auth_url:', line: 'rackspace_cloud_auth_url: {{ rackspace_cloud_auth_url }}' }
+        - { regexp: '^rackspace_cloud_tenant_id:', line: 'rackspace_cloud_tenant_id: {{ rackspace_cloud_tenant_id }}' }
+        - { regexp: '^rackspace_cloud_username:', line: 'rackspace_cloud_username: {{ rackspace_cloud_username }}' }
+        - { regexp: '^rackspace_cloud_password:', line: 'rackspace_cloud_password: {{ rackspace_cloud_password }}' }
+        - { regexp: '^rackspace_cloud_api_key:', line: 'rackspace_cloud_api_key: {{ rackspace_cloud_api_key }}' }
+        - { regexp: '^maas_notification_plan:', line: 'maas_notification_plan: npTechnicalContactsEmail' }
+        - { regexp: "^lb_name:", line: "lb_name: '{{ heat_stack_prefix|string }}-{{ groups.infra|first }}'" }
+        - { regexp: '^(# )?maas_(nova|horizon)_scheme:', line: 'maas_horizon_scheme: https' }
+
+    - name: PIP Install Rackspace Monitoring CLI
+      pip: name=rackspace-monitoring-cli state=present
+
+    - name: Get IP Address Alias
+      shell: raxmon-entities-list --details --username={{ rackspace_cloud_username }} --api-key={{ rackspace_cloud_api_key }} | grep {{ hostvars[inventory_hostname].ansible_eth0.ipv4.address }}
+      register: infra1_maas_target_alias
+
+    - name: Get MaaS Target Alias - Public 1
+      lineinfile: "dest=/etc/openstack_deploy/user_extras_variables.yml regexp='maas_target_alias:' line='maas_target_alias: public1_v4' state=present"
+      when: "'public1_v4' in infra1_maas_target_alias.stdout"
+
+    - name: Set Deploy Environment MaaS Fact
+      ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=deploy_maas value=yes
+
+    - name: Set Deploy Environment MaaS Verify Fact
+      ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=verify_maas value=no
+
+- name: Install RPC
+  hosts: infra[0]
+  tags:
+    - compute
+    - block
+    - ceph
+    - object
+    - object_stand_alone
+    - maas
+  tasks:
+    - name:
+      shell: ./scripts/deploy.sh >> /opt/cloud-training/deploy.sh.log 2>> /opt/cloud-training/deploy.sh.err chdir=/opt/rpc-openstack/
+      environment:
+        DEPLOY_HAPROXY: "{{ ansible_local.deploy_environment.option.deploy_haproxy }}"
+        DEPLOY_MAAS: "{{ ansible_local.deploy_environment.option.deploy_maas }}"
+        DEPLOY_CEPH: "{{ ansible_local.deploy_environment.option.deploy_ceph }}"
+        VERIFY_MAAS: "{{ ansible_local.deploy_environment.option.verify_maas }}"
+        FORKS: "10"
+
+- name: Gather Ceph monitor node
+  hosts: infra[0]
+  tags:
+    - ceph
+  tasks:
+    - name: Get node name
+      shell: |
+        lxc-ls -f |awk '/ceph_mon/ { print $1 }'
+      register: ceph_mon_node
+
+    - name: Add node to inventory
+      add_host: name={{ ceph_mon_node.stdout_lines | first }}
+                groups=ceph_mon
+                ansible_ssh_private_key_file=/root/.ssh/id_rsa
+      when: ceph_mon_node.rc == 0
+
+- name: Configure Ceph CRUSH rules
+  hosts: ceph_mon[0]
+  tags:
+    - ceph
+  tasks:
+    - name: Dump Ceph CRUSH map
+      shell: |
+        ceph osd getcrushmap | crushtool -d - -o crush-map.txt
+      register: crush_dump
+
+    - name: Add OSD-chooseleaf rule
+      shell: |
+       echo 'cnVsZSBvc2RfY2hvb3NlbGVhZiB7CiAgICAgICAgcnVsZXNldCAxCiAgICAgICAgdHlwZSByZXBs
+       aWNhdGVkCiAgICAgICAgbWluX3NpemUgMQogICAgICAgIG1heF9zaXplIDEwCiAgICAgICAgc3Rl
+       cCB0YWtlIGRlZmF1bHQKICAgICAgICBzdGVwIGNob29zZWxlYWYgZmlyc3RuIDAgdHlwZSBvc2QK
+       ICAgICAgICBzdGVwIGVtaXQKfQo=' | base64 -d >> crush-map.txt
+      register: crush_rule
+      when: crush_dump.rc == 0
+
+    - name: Compile Ceph CRUSH map
+      shell: |
+        crushtool -c crush-map.txt -o new-crush-map
+      register: crush_compile
+      when: crush_rule.rc == 0
+
+    - name: Update Ceph CRUSH map
+      shell: |
+        ceph osd setcrushmap -i new-crush-map
+      register: crush_upload
+      when: crush_compile.rc == 0
+
+    - name: Gather Ceph pools
+      shell: |
+        ceph osd pool ls
+      register: ceph_pools
+      when: crush_upload.rc == 0
+
+    - name: Assign OSD-chooseleaf rule to Ceph pools
+      shell: |
+        ceph osd pool set {{ item }} crush_ruleset 1
+      with_items: ceph_pools.stdout_lines
+      when: ceph_pools.rc == 0
+
+
+- name: Restart MaaS
+  hosts: all
+  tags:
+    - maas
+  tasks:
+    - name: Check If Rackspace Monitoring Agent Is Install
+      stat: path=/usr/bin/rackspace-monitoring-agent
+      register: agent_installed
+
+    - name: Restart Rackspace Monitoring Agent
+      service: name=rackspace-monitoring-agent state=restarted
+      when: agent_installed.stat.exists
+
+- name: Update LibVirt CPU Map
+  hosts: compute
+  tags:
+    - compute
+  tasks:
+    - name: Create /usr/share/libvirt
+      file: path=/usr/share/libvirt state=directory
+
+    - name: Copy LibVirt CPU Map
+      copy: src=files/usr/share/libvirt/cpu_map.xml dest=/usr/share/libvirt/cpu_map.xml
+
+    - name: Restart LibVirt
+      service: name=libvirt-bin state=restarted
+
+    - name: Restart Nova Compute
+      service: name=nova-compute state=restarted
