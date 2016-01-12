@@ -77,7 +77,6 @@ resources:
           params:
             "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
 
-
   swift_signal_handle_infra1:
     type: OS::Heat::SwiftSignalHandle
 
