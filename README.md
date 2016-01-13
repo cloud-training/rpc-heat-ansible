@@ -1,12 +1,47 @@
 # Deploy A Rackspace Private Cloud Environment
 
-`heat stack-create -f rpc-11.1-*-template.yml -t 240 -P ansible_tags=<comma-separated-ansible-tags> [-e rpc-11.1-environment.yml] <stack-name>`
+`heat stack-create -t 240 -f templates/rpc-*.yml -e environments/*.yml [-e environments/user-maas-credentials.yml] <stack-name>`
 
-### Environment
+### Heat Templates
 
-Some settings should be private, and may be passed in through the use of a Heat Environment file. Below is an example of passing in Rackspace Cloud credentials for MaaS configuration.
+Templates define the cloud resources necessary for the environment. These can be found in the `templates` directory.
 
-**`rpc-11.1-environment.yml`**
+* `rpc-full-ceph.yml` - Compute, Block, Object, Ceph
+* `rpc-full.yml`      - Compute, Block, Object
+* `rpc-object.yml`    - Stand-Alone Object
+
+### Environments
+
+Template parameters may be passed in through the use of an environment file. There are several environments that have been provided for various types of deployments. These can be found in the `environments` directory.
+
+#### RPC v10.1
+
+* `rpc-10.1-full-maas.yml`
+* `rpc-10.1-full.yml`
+
+#### RPC v11.0
+
+* `rpc-11.0-full-maas.yml`
+* `rpc-11.0-full.yml`
+* `rpc-11.0-object-maas.yml`
+* `rpc-11.0-object.yml`
+
+#### RPC v11.1
+
+* `rpc-11.1-full-ceph-maas.yml`
+* `rpc-11.1-full-ceph.yml`
+* `rpc-11.1-full-maas.yml`
+* `rpc-11.1-full.yml`
+* `rpc-11.1-object-maas.yml`
+* `rpc-11.1-object.yml`
+
+#### MaaS Credentials
+
+In addition to choosing one of the above, if you are planning to install MaaS, you will need to provide your Rackspace Cloud credentials in a separate environment file.
+
+Below is an example of a MaaS credentials environment file.
+
+**`environments/user-maas-credentials.yml`**
 
 ```
 parameters:
@@ -17,67 +52,68 @@ parameters:
   rackspace_cloud_api_key: SomeAPIKey
 ```
 
-### Available Ansible Tags
-
-* `nothing`            - Do Nothing
-* `prepare`            - Prepare Environment (Default, Assumed If Using Any Below)
-* `compute`            - Install Compute
-* `block`              - Install Block
-* `object`             - Install Object
-* `maas`               - Install MaaS
-* `object_stand_alone` - Install Stand Alone Object (v11.0+ Only)
-* `ceph`               - Install Ceph MON & OSD (v11.1+ Only)
-
 ### Sample Deployments v11.1
+
+#### RPC v11.1 Full + Ceph + MaaS
+
+`heat stack-create -t 240 -f templates/rpc-full-ceph.yml -e environments/rpc-11.1-full-ceph-maas.yml -e environments/user-maas-credentials.yml <stack-name>`
+
+#### RPC v11.1 Full + Ceph
+
+`heat stack-create -t 240 -f templates/rpc-full-ceph.yml -e environments/rpc-11.1-full-ceph.yml <stack-name>`
 
 #### RPC v11.1 Full + MaaS
 
-`heat stack-create -f rpc-11.1-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,ceph,object,maas -e rpc-11.1-environment.yml <stack-name>`
+`heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-11.1-full-maas.yml -e environments/user-maas-credentials.yml <stack-name>`
 
 #### RPC v11.1 Full
 
-`heat stack-create -f rpc-11.1-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,ceph,object <stack-name>`
+`heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-11.1-full.yml <stack-name>`
 
-#### RPC v11.1 Standalone Swift + MaaS
+#### RPC v11.1 Stand-Alone Object + MaaS
 
-`heat stack-create -f rpc-11.1-object-template.yml -t 240 -P ansible_tags=object_stand_alone,maas -e rpc-11.1-environment.yml <stack-name>`
+`heat stack-create -t 240 -f templates/rpc-object.yml -e environments/rpc-11.1-object-maas.yml -e environments/user-maas-credentials.yml <stack-name>`
 
-#### RPC v11.1 Standalone Swift
+#### RPC v11.1 Stand-Alone Object
 
-`heat stack-create -f rpc-11.1-object-template.yml -t 240 -P ansible_tags=object_stand_alone <stack-name>`
+`heat stack-create -t 240 -f templates/rpc-object.yml -e environments/rpc-11.1-object.yml <stack-name>`
 
 ### Sample Deployments v11.0
 
 #### RPC v11.0 Full + MaaS
 
-`heat stack-create -f rpc-11.0-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,object,maas -e rpc-11.0-environment.yml <stack-name>`
+`heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-11.0-full-maas.yml -e environments/user-maas-credentials.yml <stack-name>`
 
 #### RPC v11.0 Full
 
-`heat stack-create -f rpc-11.0-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,object <stack-name>`
+`heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-11.0-full.yml <stack-name>`
 
-#### RPC v11.0 Standalone Swift + MaaS
+#### RPC v11.0 Stand-Alone Object + MaaS
 
-`heat stack-create -f rpc-11.0-object-template.yml -t 240 -P ansible_tags=object_stand_alone,maas -e rpc-11.0-environment.yml <stack-name>`
+`heat stack-create -t 240 -f templates/rpc-object.yml -e environments/rpc-11.0-object-maas.yml -e environments/user-maas-credentials.yml <stack-name>`
 
-#### RPC v11.0 Standalone Swift
+#### RPC v11.0 Stand-Alone Object
 
-`heat stack-create -f rpc-11.0-object-template.yml -t 240 -P ansible_tags=object_stand_alone <stack-name>`
+`heat stack-create -t 240 -f templates/rpc-object.yml -e environments/rpc-11.0-object.yml <stack-name>`
 
 ### Sample Deployments v10.1
 
-#### RPC v10.1 Full (HA) + MaaS
-
-`heat stack-create -f rpc-10.1-ha-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,object,maas -e rpc-10.1-environment.yml <stack-name>`
-
 #### RPC v10.1 Full + MaaS
 
-`heat stack-create -f rpc-10.1-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,object,maas -e rpc-10.1-environment.yml <stack-name>`
-
-#### RPC v10.1 Full (HA)
-
-`heat stack-create -f rpc-10.1-ha-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,object <stack-name>`
+`heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-10.1-full-maas.yml -e environments/user-maas-credentials.yml <stack-name>`
 
 #### RPC v10.1 Full
 
-`heat stack-create -f rpc-10.1-compute-block-object-template.yml -t 240 -P ansible_tags=compute,block,object <stack-name>`
+`heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-10.1-full.yml <stack-name>`
+
+### Environment Overrides
+
+If you would like to to override certain parameters of an environment, you can do so by passing one or more `-P` parameter flags.
+
+Below is an example of overriding the `rpc_release` parameter to deploy from the HEAD of the Juno branch.
+
+`heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-10.1-full.yml -P rpc_release=juno <stack-name>`
+
+Below is an example of overriding the `rpc_heat_ansible_repo` and `rpc_heat_ansible_release` parameters, useful when deploying from a different fork and / or branch of this repo.
+
+`heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-10.1-full.yml -P rpc_heat_ansible_repo=https://github.com/my_fork/rpc-heat-ansible.git -P rpc_heat_ansible_release=my_branch <stack-name>`
