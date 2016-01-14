@@ -219,16 +219,38 @@
       register: pvcreate_result
       failed_when: pvcreate_result.rc != 0 and pvcreate_result.rc != 5
       changed_when: False
+      when: inventory_hostname in groups[ item.group ]
       with_items:
-        - device: /dev/xvdz1
-      when: inventory_hostname not in groups['ceph']
+        - group: infra
+          device: /dev/xvdz1
+        - group: logger
+          device: /dev/xvdz1
+        - group: compute
+          device: /dev/xvdz1
+        - group: block
+          device: /dev/xvdz1
+        - group: object
+          device: /dev/xvdz1
 
     - name: Create Logical Volume Groups
       lvg: vg={{ item.vg }} pvs={{ item.pvs }} state=present vg_options=''
+      when: inventory_hostname in groups[ item.group ]
       with_items:
-        - vg: lxc
+        - group: infra
+          vg: lxc
           pvs: /dev/xvdz1
-      when: inventory_hostname not in groups['ceph']
+        - group: logger
+          vg: lxc
+          pvs: /dev/xvdz1
+        - group: compute
+          vg: lxc
+          pvs: /dev/xvdz1
+        - group: block
+          vg: lxc
+          pvs: /dev/xvdz1
+        - group: object
+          vg: lxc
+          pvs: /dev/xvdz1
 
     - name: Create /etc/network/interfaces.d/
       file: dest=/etc/network/interfaces.d/ state=directory
@@ -237,7 +259,7 @@
       lineinfile: dest=/etc/network/interfaces line='source /etc/network/interfaces.d/*.cfg' insertafter=EOF state=present
 
     - name: Create /etc/network/interfaces.d/rpc.cfg
-      template: src=templates/etc/network/interfaces.d/rpc-11.0.cfg.j2 dest=/etc/network/interfaces.d/rpc.cfg
+      template: src=templates/etc/network/interfaces.d/rpc-11.1.cfg.j2 dest=/etc/network/interfaces.d/rpc.cfg
 
     - name: Bring Up VXLANs
       command: ifup vxlan-{{ item }}
@@ -389,7 +411,7 @@
       ini_file: dest=/etc/ansible/facts.d/default_configs.fact section=state option=done value=true
 
     - name: Copy OpenStack User Config File
-      template: src=templates/etc/openstack_deploy/openstack_user_config-11.0.yml.j2 dest=/etc/openstack_deploy/openstack_user_config.yml
+      template: src=templates/etc/openstack_deploy/openstack_user_config-11.1.yml.j2 dest=/etc/openstack_deploy/openstack_user_config.yml
 
     - name: Update OpenStack User Variables File
       lineinfile: dest=/etc/openstack_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
@@ -425,7 +447,7 @@
     - object_stand_alone
   tasks:
     - name: Copy OpenStack User Config File
-      template: src=templates/etc/openstack_deploy/openstack_user_config-11.0-object-stand-alone.yml.j2 dest=/etc/openstack_deploy/openstack_user_config.yml
+      template: src=templates/etc/openstack_deploy/openstack_user_config-11.1-object-stand-alone.yml.j2 dest=/etc/openstack_deploy/openstack_user_config.yml
 
 - name: Configure Object Common
   hosts: infra[0]
@@ -434,7 +456,7 @@
     - object_stand_alone
   tasks:
     - name: Copy OpenStack Swift Config File
-      template: src=templates/etc/openstack_deploy/conf.d/swift-11.0.yml.j2 dest=/etc/openstack_deploy/conf.d/swift.yml
+      template: src=templates/etc/openstack_deploy/conf.d/swift-11.1.yml.j2 dest=/etc/openstack_deploy/conf.d/swift.yml
 
     - name: Update OpenStack User Config File
       lineinfile: "dest=/etc/openstack_deploy/openstack_user_config.yml regexp='         ( #)? - swift_proxy' line='          - swift_proxy' state=present"
