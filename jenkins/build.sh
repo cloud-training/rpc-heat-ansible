@@ -61,14 +61,17 @@ if [[ $BUILD_FAILED -eq 1 && $SWIFT_SIGNAL_FAILED -gt 0 || ( $BUILD_FAILED -eq 0
   scp -i $STACK_NAME.pem -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$INFRA1_IP:/opt/cloud-training/*.err .
   scp -i $STACK_NAME.pem -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$INFRA1_IP:/var/log/cloud-init-output.log .
   echo "===================================================="
-  echo "Failed Tasks"
+  echo "Failed Tasks:"
+  echo ""
   grep "failed: " *.log
   echo "===================================================="
-  echo "Fatal Tasks"
+  echo "Fatal Tasks:"
+  echo ""
   grep "fatal: " *.log
 fi
 
 BUILD_DELETED=1
+echo "===================================================="
 heat stack-delete $STACK_NAME
 
 until [[ $BUILD_DELETED -eq 0 ]]; do
