@@ -11,10 +11,6 @@ parameters:
     type: string
     label: RPC Release
     default: 'r11.1.0'
-  rpc_series:
-    type: string
-    label: RPC Series
-    default: '11.1'
   rpc_heat_ansible_release:
     type: string
     label: RPC Heat Ansible Release
