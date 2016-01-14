@@ -62,17 +62,9 @@ if [[ $BUILD_FAILED -eq 1 && $SWIFT_SIGNAL_FAILED -gt 0 || ( $BUILD_FAILED -eq 0
   scp -i $STACK_NAME.pem -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$INFRA1_IP:/opt/cloud-training/*.err .
   scp -i $STACK_NAME.pem -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$INFRA1_IP:/var/log/cloud-init-output.log .
   echo "===================================================="
-  echo "Failed Tasks:"
+  echo "Build Failure Analyzer Extractions:"
   echo ""
-  grep "failed: \[" *.log
-  echo "===================================================="
-  echo "Fatal Tasks:"
-  echo ""
-  grep "fatal: \[" *.log
-  echo "===================================================="
-  echo "Messages:"
-  echo ""
-  grep "msg: " *.log
+  grep -e "fatal: \[" -e "failed: \[" -e "msg: " -e "\.\.\.ignoring" runcmd-bash.log deploy.sh.log
 fi
 
 BUILD_DELETED=1
