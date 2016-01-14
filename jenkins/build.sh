@@ -57,17 +57,22 @@ if [[ $BUILD_FAILED -eq 1 && $SWIFT_SIGNAL_FAILED -gt 0 || ( $BUILD_FAILED -eq 0
   INFRA1_IP=`heat output-show $STACK_NAME server_infra1_ip -F raw`
   heat output-show $STACK_NAME private_key -F raw > $STACK_NAME.pem
   chmod 400 $STACK_NAME.pem
+  echo "===================================================="
   scp -i $STACK_NAME.pem -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$INFRA1_IP:/opt/cloud-training/*.log .
   scp -i $STACK_NAME.pem -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$INFRA1_IP:/opt/cloud-training/*.err .
   scp -i $STACK_NAME.pem -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@$INFRA1_IP:/var/log/cloud-init-output.log .
   echo "===================================================="
   echo "Failed Tasks:"
   echo ""
-  grep "failed: " *.log
+  grep "failed: \[" *.log
   echo "===================================================="
   echo "Fatal Tasks:"
   echo ""
-  grep "fatal: " *.log
+  grep "fatal: \[" *.log
+  echo "===================================================="
+  echo "Messages:"
+  echo ""
+  grep "msg: " *.log
 fi
 
 BUILD_DELETED=1
