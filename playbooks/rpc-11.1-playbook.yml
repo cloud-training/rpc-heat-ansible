@@ -371,6 +371,7 @@
         - bug-621.patch
         - bug-675.patch
         - bug-rabbitless-maas.patch
+        - bug-network-checks-list-empty.patch
         - ceph-448.patch
 
     - name: Bugs - Apply Patches (OpenStack Ansible)
@@ -385,6 +386,7 @@
         - bug-621.patch
         - bug-675.patch
         - bug-rabbitless-maas.patch
+        - bug-network-checks-list-empty.patch
 
     - name: Bugs - Apply Patches (Ceph-mon)
       command: git apply /opt/cloud-training/patches/{{ item }} chdir=/opt/rpc-openstack/rpcd/playbooks/roles/ceph-mon
