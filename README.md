@@ -56,55 +56,79 @@ parameters:
 
 #### RPC v11.1 Full + Ceph + MaaS
 
-`heat stack-create -t 240 -f templates/rpc-full-ceph.yml -e environments/rpc-11.1-full-ceph-maas.yml -e environments/user-maas-credentials.yml <stack-name>`
+```
+heat stack-create -t 240 -f templates/rpc-full-ceph.yml -e environments/rpc-11.1-full-ceph-maas.yml -e environments/user-maas-credentials.yml <stack-name>
+```
 
 #### RPC v11.1 Full + Ceph
 
-`heat stack-create -t 240 -f templates/rpc-full-ceph.yml -e environments/rpc-11.1-full-ceph.yml <stack-name>`
+```
+heat stack-create -t 240 -f templates/rpc-full-ceph.yml -e environments/rpc-11.1-full-ceph.yml <stack-name>
+```
 
 #### RPC v11.1 Full + MaaS
 
-`heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-11.1-full-maas.yml -e environments/user-maas-credentials.yml <stack-name>`
+```
+heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-11.1-full-maas.yml -e environments/user-maas-credentials.yml <stack-name>
+```
 
 #### RPC v11.1 Full
 
-`heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-11.1-full.yml <stack-name>`
+```
+heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-11.1-full.yml <stack-name>
+```
 
 #### RPC v11.1 Stand-Alone Object + MaaS
 
-`heat stack-create -t 240 -f templates/rpc-object.yml -e environments/rpc-11.1-object-maas.yml -e environments/user-maas-credentials.yml <stack-name>`
+```
+heat stack-create -t 240 -f templates/rpc-object.yml -e environments/rpc-11.1-object-maas.yml -e environments/user-maas-credentials.yml <stack-name>
+```
 
 #### RPC v11.1 Stand-Alone Object
 
-`heat stack-create -t 240 -f templates/rpc-object.yml -e environments/rpc-11.1-object.yml <stack-name>`
+```
+heat stack-create -t 240 -f templates/rpc-object.yml -e environments/rpc-11.1-object.yml <stack-name>
+```
 
 ### Sample Deployments v11.0
 
 #### RPC v11.0 Full + MaaS
 
-`heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-11.0-full-maas.yml -e environments/user-maas-credentials.yml <stack-name>`
+```
+heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-11.0-full-maas.yml -e environments/user-maas-credentials.yml <stack-name>
+```
 
 #### RPC v11.0 Full
 
-`heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-11.0-full.yml <stack-name>`
+```
+heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-11.0-full.yml <stack-name>
+```
 
 #### RPC v11.0 Stand-Alone Object + MaaS
 
-`heat stack-create -t 240 -f templates/rpc-object.yml -e environments/rpc-11.0-object-maas.yml -e environments/user-maas-credentials.yml <stack-name>`
+```
+heat stack-create -t 240 -f templates/rpc-object.yml -e environments/rpc-11.0-object-maas.yml -e environments/user-maas-credentials.yml <stack-name>
+```
 
 #### RPC v11.0 Stand-Alone Object
 
-`heat stack-create -t 240 -f templates/rpc-object.yml -e environments/rpc-11.0-object.yml <stack-name>`
+```
+heat stack-create -t 240 -f templates/rpc-object.yml -e environments/rpc-11.0-object.yml <stack-name>
+```
 
 ### Sample Deployments v10.1
 
 #### RPC v10.1 Full + MaaS
 
-`heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-10.1-full-maas.yml -e environments/user-maas-credentials.yml <stack-name>`
+```
+heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-10.1-full-maas.yml -e environments/user-maas-credentials.yml <stack-name>
+```
 
 #### RPC v10.1 Full
 
-`heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-10.1-full.yml <stack-name>`
+```
+heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-10.1-full.yml <stack-name>
+```
 
 ### Environment Overrides
 
