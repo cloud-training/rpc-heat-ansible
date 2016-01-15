@@ -543,6 +543,7 @@
     - name: Update RPC User Variables File
       lineinfile: dest=/etc/openstack_deploy/user_extras_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
       with_items:
+        - { regexp: '^neutron_dnsmasq_dns_servers:', line: 'neutron_dnsmasq_dns_servers: 8.8.8.8,8.8.4.4'}
         - { regexp: '^neutron_network_device_mtu:', line: 'neutron_network_device_mtu: 1400'}
         - { regexp: '^neutron_dhcp_config:', line: 'neutron_dhcp_config: { dhcp-option-force: "26,1400", log-facility: "/var/log/neutron/neutron-dnsmasq.log" }'}
 
