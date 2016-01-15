@@ -476,7 +476,7 @@ resources:
           template: "%heat_stack_prefix%-logger1"
           params:
             "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-      size: 150
+      size: 75
       volume_type: SSD
 
   volume_compute1:
@@ -487,7 +487,7 @@ resources:
           template: "%heat_stack_prefix%-compute1"
           params:
             "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-      size: 150
+      size: 75
       volume_type: SSD
 
   volume_block1:
@@ -498,7 +498,7 @@ resources:
           template: "%heat_stack_prefix%-block1"
           params:
             "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-      size: 150
+      size: 75
       volume_type: SSD
 
   volume_object1:

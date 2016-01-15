@@ -115,7 +115,7 @@
           size: 20
         - group: block
           device: /dev/xvdz
-          size: 10
+          size: 45
         - group: object
           device: /dev/xvdz
           size: 15
@@ -139,19 +139,19 @@
       with_items:
         - group: object
           device: /dev/xvdz
-          size: 20
+          size: 25
         - group: object
           device: /dev/xvdz
-          size: 20
+          size: 25
         - group: object
           device: /dev/xvdz
-          size: 20
+          size: 25
         - group: object
           device: /dev/xvdz
-          size: 20
+          size: 25
         - group: object
           device: /dev/xvdz
-          size: 20
+          size: 25
 
     - name: Create Partitions Done Fact
       ini_file: dest=/etc/ansible/facts.d/partitions.fact section=state option=done value=true
