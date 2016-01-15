@@ -450,6 +450,17 @@
     - name: Set Deploy Environment MaaS Verify Fact
       ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=verify_maas value=no
 
+- name: Configure External Network - Play 1 of 2
+  hosts: infra[0]
+  tags:
+    - network_external
+  tasks:
+    - name: Update RPC User Variables File
+      lineinfile: dest=/etc/openstack_deploy/user_extras_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
+      with_items:
+        - { regexp: '^neutron_network_device_mtu:', line: 'neutron_network_device_mtu: 1400'}
+        - { regexp: '^neutron_dhcp_config:', line: 'neutron_dhcp_config: { dhcp-option-force: "26,1400", log-facility: "/var/log/neutron/neutron-dnsmasq.log" }'}
+
 - name: Install RPC
   hosts: infra[0]
   tags:
