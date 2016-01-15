@@ -324,7 +324,7 @@
       file: dest=/opt state=directory
 
     - name: Clone RPC Repo
-      git: repo=https://github.com/openstack/openstack-ansible.git dest=/opt/openstack-ansible version="{{ rpc_release }}"
+      git: repo=https://github.com/openstack/openstack-ansible.git dest=/opt/openstack-ansible version={{ rpc_release }} force=yes
 
     - name: Create /opt/cloud-training/patches
       file: dest=/opt/cloud-training/patches state=directory

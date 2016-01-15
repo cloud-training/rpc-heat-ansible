@@ -355,12 +355,7 @@
       file: dest=/opt state=directory
 
     - name: Clone RPC Repo
-      git:
-        repo=https://github.com/rcbops/rpc-openstack
-        dest=/opt/rpc-openstack
-        recursive=yes
-        version={{ rpc_release }}
-      ignore_errors: no
+      git: repo=https://github.com/rcbops/rpc-openstack dest=/opt/rpc-openstack version={{ rpc_release }} recursive=yes force=yes
 
     - name: Create /opt/cloud-training/patches
       file: dest=/opt/cloud-training/patches state=directory
