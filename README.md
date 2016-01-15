@@ -1,6 +1,8 @@
 # Deploy A Rackspace Private Cloud Environment
 
-`heat stack-create -t 240 -f templates/rpc-*.yml -e environments/*.yml [-e environments/user-maas-credentials.yml] <stack-name>`
+```
+heat stack-create -t 240 -f templates/rpc-*.yml -e environments/*.yml [-e environments/user-maas-credentials.yml] <stack-name>
+```
 
 ### Heat Templates
 
@@ -136,8 +138,12 @@ If you would like to to override certain parameters of an environment, you can d
 
 Below is an example of overriding the `rpc_release` parameter to deploy from the HEAD of the Juno branch.
 
-`heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-10.1-full.yml -P rpc_release=juno <stack-name>`
+```
+heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-10.1-full.yml -P rpc_release=juno <stack-name>
+```
 
 Below is an example of overriding the `rpc_heat_ansible_repo` and `rpc_heat_ansible_release` parameters, useful when deploying from a different fork and / or branch of this repo.
 
-`heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-10.1-full.yml -P rpc_heat_ansible_repo=https://github.com/my_fork/rpc-heat-ansible.git -P rpc_heat_ansible_release=my_branch <stack-name>`
+```
+heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-10.1-full.yml -P rpc_heat_ansible_repo=https://github.com/my_fork/rpc-heat-ansible.git -P rpc_heat_ansible_release=my_branch <stack-name>
+```
