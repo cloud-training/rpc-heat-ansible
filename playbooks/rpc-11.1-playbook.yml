@@ -576,25 +576,29 @@
   tasks:
     - name: Get Public Network
       shell: |
-        source openrc
+        echo $HOME
+        source /root/openrc
         neutron net-list | awk '/ Public / { print $2 }'
       register: public_network_result
 
     - name: Create Public Network
       shell: |
-        source openrc
+        echo $HOME
+        source /root/openrc
         neutron net-create --router:external --provider:network_type flat --provider:physical_network flat Public
       when: public_network_result.stdout_lines|length == 0
 
     - name: Get Public Subnet
       shell: |
-        source openrc
+        echo $HOME
+        source /root/openrc
         neutron subnet-list | awk '/ Public Subnet / { print $2 }'
       register: public_subnet_result
 
     - name: Create Public Subnet
       shell: |
-        source openrc
+        echo $HOME
+        source /root/openrc
         neutron subnet-create --name "Public Subnet" --disable-dhcp Public 172.29.248.0/22
       when: public_subnet_result.stdout_lines|length == 0
 
