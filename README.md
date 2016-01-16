@@ -18,24 +18,30 @@ Template parameters may be passed in through the use of an environment file. The
 
 #### RPC v10.1
 
-* `rpc-10.1-full-maas.yml`
-* `rpc-10.1-full.yml`
+* `rpc-10.1-full-maas.yml` - Compute, Block, Object, MaaS
+* `rpc-10.1-full.yml`      - Compute, Block, Object
 
 #### RPC v11.0
 
-* `rpc-11.0-full-maas.yml`
-* `rpc-11.0-full.yml`
-* `rpc-11.0-object-maas.yml`
-* `rpc-11.0-object.yml`
+* `rpc-11.0-full-net-maas.yml` - Compute, Block, Object, External Network, MaaS
+* `rpc-11.0-full-maas.yml`     - Compute, Block, Object, Maas
+* `rpc-11.0-full-net.yml`      - Compute, Block, Object, External Network
+* `rpc-11.0-full.yml`          - Compute, Block, Object
+* `rpc-11.0-object-maas.yml`   - Stand-Alone Object, MaaS
+* `rpc-11.0-object.yml`        - Stand-Alone Object
 
 #### RPC v11.1
 
-* `rpc-11.1-full-ceph-maas.yml`
-* `rpc-11.1-full-ceph.yml`
-* `rpc-11.1-full-maas.yml`
-* `rpc-11.1-full.yml`
-* `rpc-11.1-object-maas.yml`
-* `rpc-11.1-object.yml`
+* `rpc-11.1-full-ceph-net-maas.yml` - Compute, Block, Object, Ceph, External Network, MaaS
+* `rpc-11.1-full-ceph-maas.yml`     - Compute, Block, Object, Ceph, MaaS
+* `rpc-11.1-full-ceph-net.yml`      - Compute, Block, Object, Ceph, External Network
+* `rpc-11.1-full-ceph.yml`          - Compute, Block, Object, Ceph
+* `rpc-11.1-full-net-maas.yml`      - Compute, Block, Object, Externale Network, MaaS
+* `rpc-11.1-full-maas.yml`          - Compute, Block, Object, Maas
+* `rpc-11.1-full-net.yml`           - Compute, Block, Object, External Network
+* `rpc-11.1-full.yml`               - Compute, Block, Object
+* `rpc-11.1-object-maas.yml`        - Stand-Alone Object, MaaS
+* `rpc-11.1-object.yml`             - Stand-Alone Object
 
 #### MaaS Credentials
 
