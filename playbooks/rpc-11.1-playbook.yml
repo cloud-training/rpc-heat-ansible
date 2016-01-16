@@ -516,6 +516,9 @@
         - { regexp: '^maas_notification_plan:', line: 'maas_notification_plan: npTechnicalContactsEmail' }
         - { regexp: "^lb_name:", line: "lb_name: '{{ heat_stack_prefix|string }}-{{ groups.infra|first }}'" }
         - { regexp: '^(# )?maas_(nova|horizon)_scheme:', line: 'maas_horizon_scheme: https' }
+        - { regexp: '^neutron_dnsmasq_dns_servers:', line: 'neutron_dnsmasq_dns_servers: 8.8.8.8,8.8.4.4'}
+        - { regexp: '^neutron_network_device_mtu:', line: 'neutron_network_device_mtu: 1400'}
+        - { regexp: '^neutron_dhcp_config:', line: 'neutron_dhcp_config: { dhcp-option-force: "26,1400", log-facility: "/var/log/neutron/neutron-dnsmasq.log" }'}
         - { regexp: '^network_checks_list:', line: 'network_checks_list: []'} # Temporarily disable network checks.
 
     - name: PIP Install Rackspace Monitoring CLI
@@ -535,18 +538,6 @@
     - name: Set Deploy Environment MaaS Verify Fact
       ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=verify_maas value=no
 
-- name: Configure External Network - Play 1 of 2
-  hosts: infra[0]
-  tags:
-    - network_external
-  tasks:
-    - name: Update RPC User Variables File
-      lineinfile: dest=/etc/openstack_deploy/user_extras_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
-      with_items:
-        - { regexp: '^neutron_dnsmasq_dns_servers:', line: 'neutron_dnsmasq_dns_servers: 8.8.8.8,8.8.4.4'}
-        - { regexp: '^neutron_network_device_mtu:', line: 'neutron_network_device_mtu: 1400'}
-        - { regexp: '^neutron_dhcp_config:', line: 'neutron_dhcp_config: { dhcp-option-force: "26,1400", log-facility: "/var/log/neutron/neutron-dnsmasq.log" }'}
-
 - name: Install RPC
   hosts: infra[0]
   tags:
@@ -565,6 +556,47 @@
         DEPLOY_CEPH: "{{ ansible_local.deploy_environment.option.deploy_ceph }}"
         VERIFY_MAAS: "{{ ansible_local.deploy_environment.option.verify_maas }}"
         FORKS: "10"
+
+- name: Configure External Network - Play 1 of 2
+  hosts: infra[0]
+  tags:
+    - network_external
+  tasks:
+    - name: Get Utility Container
+      shell: lxc-ls -1 | grep utility
+      register: utility_container
+
+    - name: Add Utility Container Host
+      add_host: name={{ utility_container.stdout_lines | first }} group=utility ansible_ssh_private_key_file=/root/.ssh/id_rsa
+
+- name: Configure External Network - Play 2 of 2
+  hosts: utility[0]
+  tags:
+    - network_external
+  tasks:
+    - name: Get Public Network
+      shell: |
+        source openrc
+        neutron net-list | awk '/ Public / { print $2 }'
+      register: public_network_result
+
+    - name: Create Public Network
+      shell: |
+        source openrc
+        neutron net-create --router:external --provider:network_type flat --provider:physical_network flat Public
+      when: public_network_result.stdout_lines|length == 0
+
+    - name: Get Public Subnet
+      shell: |
+        source openrc
+        neutron subnet-list | awk '/ Public Subnet / { print $2 }'
+      register: public_subnet_result
+
+    - name: Create Public Subnet
+      shell: |
+        source openrc
+        neutron subnet-create --name "Public Subnet" --disable-dhcp Public 172.29.248.0/22
+      when: public_subnet_result.stdout_lines|length == 0
 
 - name: Gather Ceph monitor node
   hosts: infra[0]
@@ -624,7 +656,6 @@
         ceph osd pool set {{ item }} crush_ruleset 1
       with_items: ceph_pools.stdout_lines
       when: ceph_pools.rc == 0
-
 
 - name: Restart MaaS
   hosts: all
