@@ -466,6 +466,9 @@
     - name: Copy Ceph OSA Config File
       template: src=templates/etc/openstack_deploy/conf.d/ceph-11.1.yml.j2 dest=/etc/openstack_deploy/conf.d/ceph.yml
 
+    - name: Update OpenStack User Config File
+      lineinfile: "dest=/etc/openstack_deploy/openstack_user_config.yml regexp='         ( #)? - mons' line='          - mons' state=present"
+
     - name: Configure Ceph Openstack Settings
       lineinfile: dest=/etc/openstack_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
       with_items:
