@@ -21,7 +21,7 @@ index 6591fdc..12b7d86 100644
  fetch_directory: fetch/
 +conf_directory_owner: root
 +conf_directory_group: root
-+conf_directory_mode: 0644
++conf_directory_mode: 644
  
  ###########
  # INSTALL #

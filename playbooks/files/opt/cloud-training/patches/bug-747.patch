@@ -1,4 +1,4 @@
-From f7b1ad0958e194dc86ae11a153ca1b5b88d10c9e Mon Sep 17 00:00:00 2001
+From 590928882d3c33e559b6f523b6d6f0fcf353ba9d Mon Sep 17 00:00:00 2001
 From: Byron McCollum <byron.mccollum@rackspace.com>
 Date: Sat, 16 Jan 2016 22:09:50 -0600
 Subject: [PATCH] Adjust permission of /etc/ceph to allow Cinder to create Ceph
@@ -14,22 +14,20 @@ https://github.com/ceph/ceph-ansible/pull/485
 
 Fixes: #747
 ---
- rpcd/playbooks/setup-maas.yml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ rpcd/playbooks/ceph-osd.yml | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/rpcd/playbooks/setup-maas.yml b/rpcd/playbooks/setup-maas.yml
-index 6a90483..c67ca33 100644
---- a/rpcd/playbooks/setup-maas.yml
-+++ b/rpcd/playbooks/setup-maas.yml
-@@ -19,7 +19,7 @@
- - name: Install Ceph dependencies
-   hosts: osds_all:mons_all:&hosts
+diff --git a/rpcd/playbooks/ceph-osd.yml b/rpcd/playbooks/ceph-osd.yml
+index 23f7e36..d86ca3d 100644
+--- a/rpcd/playbooks/ceph-osd.yml
++++ b/rpcd/playbooks/ceph-osd.yml
+@@ -43,5 +43,6 @@
+         - ceph-logs
    roles:
--    - role: ceph-common
-+    - { role: "ceph-common", conf_directory_group: "cinder", conf_directory_mode: "0654" }
- 
- - name: Install MaaS
-   hosts: hosts:all_containers
+     - ceph-osd
++    - { role: "ceph-common", conf_directory_group: "cinder", conf_directory_mode: "654" }
+   vars:
+     is_metal: "{{ properties.is_metal|default(false) }}"
 -- 
 2.7.0
 
