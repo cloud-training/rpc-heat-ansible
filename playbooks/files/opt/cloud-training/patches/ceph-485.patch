@@ -1,0 +1,47 @@
+From b2dcb13b49ac31a37dc94fc30616f8581c7b8cec Mon Sep 17 00:00:00 2001
+From: Byron McCollum <byron.mccollum@rackspace.com>
+Date: Sat, 16 Jan 2016 21:44:23 -0600
+Subject: [PATCH] Configurable Ceph Conf Directory Permissions
+
+This change allows for configurable Ceph Conf Directory permissions. This
+is required for integrators of Ceph, like OpenStack Cinder, which needs to
+read from /etc/ceph for operation.
+---
+ roles/ceph-common/defaults/main.yml | 3 +++
+ roles/ceph-common/tasks/main.yml    | 6 +++---
+ 2 files changed, 6 insertions(+), 3 deletions(-)
+
+diff --git a/roles/ceph-common/defaults/main.yml b/roles/ceph-common/defaults/main.yml
+index 6591fdc..12b7d86 100644
+--- a/roles/ceph-common/defaults/main.yml
++++ b/roles/ceph-common/defaults/main.yml
+@@ -6,6 +6,9 @@
+ ###########
+ 
+ fetch_directory: fetch/
++conf_directory_owner: root
++conf_directory_group: root
++conf_directory_mode: 0644
+ 
+ ###########
+ # INSTALL #
+diff --git a/roles/ceph-common/tasks/main.yml b/roles/ceph-common/tasks/main.yml
+index 5f40467..aa9e122 100644
+--- a/roles/ceph-common/tasks/main.yml
++++ b/roles/ceph-common/tasks/main.yml
+@@ -82,9 +82,9 @@
+   file:
+       path: /etc/ceph
+       state: directory
+-      owner: root
+-      group: root
+-      mode: 0644
++      owner: "{{ conf_directory_owner }}"
++      group: "{{ conf_directory_group }}"
++      mode: "{{ conf_directory_mode }}"
+ 
+ - name: generate ceph configuration file
+   config_template:
+-- 
+2.7.0
+
