@@ -365,11 +365,9 @@
       with_items:
         - bug-621.patch
         - bug-675.patch
-        - bug-747.patch
         - bug-rabbitless-maas.patch
         - bug-network-checks-list-empty.patch
         - ceph-448.patch
-        - ceph-485.patch
 
     - name: Bugs - Apply Patches (OpenStack Ansible)
       command: git apply /opt/cloud-training/patches/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible
@@ -382,7 +380,6 @@
       with_items:
         - bug-621.patch
         - bug-675.patch
-        - bug-747.patch
         - bug-rabbitless-maas.patch
         - bug-network-checks-list-empty.patch
 
@@ -400,8 +397,7 @@
     - name: Bugs - Apply Patches (Ceph Common)
       command: git apply /opt/cloud-training/patches/{{ item }} chdir=/opt/rpc-openstack/rpcd/playbooks/roles/ceph-common
       ignore_errors: yes
-      with_items:
-        - ceph-485.patch
+      with_items: []
 
     - name: Create /etc/openstack_deploy
       file: dest=/etc/openstack_deploy state=directory
