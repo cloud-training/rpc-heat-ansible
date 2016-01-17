@@ -7,14 +7,14 @@ This change allows for configurable Ceph Conf Directory permissions. This
 is required for integrators of Ceph, like OpenStack Cinder, which needs to
 read from /etc/ceph for operation.
 ---
- roles/ceph-common/defaults/main.yml | 3 +++
- roles/ceph-common/tasks/main.yml    | 6 +++---
+ defaults/main.yml | 3 +++
+ tasks/main.yml    | 6 +++---
  2 files changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/roles/ceph-common/defaults/main.yml b/roles/ceph-common/defaults/main.yml
+diff --git a/defaults/main.yml b/defaults/main.yml
 index 6591fdc..12b7d86 100644
---- a/roles/ceph-common/defaults/main.yml
-+++ b/roles/ceph-common/defaults/main.yml
+--- a/defaults/main.yml
++++ b/defaults/main.yml
 @@ -6,6 +6,9 @@
  ###########
  
@@ -25,10 +25,10 @@ index 6591fdc..12b7d86 100644
  
  ###########
  # INSTALL #
-diff --git a/roles/ceph-common/tasks/main.yml b/roles/ceph-common/tasks/main.yml
+diff --git a/tasks/main.yml b/tasks/main.yml
 index 5f40467..aa9e122 100644
---- a/roles/ceph-common/tasks/main.yml
-+++ b/roles/ceph-common/tasks/main.yml
+--- a/tasks/main.yml
++++ b/tasks/main.yml
 @@ -82,9 +82,9 @@
    file:
        path: /etc/ceph
