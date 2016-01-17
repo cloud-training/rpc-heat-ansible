@@ -41,7 +41,7 @@ index 5f40467..aa9e122 100644
 +      mode: "{{ conf_directory_mode }}"
  
  - name: generate ceph configuration file
-   config_template:
+   template:
 -- 
 2.7.0
 
