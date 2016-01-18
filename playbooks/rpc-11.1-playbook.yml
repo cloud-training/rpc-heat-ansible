@@ -365,11 +365,9 @@
       with_items:
         - bug-621.patch
         - bug-675.patch
-        - bug-747.patch
         - bug-rabbitless-maas.patch
         - bug-network-checks-list-empty.patch
         - ceph-448.patch
-        - ceph-485.patch
 
     - name: Bugs - Apply Patches (OpenStack Ansible)
       command: git apply /opt/cloud-training/patches/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible
