@@ -36,7 +36,7 @@ Template parameters may be passed in through the use of an environment file. The
 * `rpc-11.1-full-ceph-maas.yml`     - Compute, Block, Object, Ceph, MaaS
 * `rpc-11.1-full-ceph-net.yml`      - Compute, Block, Object, Ceph, External Network
 * `rpc-11.1-full-ceph.yml`          - Compute, Block, Object, Ceph
-* `rpc-11.1-full-net-maas.yml`      - Compute, Block, Object, Externale Network, MaaS
+* `rpc-11.1-full-net-maas.yml`      - Compute, Block, Object, External Network, MaaS
 * `rpc-11.1-full-maas.yml`          - Compute, Block, Object, Maas
 * `rpc-11.1-full-net.yml`           - Compute, Block, Object, External Network
 * `rpc-11.1-full.yml`               - Compute, Block, Object
