@@ -16,20 +16,6 @@ Templates define the cloud resources necessary for the environment. These can be
 
 Template parameters may be passed in through the use of an environment file. There are several environments that have been provided for various types of deployments. These can be found in the `environments` directory.
 
-#### RPC v10.1
-
-* `rpc-10.1-full-maas.yml` - Compute, Block, Object, MaaS
-* `rpc-10.1-full.yml`      - Compute, Block, Object
-
-#### RPC v11.0
-
-* `rpc-11.0-full-net-maas.yml` - Compute, Block, Object, External Network, MaaS
-* `rpc-11.0-full-maas.yml`     - Compute, Block, Object, Maas
-* `rpc-11.0-full-net.yml`      - Compute, Block, Object, External Network
-* `rpc-11.0-full.yml`          - Compute, Block, Object
-* `rpc-11.0-object-maas.yml`   - Stand-Alone Object, MaaS
-* `rpc-11.0-object.yml`        - Stand-Alone Object
-
 #### RPC v11.1
 
 * `rpc-11.1-full-ceph-net-maas.yml` - Compute, Block, Object, Ceph, External Network, MaaS
@@ -42,6 +28,20 @@ Template parameters may be passed in through the use of an environment file. The
 * `rpc-11.1-full.yml`               - Compute, Block, Object
 * `rpc-11.1-object-maas.yml`        - Stand-Alone Object, MaaS
 * `rpc-11.1-object.yml`             - Stand-Alone Object
+
+#### RPC v11.0
+
+* `rpc-11.0-full-net-maas.yml` - Compute, Block, Object, External Network, MaaS
+* `rpc-11.0-full-maas.yml`     - Compute, Block, Object, Maas
+* `rpc-11.0-full-net.yml`      - Compute, Block, Object, External Network
+* `rpc-11.0-full.yml`          - Compute, Block, Object
+* `rpc-11.0-object-maas.yml`   - Stand-Alone Object, MaaS
+* `rpc-11.0-object.yml`        - Stand-Alone Object
+
+#### RPC v10.1
+
+* `rpc-10.1-full-maas.yml` - Compute, Block, Object, MaaS
+* `rpc-10.1-full.yml`      - Compute, Block, Object
 
 #### MaaS Credentials
 
@@ -62,10 +62,22 @@ parameters:
 
 ### Sample Deployments v11.1
 
+#### RPC v11.1 Full + Ceph + External Network + MaaS
+
+```
+heat stack-create -t 240 -f templates/rpc-full-ceph.yml -e environments/rpc-11.1-full-ceph-net-maas.yml -e environments/user-maas-credentials.yml <stack-name>
+```
+
 #### RPC v11.1 Full + Ceph + MaaS
 
 ```
 heat stack-create -t 240 -f templates/rpc-full-ceph.yml -e environments/rpc-11.1-full-ceph-maas.yml -e environments/user-maas-credentials.yml <stack-name>
+```
+
+#### RPC v11.1 Full + Ceph + External Network
+
+```
+heat stack-create -t 240 -f templates/rpc-full-ceph.yml -e environments/rpc-11.1-full-ceph-net.yml <stack-name>
 ```
 
 #### RPC v11.1 Full + Ceph
@@ -74,10 +86,22 @@ heat stack-create -t 240 -f templates/rpc-full-ceph.yml -e environments/rpc-11.1
 heat stack-create -t 240 -f templates/rpc-full-ceph.yml -e environments/rpc-11.1-full-ceph.yml <stack-name>
 ```
 
+#### RPC v11.1 Full + External Network + MaaS
+
+```
+heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-11.1-full-net-maas.yml -e environments/user-maas-credentials.yml <stack-name>
+```
+
 #### RPC v11.1 Full + MaaS
 
 ```
 heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-11.1-full-maas.yml -e environments/user-maas-credentials.yml <stack-name>
+```
+
+#### RPC v11.1 Full + External Network
+
+```
+heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-11.1-full-net.yml <stack-name>
 ```
 
 #### RPC v11.1 Full
@@ -100,10 +124,22 @@ heat stack-create -t 240 -f templates/rpc-object.yml -e environments/rpc-11.1-ob
 
 ### Sample Deployments v11.0
 
+#### RPC v11.0 Full + External Network + MaaS
+
+```
+heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-11.0-full-net-maas.yml -e environments/user-maas-credentials.yml <stack-name>
+```
+
 #### RPC v11.0 Full + MaaS
 
 ```
 heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-11.0-full-maas.yml -e environments/user-maas-credentials.yml <stack-name>
+```
+
+#### RPC v11.0 Full + External Network
+
+```
+heat stack-create -t 240 -f templates/rpc-full.yml -e environments/rpc-11.0-full-net.yml <stack-name>
 ```
 
 #### RPC v11.0 Full
