@@ -1,0 +1,33 @@
+From a314356c58b55c7ec472abc53bbefb0e88afef38 Mon Sep 17 00:00:00 2001
+From: Byron McCollum <byron.mccollum@rackspace.com>
+Date: Sat, 16 Jan 2016 22:09:50 -0600
+Subject: [PATCH] Adjust permission of /etc/ceph to allow Cinder to create Ceph
+ Volumes
+
+Cinder Volume needs access to /etc/ceph to create Ceph Volumes. This
+change passes and `conf_directory_mode` as a role parameter to adjust
+permissions accordingly.
+
+Note: This depends on an upstream pull request for the ceph-common role
+
+https://github.com/ceph/ceph-ansible/pull/485
+
+Fixes: #747
+---
+ rpcd/playbooks/group_vars/all.yml | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/rpcd/playbooks/group_vars/all.yml b/rpcd/playbooks/group_vars/all.yml
+index 20f8374..dd960cf 100644
+--- a/rpcd/playbooks/group_vars/all.yml
++++ b/rpcd/playbooks/group_vars/all.yml
+@@ -25,3 +25,6 @@ openstack_repo_url: "http://{{ internal_lb_vip_address }}:{{ repo_server_port }}
+ 
+ # Location to store a catalog of migrations completed
+ migrations_dir: /etc/openstack_deploy/migrations
++
++# Ceph Conf Directory Mode
++conf_directory_mode: 755
+-- 
+2.7.0
+
