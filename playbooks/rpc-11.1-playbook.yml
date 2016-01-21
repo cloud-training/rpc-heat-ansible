@@ -357,27 +357,14 @@
     - name: Clone RPC Repo
       git: repo=https://github.com/rcbops/rpc-openstack dest=/opt/rpc-openstack version={{ rpc_release }} recursive=yes force=yes
 
-    - name: Create /opt/cloud-training/patches
-      file: dest=/opt/cloud-training/patches state=directory
-
-    - name: Bugs - Fetch Patches
-      copy: src=files/opt/cloud-training/patches/{{ item }} dest=/opt/cloud-training/patches/{{ item }}
-      with_items:
-        - bug-621.patch
-        - bug-675.patch
-        - bug-747.patch
-        - bug-rabbitless-maas.patch
-        - bug-network-checks-list-empty.patch
-        - ceph-448.patch
-        - ceph-485.patch
-
     - name: Bugs - Apply Patches (OpenStack Ansible)
-      command: git apply /opt/cloud-training/patches/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible
+      command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible
       ignore_errors: yes
-      with_items: []
+      with_items:
+        - bug-pin-pip.patch
 
     - name: Bugs - Apply Patches (RPC OpenStack)
-      command: git apply /opt/cloud-training/patches/{{ item }} chdir=/opt/rpc-openstack
+      command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack
       ignore_errors: yes
       with_items:
         - bug-621.patch
@@ -387,18 +374,18 @@
         - bug-network-checks-list-empty.patch
 
     - name: Bugs - Apply Patches (Ceph MON)
-      command: git apply /opt/cloud-training/patches/{{ item }} chdir=/opt/rpc-openstack/rpcd/playbooks/roles/ceph-mon
+      command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack/rpcd/playbooks/roles/ceph-mon
       ignore_errors: yes
       with_items:
         - ceph-448.patch
 
     - name: Bugs - Apply Patches (Ceph OSD)
-      command: git apply /opt/cloud-training/patches/{{ item }} chdir=/opt/rpc-openstack/rpcd/playbooks/roles/ceph-osd
+      command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack/rpcd/playbooks/roles/ceph-osd
       ignore_errors: yes
       with_items: []
 
     - name: Bugs - Apply Patches (Ceph Common)
-      command: git apply /opt/cloud-training/patches/{{ item }} chdir=/opt/rpc-openstack/rpcd/playbooks/roles/ceph-common
+      command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack/rpcd/playbooks/roles/ceph-common
       ignore_errors: yes
       with_items:
         - ceph-485.patch
