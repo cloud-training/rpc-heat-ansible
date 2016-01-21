@@ -330,22 +330,14 @@
     - name: Clone RPC Repo
       git: repo=https://github.com/rcbops/rpc-openstack dest=/opt/rpc-openstack version={{ rpc_release }} recursive=yes force=yes
 
-    - name: Create /opt/cloud-training/patches
-      file: dest=/opt/cloud-training/patches state=directory
-
-    - name: Bugs - Fetch Patches
-      copy: src=files/opt/cloud-training/patches/{{ item }} dest=/opt/cloud-training/patches/{{ item }}
-      with_items:
-        - bug-621.patch
-        - bug-rabbitless-maas.patch
-
     - name: Bugs - Apply Patches (OpenStack Ansible)
-      command: git apply /opt/cloud-training/patches/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible
+      command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible
       ignore_errors: yes
-      with_items: []
+      with_items:
+        - bug-pin-pip.patch
 
     - name: Bugs - Apply Patches (RPC OpenStack)
-      command: git apply /opt/cloud-training/patches/{{ item }} chdir=/opt/rpc-openstack
+      command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack
       ignore_errors: yes
       with_items:
         - bug-621.patch
