@@ -368,16 +368,13 @@
       ignore_errors: yes
       with_items:
         - bug-621.patch
-        - bug-675.patch
         - bug-747.patch
-        - bug-rabbitless-maas.patch
         - bug-network-checks-list-empty.patch
 
     - name: Bugs - Apply Patches (Ceph MON)
       command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack/rpcd/playbooks/roles/ceph-mon
       ignore_errors: yes
-      with_items:
-        - ceph-448.patch
+      with_items: []
 
     - name: Bugs - Apply Patches (Ceph OSD)
       command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack/rpcd/playbooks/roles/ceph-osd
