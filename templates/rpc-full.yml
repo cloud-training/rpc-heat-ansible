@@ -39,6 +39,10 @@ parameters:
     type: string
     label: Rackspace Cloud API Key
     default: 'SomeAPIKey'
+  maas_notification_email_address:
+    type: string
+    label: MaaS Notification Email Address
+    default: 'rpc-mass-alerts@mg.cloudtrain.me'
   apply_patches:
     type: string
     label: Apply Patches
@@ -53,6 +57,33 @@ parameters:
     default: 2
 
 resources:
+  notification:
+    type: Rackspace::CloudMonitoring::Notification
+    properties:
+      label:
+        str_replace:
+          template: "%heat_stack_prefix%-rpc-notification"
+          params:
+            "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
+      type: email
+      details:
+        address: { get_param: "maas_notification_email_address" }
+
+  notification_plan:
+    type: Rackspace::CloudMonitoring::NotificationPlan
+    properties:
+      label:
+        str_replace:
+          template: "%heat_stack_prefix%-rpc-notification-plan"
+          params:
+            "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
+      warning_state:
+      - { get_resource: notification }
+      critical_state:
+      - { get_resource: notification }
+      ok_state:
+      - { get_resource: notification }
+
   password:
     type: OS::Heat::RandomString
     properties:
@@ -183,6 +214,7 @@ resources:
                   rpc_release=%rpc_release%
                   apply_patches=%apply_patches%
                   deploy_retries=%deploy_retries%
+                  maas_notification_plan=%maas_notification_plan%
                   
                   [all]
                   infra1      ansible_connection=local    node_id=1
@@ -220,6 +252,7 @@ resources:
                   "%rpc_release%":               { get_param: "rpc_release" }
                   "%apply_patches%":             { get_param: "apply_patches" }
                   "%deploy_retries%":            { get_param: "deploy_retries" }
+                  "%maas_notification_plan%":    { get_resource: notification_plan }
                   "%server_logger1_ip%":         { get_attr: [ server_logger1, accessIPv4 ] }
                   "%server_compute1_ip%":        { get_attr: [ server_compute1, accessIPv4 ] }
                   "%server_block1_ip%":          { get_attr: [ server_block1, accessIPv4 ] }
