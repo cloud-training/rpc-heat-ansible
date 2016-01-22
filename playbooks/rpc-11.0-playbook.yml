@@ -340,7 +340,6 @@
       command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack
       ignore_errors: yes
       with_items:
-        - bug-621.patch
         - bug-rabbitless-maas.patch
 
     - name: Create /etc/openstack_deploy
