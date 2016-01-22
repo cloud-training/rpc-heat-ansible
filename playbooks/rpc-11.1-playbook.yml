@@ -369,6 +369,7 @@
       with_items:
         - bug-621.patch
         - bug-747.patch
+        - bug-769.patch
         - bug-network-checks-list-empty.patch
 
     - name: Bugs - Apply Patches (Ceph MON)
