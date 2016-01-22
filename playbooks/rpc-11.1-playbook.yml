@@ -418,6 +418,13 @@
     - name: Run Password Token Generation Script Done Fact
       ini_file: dest=/etc/ansible/facts.d/pw_token_gen.fact section=state option=done value=true
 
+    - name: Update RPC User Variables File
+      lineinfile: dest=/etc/openstack_deploy/user_extras_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
+      with_items:
+        - { regexp: '^neutron_dnsmasq_dns_servers:', line: 'neutron_dnsmasq_dns_servers: 8.8.8.8,8.8.4.4'}
+        - { regexp: '^neutron_network_device_mtu:', line: 'neutron_network_device_mtu: 1400'}
+        - { regexp: '^neutron_dhcp_config:', line: 'neutron_dhcp_config: { dhcp-option-force: "26,1400", log-facility: "/var/log/neutron/neutron-dnsmasq.log" }'}
+
     - name: Set Deploy Environment HAProxy Fact
       ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=deploy_haproxy value=yes
 
@@ -512,9 +519,6 @@
         - { regexp: '^maas_notification_plan:', line: 'maas_notification_plan: npTechnicalContactsEmail' }
         - { regexp: "^(#)?lb_name:", line: "lb_name: '{{ heat_stack_prefix|string }}-{{ groups.infra|first }}'" }
         - { regexp: '^(# )?maas_(nova|horizon)_scheme:', line: 'maas_horizon_scheme: https' }
-        - { regexp: '^neutron_dnsmasq_dns_servers:', line: 'neutron_dnsmasq_dns_servers: 8.8.8.8,8.8.4.4'}
-        - { regexp: '^neutron_network_device_mtu:', line: 'neutron_network_device_mtu: 1400'}
-        - { regexp: '^neutron_dhcp_config:', line: 'neutron_dhcp_config: { dhcp-option-force: "26,1400", log-facility: "/var/log/neutron/neutron-dnsmasq.log" }'}
         - { regexp: '^network_checks_list:', line: 'network_checks_list: []'} # Temporarily disable network checks.
         - { regexp: '^net_max_speed:', line: 'net_max_speed: 1000'} # NIC speed not discoverable on Cloud Servers.
 
