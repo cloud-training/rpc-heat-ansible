@@ -39,6 +39,14 @@ parameters:
     type: string
     label: Rackspace Cloud API Key
     default: 'SomeAPIKey'
+  apply_patches:
+    type: string
+    label: Apply Patches
+    default: True
+    constraints:
+      - allowed_values:
+        - True
+        - False
 
 resources:
   password:
@@ -199,6 +207,7 @@ resources:
                   rackspace_cloud_password=%rackspace_cloud_password%
                   rackspace_cloud_api_key=%rackspace_cloud_api_key%
                   rpc_release=%rpc_release%
+                  apply_patches=%apply_patches%
                   
                   [all]
                   infra1      ansible_connection=local    node_id=1
@@ -240,6 +249,7 @@ resources:
                   "%rackspace_cloud_password%":  { get_param: "rackspace_cloud_password" }
                   "%rackspace_cloud_api_key%":   { get_param: "rackspace_cloud_api_key" }
                   "%rpc_release%":               { get_param: "rpc_release" }
+                  "%apply_patches%":             { get_param: "apply_patches" }
                   "%server_infra2_ip%":          { get_attr: [ server_infra2, accessIPv4 ] }
                   "%server_infra3_ip%":          { get_attr: [ server_infra3, accessIPv4 ] }
                   "%server_logger1_ip%":         { get_attr: [ server_logger1, accessIPv4 ] }

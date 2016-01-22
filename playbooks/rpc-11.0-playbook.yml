@@ -332,12 +332,14 @@
 
     - name: Bugs - Apply Patches (OpenStack Ansible)
       command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible
+      when: apply_patches | bool
       ignore_errors: yes
       with_items:
         - bug-pin-pip.patch
 
     - name: Bugs - Apply Patches (RPC OpenStack)
       command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack
+      when: apply_patches | bool
       ignore_errors: yes
       with_items:
         - bug-rabbitless-maas.patch
