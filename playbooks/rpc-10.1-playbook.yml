@@ -328,6 +328,7 @@
 
     - name: Bugs - Apply Patches (OpenStack Ansible)
       command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/openstack-ansible
+      when: apply_patches | bool
       ignore_errors: yes
       with_items:
         - bug-1522897.patch
