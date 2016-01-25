@@ -47,6 +47,10 @@ parameters:
       - allowed_values:
         - True
         - False
+  deploy_retries:
+    type: number
+    label: Deploy Retries
+    default: 2
 
 resources:
   password:
@@ -188,6 +192,7 @@ resources:
                   rackspace_cloud_api_key=%rackspace_cloud_api_key%
                   rpc_release=%rpc_release%
                   apply_patches=%apply_patches%
+                  deploy_retries=%deploy_retries%
                   
                   [all]
                   infra1      ansible_connection=local    node_id=1
@@ -226,6 +231,7 @@ resources:
                   "%rackspace_cloud_api_key%":   { get_param: "rackspace_cloud_api_key" }
                   "%rpc_release%":               { get_param: "rpc_release" }
                   "%apply_patches%":             { get_param: "apply_patches" }
+                  "%deploy_retries%":            { get_param: "deploy_retries" }
                   "%server_logger1_ip%":         { get_attr: [ server_logger1, accessIPv4 ] }
                   "%server_compute1_ip%":        { get_attr: [ server_compute1, accessIPv4 ] }
                   "%server_block1_ip%":          { get_attr: [ server_block1, accessIPv4 ] }

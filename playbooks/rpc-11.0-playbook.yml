@@ -460,6 +460,10 @@
   tasks:
     - name:
       shell: ./scripts/deploy.sh >> /opt/cloud-training/deploy.sh.log 2>> /opt/cloud-training/deploy.sh.err chdir=/opt/rpc-openstack/
+      register: deploy_result
+      until: deploy_result.rc == 0
+      retries: "{{ deploy_retries }}"
+      delay: 10
       environment:
         DEPLOY_HAPROXY: "{{ ansible_local.deploy_environment.option.deploy_haproxy }}"
         DEPLOY_MAAS: "{{ ansible_local.deploy_environment.option.deploy_maas }}"

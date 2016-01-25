@@ -8,6 +8,12 @@ sudo pip install oslo.config
 # Environment Binding
 $PUBLIC_CLOUD_CREDENTIALS
 
+if [[ "$APPLY_PATCHES" == "True" ]]; then
+    PATCH_STATUS="patched"
+elif [[ "$APPLY_PATCHES" == "False" ]]; then
+    PATCH_STATUS="unpatched"
+fi
+
 if [[ "$RPC_RELEASE" == "juno" ]]; then
     RPC_SERIES="10.1"
 elif [[ "$RPC_RELEASE" == "kilo" ]]; then
@@ -18,9 +24,9 @@ else
     RPC_SERIES=`echo $RPC_RELEASE | sed 's/^r//g' | awk -F '[\.]' '{ print $1 "." $2 }'`
 fi
 
-STACK_NAME=rpc-jenkins-$BUILD_NUMBER-install-`echo $RPC_RELEASE | sed 's/\./-/g'`-$HEAT_ENVIRONMENT
+STACK_NAME=rpc-jenkins-$BUILD_NUMBER-install-`echo $RPC_RELEASE | sed 's/\./-/g'`-$HEAT_ENVIRONMENT-$PATCH_STATUS
 
-heat stack-create -t 240 -f templates/rpc-$HEAT_TEMPLATE.yml -e environments/rpc-$RPC_SERIES-$HEAT_ENVIRONMENT.yml -e $HEAT_ENVIRONMENT_MAAS_CREDENTIALS -P rpc_release=$RPC_RELEASE -P rpc_heat_ansible_release=$RPC_HEAT_ANSIBLE_RELEASE -P apply_patches=$APPLY_PATCHES $STACK_NAME
+heat stack-create -t 240 -f templates/rpc-$HEAT_TEMPLATE.yml -e environments/rpc-$RPC_SERIES-$HEAT_ENVIRONMENT.yml -e $HEAT_ENVIRONMENT_MAAS_CREDENTIALS -P rpc_release=$RPC_RELEASE -P rpc_heat_ansible_release=$RPC_HEAT_ANSIBLE_RELEASE -P apply_patches=$APPLY_PATCHES -P deploy_retries=$DEPLOY_RETRIES $STACK_NAME
 
 BUILD_COMPLETED=0
 BUILD_FAILED=0
@@ -64,7 +70,7 @@ if [[ $BUILD_FAILED -eq 1 && $SWIFT_SIGNAL_FAILED -gt 0 || ( $BUILD_FAILED -eq 0
   echo "===================================================="
   echo "Build Failure Analyzer Extractions:"
   echo ""
-  grep -e "fatal: \[" -e "failed: \[" -e "msg: " -e "\.\.\.ignoring" -e "stderr: " -e "stdout: " -e "OSError: " -e "UndefinedError: " runcmd-bash.log deploy.sh.log
+  grep -e "fatal: \[" -e "failed: \[" -e "msg: " -e "\.\.\.ignoring" -e "stderr: " -e "stdout: " -e "OSError: " -e "UndefinedError: " -e "PLAY" runcmd-bash.log deploy.sh.log
 fi
 
 BUILD_DELETED=1
