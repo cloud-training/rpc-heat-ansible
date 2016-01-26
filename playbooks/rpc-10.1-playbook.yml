@@ -426,98 +426,98 @@
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/setup/setup-common.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'Setup - Build Containers' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/setup/build-containers.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'Setup - Restart Containers' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/setup/restart-containers.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'Setup - Containers Common' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/setup/containers-common.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'Infrastructure - HAProxy Install' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/haproxy-install.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'Infrastructure - Memcached Install' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/memcached-install.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'Infrastructure - Galera Install' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/galera-install.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'Infrastructure - Rabbit Install' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/rabbit-install.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'Infrastructure - Rsyslog Install' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/rsyslog-install.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'Infrastructure - Elasticsearch Install' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/elasticsearch-install.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'Infrastructure - Logstash Install' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/logstash-install.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'Infrastructure - Kibana Install' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/kibana-install.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'Infrastructure - Elasticsearch CLI Install' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/es2unix-install.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'Infrastructure - Rsyslog Config' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/rsyslog-config.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
 - name: Install Compute - Play 1 of 2
@@ -529,35 +529,35 @@
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/keystone-all.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'OpenStack - Glance All' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/glance-all.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'OpenStack - Heat All' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/heat-all.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'OpenStack - Nova All' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/nova-all.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'OpenStack - Neutron All' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/neutron-all.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
 - name: Install Block
@@ -569,7 +569,7 @@
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/cinder-all.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
 - name: Install Object
@@ -581,7 +581,7 @@
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/swift-all.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
 - name: Install Compute - Play 2 of 2
@@ -593,21 +593,21 @@
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/horizon-all.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'OpenStack - Utility All' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/utility-all.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'OpenStack - RPC Support All' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/openstack/rpc-support-all.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
 - name: Install Common - Play 2 of 2
@@ -621,7 +621,7 @@
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/infrastructure/rsyslog-config.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
 - name: Install MaaS - Play 1 of 2
@@ -633,42 +633,42 @@
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/monitoring/raxmon-all.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'Monitoring - MaaS Local' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/monitoring/maas_local.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'Monitoring - MaaS Remote' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/monitoring/maas_remote.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'Monitoring - MaaS CDM' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/monitoring/maas_cdm.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'Monitoring - MaaS SSL Check' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/monitoring/maas_ssl_check.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
     - name: Run 'Monitoring - MaaS Swift' Playbook
       command: ansible-playbook -e @/etc/rpc_deploy/user_variables.yml playbooks/monitoring/swift_maas.yml chdir=/opt/openstack-ansible/rpc_deployment/
       register: playbook_result
       until: playbook_result.rc == 0
-      retries: 5
+      retries: 2
       delay: 10
 
 - name: Install MaaS - Play 2 of 2
