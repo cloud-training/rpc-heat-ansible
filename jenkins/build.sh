@@ -85,6 +85,11 @@ until [[ $BUILD_DELETED -eq 0 ]]; do
   echo "Stack Status:        $STACK_STATUS"
   echo "Build Deleted:       $BUILD_DELETED"
   if [[ "$STACK_STATUS" != 'DELETE_IN_PROGRESS' ]]; then
+    NETWORK_ID=`heat resource-list $STACK_NAME | awk '/ OS::Neutron::Net / { print $4 }'`
+    for PORT_ID in `rack networks port list --network-id $NETWORK_ID --fields id --no-header`; do
+      rack networks port delete --id $PORT_ID
+      sleep 20
+    done
     heat stack-delete $STACK_NAME
   fi
 done
