@@ -70,7 +70,7 @@ if [[ $BUILD_FAILED -eq 1 && $SWIFT_SIGNAL_FAILED -gt 0 || ( $BUILD_FAILED -eq 0
   echo "===================================================="
   echo "Build Failure Analyzer Extractions:"
   echo ""
-  grep -e "fatal: \[" -e "failed: \[" -e "msg: " -e "\.\.\.ignoring" -e "stderr: " -e "stdout: " -e "OSError: " -e "UndefinedError: " -e "PLAY" runcmd-bash.log deploy.sh.log
+  grep -e "fatal: \[" -e "failed: \[" -e "msg: " -e "\.\.\.ignoring" -e "stderr: " -e "stdout: " -e "OSError: " -e "UndefinedError: " -e ", W:" -e ", E:" -e "PLAY" runcmd-bash.log deploy.sh.log
 fi
 
 BUILD_DELETED=1
