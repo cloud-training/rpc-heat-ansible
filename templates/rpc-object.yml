@@ -42,7 +42,7 @@ parameters:
   maas_notification_email_address:
     type: string
     label: MaaS Notification Email Address
-    default: 'rpc-mass-alerts@mg.cloudtrain.me'
+    default: 'rpc-maas-alerts@mg.cloudtrain.me'
   apply_patches:
     type: string
     label: Apply Patches

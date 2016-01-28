@@ -306,6 +306,6 @@ Unless explicitly specified via an environment file or as an override, the follo
 | `rpc_release`                     | `r11.1.1`                                                |
 | `rpc_heat_ansible_release`        | `master`                                                 |
 | `rpc_heat_ansible_repo`           | `https://github.com/cloud-training/rpc-heat-ansible.git` |
-| `maas_notification_email_address` | `rpc-mass-alerts@mg.cloudtrain.me`                       |
+| `maas_notification_email_address` | `rpc-maas-alerts@mg.cloudtrain.me`                       |
 | `apply_patches`                   | `True`                                                   |
 | `deploy_retries`                  | `2`                                                      |
