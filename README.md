@@ -299,12 +299,12 @@ heat stack-create -t 240 \
 
 Unless explicitly specified via an environment file or as an override, the following defaults will be used.
 
-| Parameter                         | Default                                                  | Description                                     |
-|-----------------------------------|----------------------------------------------------------|-------------------------------------------------|
-| `ansible_tags`                    | `prepare`                                                | Comma separated list of tags to run.            |
-| `rpc_release`                     | `r11.1.1`                                                | Tag, Branch, or SHA of RPC to install.          |
-| `rpc_heat_ansible_release`        | `master`                                                 | Tag, Branch, or SHA of RPC Heat Ansible to use. |
-| `rpc_heat_ansible_repo`           | `https://github.com/cloud-training/rpc-heat-ansible.git` | Git Repo of RPC Heat Ansible to use.            |
-| `maas_notification_email_address` | `rpc-mass-alerts@mg.cloudtrain.me`                       | Email address to send MaaS notifications to.    |
-| `apply_patches`                   | `True`                                                   | Apply patches to Make It Work&trade;.           |
-| `deploy_retries`                  | `2`                                                      | Number of retries running `deploy.sh`.          |
+| Parameter                         | Default                                                  |
+|-----------------------------------|----------------------------------------------------------|
+| `ansible_tags`                    | `prepare`                                                |
+| `rpc_release`                     | `r11.1.1`                                                |
+| `rpc_heat_ansible_release`        | `master`                                                 |
+| `rpc_heat_ansible_repo`           | `https://github.com/cloud-training/rpc-heat-ansible.git` |
+| `maas_notification_email_address` | `rpc-mass-alerts@mg.cloudtrain.me`                       |
+| `apply_patches`                   | `True`                                                   |
+| `deploy_retries`                  | `2`                                                      |
