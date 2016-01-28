@@ -436,12 +436,11 @@
       pip: name=rackspace-monitoring-cli state=present
 
     - name: Get IP Address Alias
-      shell: raxmon-entities-list --details --username={{ rackspace_cloud_username }} --api-key={{ rackspace_cloud_api_key }} | grep {{ hostvars[inventory_hostname].ansible_eth0.ipv4.address }}
+      shell: raxmon-entities-list --details --username={{ rackspace_cloud_username }} --api-key={{ rackspace_cloud_api_key }} | awk -F "(" '/{{ hostvars[inventory_hostname].ansible_eth0.ipv4.address }}/ { print $2 }' | awk -F "'" '{ print $2}' | head -n 1
       register: infra1_maas_target_alias
 
-    - name: Get MaaS Target Alias - Public 1
-      lineinfile: "dest=/etc/openstack_deploy/user_extras_variables.yml regexp='maas_target_alias:' line='maas_target_alias: public1_v4' state=present"
-      when: "'public1_v4' in infra1_maas_target_alias.stdout"
+    - name: Set MaaS Target Alias
+      lineinfile: "dest=/etc/openstack_deploy/user_extras_variables.yml regexp='maas_target_alias:' line='maas_target_alias: {{ infra1_maas_target_alias.stdout }}' state=present"
 
     - name: Set Deploy Environment MaaS Fact
       ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=deploy_maas value=yes
