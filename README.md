@@ -89,6 +89,7 @@ parameters:
   rackspace_cloud_username: SomeUserName
   rackspace_cloud_password: SomeUsersPassword
   rackspace_cloud_api_key: SomeAPIKey
+  maas_notification_email_address: you@example.com
 ```
 
 ### Sample Deployments v11.1
