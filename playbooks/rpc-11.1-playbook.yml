@@ -522,7 +522,7 @@
         - { regexp: '^rackspace_cloud_username:', line: 'rackspace_cloud_username: {{ rackspace_cloud_username }}' }
         - { regexp: '^rackspace_cloud_password:', line: 'rackspace_cloud_password: {{ rackspace_cloud_password }}' }
         - { regexp: '^rackspace_cloud_api_key:', line: 'rackspace_cloud_api_key: {{ rackspace_cloud_api_key }}' }
-        - { regexp: '^maas_notification_plan:', line: 'maas_notification_plan: npTechnicalContactsEmail' }
+        - { regexp: '^maas_notification_plan:', line: 'maas_notification_plan: {{ maas_notification_plan }}' }
         - { regexp: "^(#)?lb_name:", line: "lb_name: '{{ heat_stack_prefix|string }}-{{ groups.infra|first }}'" }
         - { regexp: '^(# )?maas_(nova|horizon)_scheme:', line: 'maas_horizon_scheme: https' }
         - { regexp: '^network_checks_list:', line: 'network_checks_list: []'} # Temporarily disable network checks.
