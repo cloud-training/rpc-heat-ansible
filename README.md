@@ -2,10 +2,10 @@
 
 ```
 heat stack-create -t 240 \
-                  -f templates/rpc-*.yml \
-                  -e environments/*.yml \
-                  [-e environments/user-maas-credentials.yml] \
-                  <stack-name>
+  -f templates/rpc-*.yml \
+  -e environments/*.yml \
+  [-e environments/user-maas-credentials.yml] \
+  <stack-name>
 ```
 
 ### Build Status
@@ -97,95 +97,95 @@ parameters:
 
 ```
 heat stack-create -t 240 \
-                  -f templates/rpc-full-ceph.yml \
-                  -e environments/rpc-11.1-full-ceph-net-maas.yml \
-                  -e environments/user-maas-credentials.yml \
-                  <stack-name>
+  -f templates/rpc-full-ceph.yml \
+  -e environments/rpc-11.1-full-ceph-net-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
 ```
 
 #### RPC v11.1 Full + Ceph + MaaS
 
 ```
 heat stack-create -t 240 \
-                  -f templates/rpc-full-ceph.yml \
-                  -e environments/rpc-11.1-full-ceph-maas.yml \
-                  -e environments/user-maas-credentials.yml \
-                  <stack-name>
+  -f templates/rpc-full-ceph.yml \
+  -e environments/rpc-11.1-full-ceph-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
 ```
 
 #### RPC v11.1 Full + Ceph + External Network
 
 ```
 heat stack-create -t 240 \
-                  -f templates/rpc-full-ceph.yml \
-                  -e environments/rpc-11.1-full-ceph-net.yml \
-                   <stack-name>
+  -f templates/rpc-full-ceph.yml \
+  -e environments/rpc-11.1-full-ceph-net.yml \
+   <stack-name>
 ```
 
 #### RPC v11.1 Full + Ceph
 
 ```
 heat stack-create -t 240 \
-                  -f templates/rpc-full-ceph.yml \
-                  -e environments/rpc-11.1-full-ceph.yml \
-                  <stack-name>
+  -f templates/rpc-full-ceph.yml \
+  -e environments/rpc-11.1-full-ceph.yml \
+  <stack-name>
 ```
 
 #### RPC v11.1 Full + External Network + MaaS
 
 ```
 heat stack-create -t 240 \
-                  -f templates/rpc-full.yml \
-                  -e environments/rpc-11.1-full-net-maas.yml \
-                  -e environments/user-maas-credentials.yml \
-                  <stack-name>
+  -f templates/rpc-full.yml \
+  -e environments/rpc-11.1-full-net-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
 ```
 
 #### RPC v11.1 Full + MaaS
 
 ```
 heat stack-create -t 240 \
-                  -f templates/rpc-full.yml \
-                  -e environments/rpc-11.1-full-maas.yml \
-                  -e environments/user-maas-credentials.yml \
-                  <stack-name>
+  -f templates/rpc-full.yml \
+  -e environments/rpc-11.1-full-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
 ```
 
 #### RPC v11.1 Full + External Network
 
 ```
 heat stack-create -t 240 \
-                  -f templates/rpc-full.yml \
-                  -e environments/rpc-11.1-full-net.yml \
-                  <stack-name>
+  -f templates/rpc-full.yml \
+  -e environments/rpc-11.1-full-net.yml \
+  <stack-name>
 ```
 
 #### RPC v11.1 Full
 
 ```
 heat stack-create -t 240 \
-                  -f templates/rpc-full.yml \
-                  -e environments/rpc-11.1-full.yml \
-                  <stack-name>
+  -f templates/rpc-full.yml \
+  -e environments/rpc-11.1-full.yml \
+  <stack-name>
 ```
 
 #### RPC v11.1 Stand-Alone Object + MaaS
 
 ```
 heat stack-create -t 240 \
-                  -f templates/rpc-object.yml \
-                  -e environments/rpc-11.1-object-maas.yml \
-                  -e environments/user-maas-credentials.yml \
-                  <stack-name>
+  -f templates/rpc-object.yml \
+  -e environments/rpc-11.1-object-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
 ```
 
 #### RPC v11.1 Stand-Alone Object
 
 ```
 heat stack-create -t 240 \
-                  -f templates/rpc-object.yml \
-                  -e environments/rpc-11.1-object.yml \
-                  <stack-name>
+  -f templates/rpc-object.yml \
+  -e environments/rpc-11.1-object.yml \
+  <stack-name>
 ```
 
 ### Sample Deployments v11.0
@@ -195,57 +195,57 @@ heat stack-create -t 240 \
 
 ```
 heat stack-create -t 240 \
-                  -f templates/rpc-full.yml \
-                  -e environments/rpc-11.0-full-net-maas.yml \
-                  -e environments/user-maas-credentials.yml \
-                  <stack-name>
+  -f templates/rpc-full.yml \
+  -e environments/rpc-11.0-full-net-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
 ```
 
 #### RPC v11.0 Full + MaaS
 
 ```
 heat stack-create -t 240 \
-                  -f templates/rpc-full.yml \
-                  -e environments/rpc-11.0-full-maas.yml \
-                  -e environments/user-maas-credentials.yml \
-                  <stack-name>
+  -f templates/rpc-full.yml \
+  -e environments/rpc-11.0-full-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
 ```
 
 #### RPC v11.0 Full + External Network
 
 ```
 heat stack-create -t 240 \
-                  -f templates/rpc-full.yml \
-                  -e environments/rpc-11.0-full-net.yml \
-                  <stack-name>
+  -f templates/rpc-full.yml \
+  -e environments/rpc-11.0-full-net.yml \
+  <stack-name>
 ```
 
 #### RPC v11.0 Full
 
 ```
 heat stack-create -t 240 \
-                  -f templates/rpc-full.yml \
-                  -e environments/rpc-11.0-full.yml \
-                  <stack-name>
+  -f templates/rpc-full.yml \
+  -e environments/rpc-11.0-full.yml \
+  <stack-name>
 ```
 
 #### RPC v11.0 Stand-Alone Object + MaaS
 
 ```
 heat stack-create -t 240 \
-                  -f templates/rpc-object.yml \
-                  -e environments/rpc-11.0-object-maas.yml \
-                  -e environments/user-maas-credentials.yml \
-                  <stack-name>
+  -f templates/rpc-object.yml \
+  -e environments/rpc-11.0-object-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
 ```
 
 #### RPC v11.0 Stand-Alone Object
 
 ```
 heat stack-create -t 240 \
-                  -f templates/rpc-object.yml \
-                  -e environments/rpc-11.0-object.yml \
-                  <stack-name>
+  -f templates/rpc-object.yml \
+  -e environments/rpc-11.0-object.yml \
+  <stack-name>
 ```
 
 ### Sample Deployments v10.1
@@ -255,19 +255,19 @@ heat stack-create -t 240 \
 
 ```
 heat stack-create -t 240 \
-                  -f templates/rpc-full.yml \
-                  -e environments/rpc-10.1-full-maas.yml \
-                  -e environments/user-maas-credentials.yml \
-                  <stack-name>
+  -f templates/rpc-full.yml \
+  -e environments/rpc-10.1-full-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
 ```
 
 #### RPC v10.1 Full
 
 ```
 heat stack-create -t 240 \
-                  -f templates/rpc-full.yml \
-                  -e environments/rpc-10.1-full.yml \
-                  <stack-name>
+  -f templates/rpc-full.yml \
+  -e environments/rpc-10.1-full.yml \
+  <stack-name>
 ```
 
 ### Environment Overrides
@@ -278,19 +278,33 @@ Below is an example of overriding the `rpc_release` parameter to deploy from the
 
 ```
 heat stack-create -t 240 \
-                  -f templates/rpc-full.yml \
-                  -e environments/rpc-10.1-full.yml \
-                  -P rpc_release=juno \
-                  <stack-name>
+  -f templates/rpc-full.yml \
+  -e environments/rpc-10.1-full.yml \
+  -P rpc_release=juno \
+  <stack-name>
 ```
 
 Below is an example of overriding the `rpc_heat_ansible_repo` and `rpc_heat_ansible_release` parameters, useful when deploying from a different fork and / or branch of this repo.
 
 ```
 heat stack-create -t 240 \
-                  -f templates/rpc-full.yml \
-                  -e environments/rpc-10.1-full.yml \
-                  -P rpc_heat_ansible_repo=https://github.com/my_fork/rpc-heat-ansible.git \
-                  -P rpc_heat_ansible_release=my_branch \
-                  <stack-name>
+  -f templates/rpc-full.yml \
+  -e environments/rpc-10.1-full.yml \
+  -P rpc_heat_ansible_repo=https://github.com/my_fork/rpc-heat-ansible.git \
+  -P rpc_heat_ansible_release=my_branch \
+  <stack-name>
 ```
+
+#### Available Parameters
+
+Unless explicitly specified via an environment file or as an override, the following defaults will be used.
+
+| Parameter                         | Default                                                  | Description                                     |
+|-----------------------------------|----------------------------------------------------------|-------------------------------------------------|
+| `ansible_tags`                    | `prepare`                                                | Comma separated list of tags to run.            |
+| `rpc_release`                     | `r11.1.1`                                                | Tag, Branch, or SHA of RPC to install.          |
+| `rpc_heat_ansible_release`        | `master`                                                 | Tag, Branch, or SHA of RPC Heat Ansible to use. |
+| `rpc_heat_ansible_repo`           | `https://github.com/cloud-training/rpc-heat-ansible.git` | Git Repo of RPC Heat Ansible to use.            |
+| `maas_notification_email_address` | `rpc-mass-alerts@mg.cloudtrain.me`                       | Email address to send MaaS notifications to.    |
+| `apply_patches`                   | `True`                                                   | Apply patches to Make It Work&trade;.           |
+| `deploy_retries`                  | `2`                                                      | Number of retries running `deploy.sh`.          |
