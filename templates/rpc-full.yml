@@ -311,7 +311,18 @@ resources:
                   "%rpc_heat_ansible_repo%": { get_param: "rpc_heat_ansible_repo" }
                   "%rpc_release%": { get_param: "rpc_release" }
         runcmd:
-          - /opt/cloud-training/runcmd-bash >> /opt/cloud-training/runcmd-bash.log 2>> /opt/cloud-training/runcmd-bash.err
+          - tmux new-session -s rpc-heat-ansible -d
+          - tmux rename-window runcmd-bash
+          - tmux new-window -n runcmd-bash-logs
+          - tmux new-window -n deploy-sh-logs
+          - tmux select-window -t runcmd-bash-logs
+          - tmux send-keys "touch /opt/cloud-training/runcmd-bash.err /opt/cloud-training/runcmd-bash.log" C-m
+          - tmux send-keys "multitail -cT ansi /opt/cloud-training/runcmd-bash.err -cT ansi /opt/cloud-training/runcmd-bash.log" C-m
+          - tmux select-window -t deploy-sh-logs
+          - tmux send-keys "touch /opt/cloud-training/deploy.sh.err /opt/cloud-training/deploy.sh.log" C-m
+          - tmux send-keys "multitail -cT ansi /opt/cloud-training/deploy.sh.err -cT ansi /opt/cloud-training/deploy.sh.log" C-m
+          - tmux select-window -t runcmd-bash
+          - tmux send-keys "/opt/cloud-training/runcmd-bash >> /opt/cloud-training/runcmd-bash.log 2>> /opt/cloud-training/runcmd-bash.err" C-m
 
   cloud_config_logger1:
     type: OS::Heat::CloudConfig
