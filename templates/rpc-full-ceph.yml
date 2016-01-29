@@ -277,6 +277,7 @@ resources:
                 template: |
                   #!/bin/bash
                   export HOME="/root"
+                  export ANSIBLE_FORCE_COLOR="true"
                   set -e
                   set -x
                   function exit_failure {
