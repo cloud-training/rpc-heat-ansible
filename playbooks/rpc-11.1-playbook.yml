@@ -361,18 +361,13 @@
       command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible
       when: apply_patches | bool
       ignore_errors: yes
-      with_items:
-        - bug-pin-pip.patch
+      with_items: []
 
     - name: Bugs - Apply Patches (RPC OpenStack)
       command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack
       when: apply_patches | bool
       ignore_errors: yes
-      with_items:
-        - bug-621.patch
-        - bug-747.patch
-        - bug-769.patch
-        - bug-network-checks-list-empty.patch
+      with_items: []
 
     - name: Bugs - Apply Patches (Ceph MON)
       command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack/rpcd/playbooks/roles/ceph-mon
@@ -390,8 +385,7 @@
       command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack/rpcd/playbooks/roles/ceph-common
       when: apply_patches | bool
       ignore_errors: yes
-      with_items:
-        - ceph-485.patch
+      with_items: []
 
     - name: Create /etc/openstack_deploy
       file: dest=/etc/openstack_deploy state=directory
