@@ -309,3 +309,19 @@ Unless explicitly specified via an environment file or as an override, the follo
 | `maas_notification_email_address` | `rpc-maas-alerts@mg.cloudtrain.me`                       |
 | `apply_patches`                   | `True`                                                   |
 | `deploy_retries`                  | `2`                                                      |
+
+### Troubleshooting
+
+The build process is spawned inside a tmux session, which allows you to attach and follow along, or to troubleshoot or resume a failed build. There are also tmux windows tailing the various log files that are produced.
+
+![screen shot 2016-01-29 at 5 56 12 pm](https://cloud.githubusercontent.com/assets/954353/12691456/a1f1a17a-c6b1-11e5-91b2-bfb27b9a1e25.png)
+
+#### Attaching To tmux Session
+
+```
+# tmux list-sessions
+rpc-heat-ansible: 3 windows (created Fri Jan 29 23:17:33 2016) [159x44]
+# tmux attach-session -t rpc-heat-ansible
+```
+
+The default window `0:runcmd-bash` is the spawned build process. There is nothing much to see here. You can switch to one of the other windows `1:runcmd-bash-logs` or `2:deploy-sh-logs`, which both are tailing various logs. To switch windows, press `ctrl+b` then `1` or `2`, depending on which window you want to switch to.
