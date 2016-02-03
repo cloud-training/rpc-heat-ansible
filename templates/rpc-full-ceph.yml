@@ -55,6 +55,30 @@ parameters:
     type: number
     label: Deploy Retries
     default: 2
+  infra_flavor:
+    type: string
+    label: Infra Node Flavor
+    default: '8 GB Performance'
+  logger_flavor:
+    type: string
+    label: Logger Node Flavor
+    default: '4 GB Performance'
+  compute_flavor:
+    type: string
+    label: Compute Node Flavor
+    default: '4 GB Performance'
+  block_flavor:
+    type: string
+    label: Block Node Flavor
+    default: '4 GB Performance'
+  object_flavor:
+    type: string
+    label: Object Node Flavor
+    default: '2 GB Performance'
+  ceph_flavor:
+    type: string
+    label: Ceph Node Flavor
+    default: '8 GB Performance'
 
 resources:
   notification:
@@ -442,7 +466,7 @@ resources:
           template: "%heat_stack_prefix%-infra1"
           params:
             "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-      flavor: 8 GB Performance
+      flavor: { get_param: "infra_flavor" }
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: AUTO
       block_device_mapping:
@@ -466,7 +490,7 @@ resources:
           template: "%heat_stack_prefix%-logger1"
           params:
             "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-      flavor: 4 GB Performance
+      flavor: { get_param: "logger_flavor" }
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: AUTO
       block_device_mapping:
@@ -490,7 +514,7 @@ resources:
           template: "%heat_stack_prefix%-compute1"
           params:
             "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-      flavor: 4 GB Performance
+      flavor: { get_param: "compute_flavor" }
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: AUTO
       block_device_mapping:
@@ -514,7 +538,7 @@ resources:
           template: "%heat_stack_prefix%-block1"
           params:
             "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-      flavor: 4 GB Performance
+      flavor: { get_param: "block_flavor" }
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: AUTO
       block_device_mapping:
@@ -538,7 +562,7 @@ resources:
           template: "%heat_stack_prefix%-object1"
           params:
             "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-      flavor: 4 GB Performance
+      flavor: { get_param: "object_flavor" }
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: AUTO
       block_device_mapping:
@@ -562,7 +586,7 @@ resources:
           template: "%heat_stack_prefix%-ceph1"
           params:
             "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-      flavor: 8 GB Performance
+      flavor: { get_param: "ceph_flavor" }
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: AUTO
       block_device_mapping:
