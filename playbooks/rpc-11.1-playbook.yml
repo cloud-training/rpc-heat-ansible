@@ -607,6 +607,7 @@
   hosts: infra[0]
   tags:
     - ceph
+    - ceph-rule
   tasks:
     - name: Get node name
       shell: |
@@ -623,11 +624,19 @@
   hosts: ceph_mon[0]
   tags:
     - ceph
+    - ceph-rule
   tasks:
     - name: Dump Ceph CRUSH map
       shell: |
         ceph osd getcrushmap | crushtool -d - -o crush-map.txt
       register: crush_dump
+
+    - name: Check existing Ceph CRUSH rule
+      shell: |
+        grep -q "rule osd_chooseleaf" crush-map.txt
+      ignore_errors: yes
+      register: crush_rule_existing
+      when: crush_dump.rc == 0
 
     - name: Add OSD-chooseleaf rule
       shell: |
@@ -636,31 +645,31 @@
        cCB0YWtlIGRlZmF1bHQKICAgICAgICBzdGVwIGNob29zZWxlYWYgZmlyc3RuIDAgdHlwZSBvc2QK
        ICAgICAgICBzdGVwIGVtaXQKfQo=' | base64 -d >> crush-map.txt
       register: crush_rule
-      when: crush_dump.rc == 0
+      when: (crush_rule_existing is defined) and crush_dump.rc == 0 and crush_rule_existing.rc == 1
 
     - name: Compile Ceph CRUSH map
       shell: |
         crushtool -c crush-map.txt -o new-crush-map
       register: crush_compile
-      when: crush_rule.rc == 0
+      when: (crush_rule is defined and crush_rule_existing is defined) and crush_rule.rc == 0 and crush_rule_existing.rc == 1
 
     - name: Update Ceph CRUSH map
       shell: |
         ceph osd setcrushmap -i new-crush-map
       register: crush_upload
-      when: crush_compile.rc == 0
+      when: (crush_compile is defined and crush_rule_existing is defined) and crush_compile.rc == 0 and crush_rule_existing.rc == 1
 
     - name: Gather Ceph pools
       shell: |
         ceph osd pool ls
       register: ceph_pools
-      when: crush_upload.rc == 0
+      when: (crush_upload is defined and crush_rule_existing is defined) and crush_upload.rc == 0 and crush_rule_existing.rc == 1
 
     - name: Assign OSD-chooseleaf rule to Ceph pools
       shell: |
         ceph osd pool set {{ item }} crush_ruleset 1
       with_items: ceph_pools.stdout_lines
-      when: ceph_pools.rc == 0
+      when: (ceph_pools is defined and crush_rule_existing is defined) and ceph_pools.rc == 0 and crush_rule_existing.rc == 1
 
 - name: Restart MaaS
   hosts: all
