@@ -20,6 +20,7 @@
     - object_stand_alone
     - maas
     - ceph
+    - tempest
   tasks:
     - name: Install Packages
       apt: name={{ item }} state=present
@@ -167,6 +168,7 @@
     - object_stand_alone
     - maas
     - ceph
+    - tempest
   tasks:
     - name: Check Connectivity
       command: fping {{ item }}
@@ -350,6 +352,7 @@
     - object
     - object_stand_alone
     - maas
+    - tempest
   tasks:
     - name: Create /opt
       file: dest=/opt state=directory
@@ -538,6 +541,19 @@
     - name: Set Deploy Environment MaaS Verify Fact
       ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=verify_maas value=no
 
+- name: Configure Tempest
+  hosts: infra[0]
+  tags:
+    - tempest
+  tasks:
+    - name: Update OpenStack User Variables File
+      lineinfile: dest=/etc/openstack_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
+      with_items:
+        - { regexp: '^(# )?tempest_public_subnet_cidr:', line: 'tempest_public_subnet_cidr: 172.29.248.0/22' }
+
+    - name: Set Deploy Environment Tempest Fact
+      ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=deploy_tempest value=yes
+
 - name: Install RPC
   hosts: infra[0]
   tags:
@@ -547,6 +563,7 @@
     - object
     - object_stand_alone
     - maas
+    - tempest
   tasks:
     - name:
       shell: ./scripts/deploy.sh >> /opt/cloud-training/deploy.sh.log 2>> /opt/cloud-training/deploy.sh.err chdir=/opt/rpc-openstack/
@@ -558,6 +575,7 @@
         DEPLOY_HAPROXY: "{{ ansible_local.deploy_environment.option.deploy_haproxy }}"
         DEPLOY_MAAS: "{{ ansible_local.deploy_environment.option.deploy_maas }}"
         DEPLOY_CEPH: "{{ ansible_local.deploy_environment.option.deploy_ceph }}"
+        DEPLOY_TEMPEST: "{{ ansible_local.deploy_environment.option.deploy_tempest }}"
         VERIFY_MAAS: "{{ ansible_local.deploy_environment.option.verify_maas }}"
         ANSIBLE_FORCE_COLOR: "true"
         FORKS: "10"
