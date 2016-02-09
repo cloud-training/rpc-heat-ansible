@@ -10,28 +10,40 @@ heat stack-create -t 240 \
 
 ### Build Status
 
-| Deployment                                                                                      | Release   | Patched Builds *                                                                                                    | Unpatched Builds *                                                                                                              |
-|-------------------------------------------------------------------------------------------------|-----------|---------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
-| [RPC v11.1 Full + Ceph + External Network + MaaS](#rpc-v111-full--ceph--external-network--maas) | r11.1.3   | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Ceph Net MaaS - Latest Tag) | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Ceph Net MaaS - Latest Tag - Unpatched) |
-| [RPC v11.1 Full + Ceph + External Network](#rpc-v111-full--ceph--external-network)              | r11.1.3   | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Ceph Net - Latest Tag)      | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Ceph Net - Latest Tag - Unpatched)      |
-| [RPC v11.1 Full + External Network + MaaS](#rpc-v111-full--external-network--maas)              | r11.1.3   | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Net MaaS - Latest Tag)      | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Net MaaS - Latest Tag - Unpatched)      |
-| [RPC v11.1 Full + External Network](#rpc-v111-full--external-network)                           | r11.1.3   | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Net - Latest Tag)           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Net - Latest Tag - Unpatched)           |
-| [RPC v11.1 Stand-Alone Object + MaaS](#rpc-v111-stand-alone-object--maas)                       | r11.1.3   | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Object MaaS - Latest Tag)        | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Object MaaS - Latest Tag - Unpatched)        |
-| [RPC v11.1 Stand-Alone Object](#rpc-v111-stand-alone-object)                                    | r11.1.3   | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Object - Latest Tag)             | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Object - Latest Tag - Unpatched)             |
-| [RPC v11.0 Full + External Network + MaaS](#rpc-v110-full--external-network--maas)              | r11.0.4   | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.0 - Full Net MaaS - Latest Tag)      | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.0 - Full Net MaaS - Latest Tag - Unpatched)      |
-| [RPC v11.0 Full + External Network](#rpc-v110-full--external-network)                           | r11.0.4   | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.0 - Full Net - Latest Tag)           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.0 - Full Net - Latest Tag - Unpatched)           |
-| [RPC v11.0 Stand-Alone Object + MaaS](#rpc-v110-stand-alone-object--maas)                       | r11.0.4   | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.0 - Object MaaS - Latest Tag)        | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.0 - Object MaaS - Latest Tag - Unpatched)        |
-| [RPC v11.0 Stand-Alone Object](#rpc-v110-stand-alone-object)                                    | r11.0.4   | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.0 - Object - Latest Tag)             | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.0 - Object - Latest Tag - Unpatched)             |
-| [RPC v10.1 Full + MaaS](#rpc-v101-full--maas)                                                   | 10.1.18   | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v10.1 - Full MaaS - Latest Tag)          | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v10.1 - Full MaaS - Latest Tag - Unpatched)          |
-| [RPC v10.1 Full](#rpc-v101-full)                                                                | 10.1.18   | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v10.1 - Full - Latest Tag)               | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v10.1 - Full - Latest Tag - Unpatched)               |
-|  RPC v11.1 Full + Ceph + External Network + MaaS                                                | Kilo Head | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Ceph Net MaaS - Head)       | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Ceph Net MaaS - Head - Unpatched)       |
-|  RPC v11.1 Full + Ceph + External Network                                                       | Kilo Head | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Ceph Net - Head)            | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Ceph Net - Head - Unpatched)            |
-|  RPC v11.1 Full + External Network + MaaS                                                       | Kilo Head | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Net MaaS - Head)            | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Net MaaS - Head - Unpatched)            |
-|  RPC v11.1 Full + External Network                                                              | Kilo Head | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Net - Head)                 | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Net - Head - Unpatched)                 |
-|  RPC v11.1 Stand-Alone Object + MaaS                                                            | Kilo Head | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Object MaaS - Head)              | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Object MaaS - Head - Unpatched)              |
-|  RPC v11.1 Stand-Alone Object                                                                   | Kilo Head | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Object - Head)                   | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Object - Head - Unpatched)                   |
-|  RPC v10.1 Full + MaaS                                                                          | Juno Head | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v10.1 - Full MaaS - Head)                | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v10.1 - Full MaaS - Head - Unpatched)                |
-|  RPC v10.1 Full                                                                                 | Juno Head | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v10.1 - Full - Head)                     | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v10.1 - Full - Head - Unpatched)                     |
+| Deployment                                                                                      | Release           | Patched Builds *                                                                                                    | Unpatched Builds *                                                                                                              |
+|-------------------------------------------------------------------------------------------------|-------------------|---------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| [RPC v12.0 Full + Ceph + External Network + MaaS](#rpc-v120-full--ceph--external-network--maas) | r12.0.0rc1        | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Ceph Net MaaS - Latest Tag) | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Ceph Net MaaS - Latest Tag - Unpatched) |
+| [RPC v12.0 Full + Ceph + External Network](#rpc-v120-full--ceph--external-network)              | r12.0.0rc1        | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Ceph Net - Latest Tag)      | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Ceph Net - Latest Tag - Unpatched)      |
+| [RPC v12.0 Full + External Network + MaaS](#rpc-v120-full--external-network--maas)              | r12.0.0rc1        | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Net MaaS - Latest Tag)      | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Net MaaS - Latest Tag - Unpatched)      |
+| [RPC v12.0 Full + External Network](#rpc-v120-full--external-network)                           | r12.0.0rc1        | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Net - Latest Tag)           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Net - Latest Tag - Unpatched)           |
+| [RPC v12.0 Stand-Alone Object + MaaS](#rpc-v120-stand-alone-object--maas)                       | r12.0.0rc1        | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Object MaaS - Latest Tag)        | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Object MaaS - Latest Tag - Unpatched)        |
+| [RPC v12.0 Stand-Alone Object](#rpc-v120-stand-alone-object)                                    | r12.0.0rc1        | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Object - Latest Tag)             | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Object - Latest Tag - Unpatched)             |
+| [RPC v12.0 Full + Ceph + External Network + MaaS](#rpc-v111-full--ceph--external-network--maas) | r11.1.3           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Ceph Net MaaS - Latest Tag) | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Ceph Net MaaS - Latest Tag - Unpatched) |
+| [RPC v11.1 Full + Ceph + External Network](#rpc-v111-full--ceph--external-network)              | r11.1.3           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Ceph Net - Latest Tag)      | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Ceph Net - Latest Tag - Unpatched)      |
+| [RPC v11.1 Full + External Network + MaaS](#rpc-v111-full--external-network--maas)              | r11.1.3           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Net MaaS - Latest Tag)      | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Net MaaS - Latest Tag - Unpatched)      |
+| [RPC v11.1 Full + External Network](#rpc-v111-full--external-network)                           | r11.1.3           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Net - Latest Tag)           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Net - Latest Tag - Unpatched)           |
+| [RPC v11.1 Stand-Alone Object + MaaS](#rpc-v111-stand-alone-object--maas)                       | r11.1.3           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Object MaaS - Latest Tag)        | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Object MaaS - Latest Tag - Unpatched)        |
+| [RPC v11.1 Stand-Alone Object](#rpc-v111-stand-alone-object)                                    | r11.1.3           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Object - Latest Tag)             | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Object - Latest Tag - Unpatched)             |
+| [RPC v11.0 Full + External Network + MaaS](#rpc-v110-full--external-network--maas)              | r11.0.4           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.0 - Full Net MaaS - Latest Tag)      | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.0 - Full Net MaaS - Latest Tag - Unpatched)      |
+| [RPC v11.0 Full + External Network](#rpc-v110-full--external-network)                           | r11.0.4           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.0 - Full Net - Latest Tag)           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.0 - Full Net - Latest Tag - Unpatched)           |
+| [RPC v11.0 Stand-Alone Object + MaaS](#rpc-v110-stand-alone-object--maas)                       | r11.0.4           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.0 - Object MaaS - Latest Tag)        | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.0 - Object MaaS - Latest Tag - Unpatched)        |
+| [RPC v11.0 Stand-Alone Object](#rpc-v110-stand-alone-object)                                    | r11.0.4           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.0 - Object - Latest Tag)             | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.0 - Object - Latest Tag - Unpatched)             |
+| [RPC v10.1 Full + MaaS](#rpc-v101-full--maas)                                                   | 10.1.18           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v10.1 - Full MaaS - Latest Tag)          | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v10.1 - Full MaaS - Latest Tag - Unpatched)          |
+| [RPC v10.1 Full](#rpc-v101-full)                                                                | 10.1.18           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v10.1 - Full - Latest Tag)               | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v10.1 - Full - Latest Tag - Unpatched)               |
+|  RPC v12.0 Full + Ceph + External Network + MaaS                                                | Liberty-12.0 Head | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Ceph Net MaaS - Head)       | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Ceph Net MaaS - Head - Unpatched)       |
+|  RPC v12.0 Full + Ceph + External Network                                                       | Liberty-12.0 Head | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Ceph Net - Head)            | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Ceph Net - Head - Unpatched)            |
+|  RPC v12.0 Full + External Network + MaaS                                                       | Liberty-12.0 Head | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Net MaaS - Head)            | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Net MaaS - Head - Unpatched)            |
+|  RPC v12.0 Full + External Network                                                              | Liberty-12.0 Head | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Net - Head)                 | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Net - Head - Unpatched)                 |
+|  RPC v12.0 Stand-Alone Object + MaaS                                                            | Liberty-12.0 Head | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Object MaaS - Head)              | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Object MaaS - Head - Unpatched)              |
+|  RPC v12.0 Stand-Alone Object                                                                   | Liberty-12.0 Head | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Object - Head)                   | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Object - Head - Unpatched)                   |
+|  RPC v11.1 Full + Ceph + External Network + MaaS                                                | Kilo Head         | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Ceph Net MaaS - Head)       | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Ceph Net MaaS - Head - Unpatched)       |
+|  RPC v11.1 Full + Ceph + External Network                                                       | Kilo Head         | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Ceph Net - Head)            | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Ceph Net - Head - Unpatched)            |
+|  RPC v11.1 Full + External Network + MaaS                                                       | Kilo Head         | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Net MaaS - Head)            | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Net MaaS - Head - Unpatched)            |
+|  RPC v11.1 Full + External Network                                                              | Kilo Head         | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Net - Head)                 | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Full Net - Head - Unpatched)                 |
+|  RPC v11.1 Stand-Alone Object + MaaS                                                            | Kilo Head         | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Object MaaS - Head)              | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Object MaaS - Head - Unpatched)              |
+|  RPC v11.1 Stand-Alone Object                                                                   | Kilo Head         | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Object - Head)                   | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v11.1 - Object - Head - Unpatched)                   |
+|  RPC v10.1 Full + MaaS                                                                          | Juno Head         | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v10.1 - Full MaaS - Head)                | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v10.1 - Full MaaS - Head - Unpatched)                |
+|  RPC v10.1 Full                                                                                 | Juno Head         | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v10.1 - Full - Head)                     | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v10.1 - Full - Head - Unpatched)                     |
 
 \* _This repo maintains a set of patches that will be applied by default in order to create a working environment. Unpatched builds are also tracked for validation purposes. Be aware that unpatched builds may be passing, but MaaS checks and alarms could be broken. If you would like an unpatched build, you can pass the override `apply_patches=False` when creating your stack. See [Environment Overrides](#environment-overrides) below for more details._
 
@@ -46,6 +58,19 @@ Templates define the cloud resources necessary for the environment. These can be
 ### Environments
 
 Template parameters may be passed in through the use of an environment file. There are several environments that have been provided for various types of deployments. These can be found in the `environments` directory.
+
+#### RPC v12.0
+
+* `rpc-12.0-full-ceph-net-maas.yml` - Compute, Block, Object, Ceph, External Network, MaaS
+* `rpc-12.0-full-ceph-maas.yml`     - Compute, Block, Object, Ceph, MaaS
+* `rpc-12.0-full-ceph-net.yml`      - Compute, Block, Object, Ceph, External Network
+* `rpc-12.0-full-ceph.yml`          - Compute, Block, Object, Ceph
+* `rpc-12.0-full-net-maas.yml`      - Compute, Block, Object, External Network, MaaS
+* `rpc-12.0-full-maas.yml`          - Compute, Block, Object, Maas
+* `rpc-12.0-full-net.yml`           - Compute, Block, Object, External Network
+* `rpc-12.0-full.yml`               - Compute, Block, Object
+* `rpc-12.0-object-maas.yml`        - Stand-Alone Object, MaaS
+* `rpc-12.0-object.yml`             - Stand-Alone Object
 
 #### RPC v11.1
 
@@ -90,6 +115,103 @@ parameters:
   rackspace_cloud_password: SomeUsersPassword
   rackspace_cloud_api_key: SomeAPIKey
   maas_notification_email_address: you@example.com
+```
+
+### Sample Deployments v12.0
+
+#### RPC v12.0 Full + Ceph + External Network + MaaS
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full-ceph.yml \
+  -e environments/rpc-12.0-full-ceph-net-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
+```
+
+#### RPC v12.0 Full + Ceph + MaaS
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full-ceph.yml \
+  -e environments/rpc-12.0-full-ceph-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
+```
+
+#### RPC v12.0 Full + Ceph + External Network
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full-ceph.yml \
+  -e environments/rpc-12.0-full-ceph-net.yml \
+   <stack-name>
+```
+
+#### RPC v12.0 Full + Ceph
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full-ceph.yml \
+  -e environments/rpc-12.0-full-ceph.yml \
+  <stack-name>
+```
+
+#### RPC v12.0 Full + External Network + MaaS
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full.yml \
+  -e environments/rpc-12.0-full-net-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
+```
+
+#### RPC v12.0 Full + MaaS
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full.yml \
+  -e environments/rpc-12.0-full-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
+```
+
+#### RPC v12.0 Full + External Network
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full.yml \
+  -e environments/rpc-12.0-full-net.yml \
+  <stack-name>
+```
+
+#### RPC v12.0 Full
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full.yml \
+  -e environments/rpc-12.0-full.yml \
+  <stack-name>
+```
+
+#### RPC v12.0 Stand-Alone Object + MaaS
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-object.yml \
+  -e environments/rpc-12.0-object-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
+```
+
+#### RPC v12.0 Stand-Alone Object
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-object.yml \
+  -e environments/rpc-12.0-object.yml \
+  <stack-name>
 ```
 
 ### Sample Deployments v11.1

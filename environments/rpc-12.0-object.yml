@@ -1,0 +1,3 @@
+parameters:
+  ansible_tags: object_stand_alone
+  rpc_release: r12.0.0rc1

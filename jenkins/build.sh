@@ -18,8 +18,8 @@ if [[ "$RPC_RELEASE" == "juno" ]]; then
     RPC_SERIES="10.1"
 elif [[ "$RPC_RELEASE" == "kilo" ]]; then
     RPC_SERIES="11.1"
-elif [[ "$RPC_RELEASE" == "master" ]]; then
-    RPC_SERIES="11.1"
+elif [[ "$RPC_RELEASE" == "liberty-12.0" || "$RPC_RELEASE" == "master" ]]; then
+    RPC_SERIES="12.0"
 else
     RPC_SERIES=`echo $RPC_RELEASE | sed 's/^r//g' | awk -F '[\.]' '{ print $1 "." $2 }'`
 fi
@@ -70,7 +70,7 @@ if [[ $BUILD_FAILED -eq 1 && $SWIFT_SIGNAL_FAILED -gt 0 || ( $BUILD_FAILED -eq 0
   echo "===================================================="
   echo "Build Failure Analyzer Extractions:"
   echo ""
-  grep -e "fatal: \[" -e "failed: \[" -e "msg: " -e "\.\.\.ignoring" -e "stderr: " -e "stdout: " -e "OSError: " -e "UndefinedError: " -e ", W:" -e ", E:" -e "PLAY" runcmd-bash.log deploy.sh.log
+  grep -e "fatal: \[" -e "failed: \[" -e "msg: " -e "\.\.\.ignoring" -e "stderr: " -e "stdout: " -e "OSError: " -e "UndefinedError: " -e ", W:" -e ", E:" -e "PLAY" -e " Entity:" -e " Check:" -e " Alarm:" runcmd-bash.log deploy.sh.log
 fi
 
 BUILD_DELETED=1
