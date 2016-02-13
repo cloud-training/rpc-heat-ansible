@@ -577,7 +577,6 @@
         DEPLOY_CEPH: "{{ ansible_local.deploy_environment.option.deploy_ceph }}"
         DEPLOY_TEMPEST: "{{ ansible_local.deploy_environment.option.deploy_tempest }}"
         VERIFY_MAAS: "{{ ansible_local.deploy_environment.option.verify_maas }}"
-        ANSIBLE_FORCE_COLOR: "true"
         FORKS: "10"
 
 - name: Configure External Network - Play 1 of 2
