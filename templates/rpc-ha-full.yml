@@ -356,10 +356,10 @@ resources:
           - tmux new-window -n deploy-sh-logs
           - tmux select-window -t runcmd-bash-logs
           - tmux send-keys "touch /opt/cloud-training/runcmd-bash.err /opt/cloud-training/runcmd-bash.log" C-m
-          - tmux send-keys "multitail -cT ansi /opt/cloud-training/runcmd-bash.err -cT ansi /opt/cloud-training/runcmd-bash.log" C-m
+          - tmux send-keys "multitail /opt/cloud-training/runcmd-bash.err /opt/cloud-training/runcmd-bash.log" C-m
           - tmux select-window -t deploy-sh-logs
           - tmux send-keys "touch /opt/cloud-training/deploy.sh.err /opt/cloud-training/deploy.sh.log" C-m
-          - tmux send-keys "multitail -cT ansi /opt/cloud-training/deploy.sh.err -cT ansi /opt/cloud-training/deploy.sh.log" C-m
+          - tmux send-keys "multitail /opt/cloud-training/deploy.sh.err /opt/cloud-training/deploy.sh.log" C-m
           - tmux select-window -t runcmd-bash
           - tmux send-keys "/opt/cloud-training/runcmd-bash >> /opt/cloud-training/runcmd-bash.log 2>> /opt/cloud-training/runcmd-bash.err" C-m
 
