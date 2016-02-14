@@ -193,7 +193,6 @@ heat stack-create -t 240 \
 
 #### RPC v11.0 Full + External Network + MaaS
 
-
 ```
 heat stack-create -t 240 \
   -f templates/rpc-full.yml \
@@ -250,7 +249,6 @@ heat stack-create -t 240 \
 ```
 
 ### Sample Deployments v10.1
-
 
 #### RPC v10.1 Full + MaaS
 
