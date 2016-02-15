@@ -553,6 +553,23 @@
     - name: Set Deploy Environment Tempest Fact
       ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=deploy_tempest value=yes
 
+- name: Update LibVirt CPU Map
+  hosts: compute
+  tags:
+    - compute
+  tasks:
+    - name: Pre-Install LibVirt
+      apt: pkg=libvirt-bin state=present update_cache=yes force=yes
+
+    - name: Create /usr/share/libvirt
+      file: path=/usr/share/libvirt state=directory
+
+    - name: Copy LibVirt CPU Map
+      copy: src=files/usr/share/libvirt/cpu_map.xml dest=/usr/share/libvirt/cpu_map.xml
+
+    - name: Restart LibVirt
+      service: name=libvirt-bin state=restarted
+
 - name: Install RPC
   hosts: infra[0]
   tags:
@@ -630,20 +647,3 @@
     - name: Restart Rackspace Monitoring Agent
       service: name=rackspace-monitoring-agent state=restarted
       when: agent_installed.stat.exists
-
-- name: Update LibVirt CPU Map
-  hosts: compute
-  tags:
-    - compute
-  tasks:
-    - name: Create /usr/share/libvirt
-      file: path=/usr/share/libvirt state=directory
-
-    - name: Copy LibVirt CPU Map
-      copy: src=files/usr/share/libvirt/cpu_map.xml dest=/usr/share/libvirt/cpu_map.xml
-
-    - name: Restart LibVirt
-      service: name=libvirt-bin state=restarted
-
-    - name: Restart Nova Compute
-      service: name=nova-compute state=restarted
