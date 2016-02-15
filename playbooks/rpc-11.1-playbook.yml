@@ -525,6 +525,7 @@
         - { regexp: '^(# )?maas_(nova|horizon)_scheme:', line: 'maas_horizon_scheme: https' }
         - { regexp: '^network_checks_list:', line: 'network_checks_list: []'} # Temporarily disable network checks.
         - { regexp: '^net_max_speed:', line: 'net_max_speed: 1000'} # NIC speed not discoverable on Cloud Servers.
+        - { regexp: '^memory_used_percentage_threshold:', line: 'memory_used_percentage_threshold: 99.0'}
 
     - name: PIP Install Rackspace Monitoring CLI
       pip: name=rackspace-monitoring-cli state=present
