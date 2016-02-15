@@ -496,6 +496,7 @@
         - { regexp: '^pool_default_crush_rule:', line: 'pool_default_crush_rule: 0' } # Set to 1-node cluster, see below
         - { regexp: '^pool_default_pg_num:', line: 'pool_default_pg_num: 150' }       # (100 * OSDs) / pool_default_size. If you plan to extend the cluster use 300 * OSDs
         - { regexp: '^pool_default_pgp_num:', line: 'pool_default_pgp_num: 150' }     # Same as pool_default_pg_num
+        - { regexp: '^common_single_host_mode:', line: 'common_single_host_mode: true' }
 
         # pool_default_crush_rule:
         # 0 - 1-node cluster.
@@ -615,65 +616,6 @@
         source /root/openrc
         neutron subnet-create --name "Public Subnet" --disable-dhcp Public 172.29.248.0/22
       when: public_subnet_result.stdout_lines|length == 0
-
-- name: Gather Ceph monitor node
-  hosts: infra[0]
-  tags:
-    - ceph
-  tasks:
-    - name: Get node name
-      shell: |
-        lxc-ls -f |awk '/ceph_mon/ { print $1 }'
-      register: ceph_mon_node
-
-    - name: Add node to inventory
-      add_host: name={{ ceph_mon_node.stdout_lines | first }}
-                groups=ceph_mon
-                ansible_ssh_private_key_file=/root/.ssh/id_rsa
-      when: ceph_mon_node.rc == 0
-
-- name: Configure Ceph CRUSH rules
-  hosts: ceph_mon[0]
-  tags:
-    - ceph
-  tasks:
-    - name: Dump Ceph CRUSH map
-      shell: |
-        ceph osd getcrushmap | crushtool -d - -o crush-map.txt
-      register: crush_dump
-
-    - name: Add OSD-chooseleaf rule
-      shell: |
-       echo 'cnVsZSBvc2RfY2hvb3NlbGVhZiB7CiAgICAgICAgcnVsZXNldCAxCiAgICAgICAgdHlwZSByZXBs
-       aWNhdGVkCiAgICAgICAgbWluX3NpemUgMQogICAgICAgIG1heF9zaXplIDEwCiAgICAgICAgc3Rl
-       cCB0YWtlIGRlZmF1bHQKICAgICAgICBzdGVwIGNob29zZWxlYWYgZmlyc3RuIDAgdHlwZSBvc2QK
-       ICAgICAgICBzdGVwIGVtaXQKfQo=' | base64 -d >> crush-map.txt
-      register: crush_rule
-      when: crush_dump.rc == 0
-
-    - name: Compile Ceph CRUSH map
-      shell: |
-        crushtool -c crush-map.txt -o new-crush-map
-      register: crush_compile
-      when: crush_rule.rc == 0
-
-    - name: Update Ceph CRUSH map
-      shell: |
-        ceph osd setcrushmap -i new-crush-map
-      register: crush_upload
-      when: crush_compile.rc == 0
-
-    - name: Gather Ceph pools
-      shell: |
-        ceph osd pool ls
-      register: ceph_pools
-      when: crush_upload.rc == 0
-
-    - name: Assign OSD-chooseleaf rule to Ceph pools
-      shell: |
-        ceph osd pool set {{ item }} crush_ruleset 1
-      with_items: ceph_pools.stdout_lines
-      when: ceph_pools.rc == 0
 
 - name: Restart MaaS
   hosts: all
