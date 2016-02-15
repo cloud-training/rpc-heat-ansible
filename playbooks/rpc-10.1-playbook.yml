@@ -62,10 +62,10 @@
         - { regexp: '^export MY_PUBLIC_IP',         line: 'export MY_PUBLIC_IP={{ hostvars[inventory_hostname].ansible_eth0.ipv4.address }}' }
 
     - name: Create Swap File
-      command: dd if=/dev/zero of=/mnt/4GB.swap bs=1024 count=4194304 creates=/mnt/4GB.swap
+      command: dd if=/dev/zero of=/mnt/16GB.swap bs=1024 count=16777216 creates=/mnt/16GB.swap
 
     - name: Format Swap File
-      command: mkswap /mnt/4GB.swap
+      command: mkswap /mnt/16GB.swap
       changed_when: false
 
     - name: Check Swap File
@@ -74,11 +74,11 @@
       changed_when: false
 
     - name: Enable Swap File
-      command: swapon /mnt/4GB.swap
-      when: "'/mnt/4GB.swap' not in check_swap_file_result.stdout"
+      command: swapon /mnt/16GB.swap
+      when: "'/mnt/16GB.swap' not in check_swap_file_result.stdout"
 
     - name: Add Swap To /etc/fstab
-      lineinfile: dest=/etc/fstab line='/mnt/4GB.swap  none  swap  sw 0  0' insertafter=EOF state=present
+      lineinfile: dest=/etc/fstab line='/mnt/16GB.swap  none  swap  sw 0  0' insertafter=EOF state=present
 
     - name: Set Swappiness
       sysctl: name=vm.swappiness value=90 state=present
