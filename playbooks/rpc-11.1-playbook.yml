@@ -410,6 +410,9 @@
       lineinfile: dest=/etc/openstack_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
       with_items:
         - { regexp: '^(# )?nova_virt_type:', line: 'nova_virt_type: qemu' }
+        - { regexp: '^galera_innodb_buffer_pool_size:', line: 'galera_innodb_buffer_pool_size: 256M' }
+        - { regexp: '^galera_innodb_log_buffer_size:', line: 'galera_innodb_log_buffer_size: 32M' }
+        - { regexp: '^galera_wsrep_provider_options:', line: 'galera_wsrep_provider_options: [ { option: "gcache.size", value: "32M" } ]' }
 
     - name: Run Password Token Generation Script
       command: ./scripts/pw-token-gen.py --file /etc/openstack_deploy/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible

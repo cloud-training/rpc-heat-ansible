@@ -75,7 +75,7 @@ shared-infra_hosts:
 {% if groups.infra|length == 1 %}
     affinity:
       rabbit_mq_container: 3
-      galera_container: 2
+      galera_container: 3
 {% endif %}
 {% endfor %}
 {% endif %}
