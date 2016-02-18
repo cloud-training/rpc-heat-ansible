@@ -556,7 +556,7 @@ resources:
           template: "%heat_stack_prefix%-ceph1"
           params:
             "%heat_stack_prefix%": { "Fn::Select": [ "0", { "Fn::Split" : [ "-", { get_param: "OS::stack_id" } ] } ] }
-      flavor: 4 GB Performance
+      flavor: 8 GB Performance
       image: Ubuntu 14.04 LTS (Trusty Tahr) (PV)
       diskConfig: AUTO
       block_device_mapping:
