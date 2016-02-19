@@ -1,0 +1,52 @@
+From 9cc542f7f46bcc8aa2a4ba2b4605f9a4b201fbff Mon Sep 17 00:00:00 2001
+From: Matthew Thode <mthode@mthode.org>
+Date: Thu, 18 Feb 2016 15:35:13 -0600
+Subject: [PATCH] force removal of aodh and ceilometer conf files
+
+exits 0 when the file is not found, which is just fine here
+---
+ scripts/deploy.sh  | 8 ++++----
+ scripts/upgrade.sh | 8 ++++----
+ 2 files changed, 8 insertions(+), 8 deletions(-)
+
+diff --git a/scripts/deploy.sh b/scripts/deploy.sh
+index 8a47b54..a56d397 100755
+--- a/scripts/deploy.sh
++++ b/scripts/deploy.sh
+@@ -112,10 +112,10 @@ openstack-ansible -i "localhost," patcher.yml
+ 
+ # disable aodh and ceilometer
+ export DEPLOY_CEILOMETER=no
+-rm /etc/openstack_deploy/conf.d/aodh.yml
+-rm /etc/openstack_deploy/conf.d/ceilometer.yml
+-rm /etc/openstack_deploy/env.d/aodh.yml
+-rm /etc/openstack_deploy/env.d/ceilometer.yml
++rm -f /etc/openstack_deploy/conf.d/aodh.yml
++rm -f /etc/openstack_deploy/conf.d/ceilometer.yml
++rm -f /etc/openstack_deploy/env.d/aodh.yml
++rm -f /etc/openstack_deploy/env.d/ceilometer.yml
+ 
+ # begin the openstack installation
+ if [[ "${DEPLOY_OA}" == "yes" ]]; then
+diff --git a/scripts/upgrade.sh b/scripts/upgrade.sh
+index a9b0cdc..6200a8d 100755
+--- a/scripts/upgrade.sh
++++ b/scripts/upgrade.sh
+@@ -28,10 +28,10 @@ mv /tmp/upgrade_user_variables.yml /etc/rpc_deploy/user_variables.yml
+ 
+ # disable aodh and ceilometer
+ export DEPLOY_CEILOMETER=no
+-rm /etc/openstack_deploy/conf.d/aodh.yml
+-rm /etc/openstack_deploy/conf.d/ceilometer.yml
+-rm /etc/openstack_deploy/env.d/aodh.yml
+-rm /etc/openstack_deploy/env.d/ceilometer.yml
++rm -f /etc/openstack_deploy/conf.d/aodh.yml
++rm -f /etc/openstack_deploy/conf.d/ceilometer.yml
++rm -f /etc/openstack_deploy/env.d/aodh.yml
++rm -f /etc/openstack_deploy/env.d/ceilometer.yml
+ 
+ # Upgrade Ansible in-place so we have access to the patch module.
+ cd ${OA_DIR}
+-- 
+2.7.1
+

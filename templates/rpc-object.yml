@@ -278,20 +278,26 @@ resources:
                         export RPC_SERIES="10.1"
                     elif [[ "$@" == "kilo" ]]; then
                         export RPC_SERIES="11.1"
-                    elif [[ "$@" == "master" ]]; then
-                        export RPC_SERIES="11.1"
+                    elif [[ "$@" == "liberty-12.0" || "$@" == "master" ]]; then
+                        export RPC_SERIES="12.0"
                     else
                         export RPC_SERIES=`echo $@ | sed 's/^r//g' | awk -F '[\.]' '{ print $1 "." $2 }'`
                     fi
                   }
+                  function install_ansible {
+                    if [[ "$RPC_SERIES" == "10.1" ]]; then
+                      ANSIBLE_VERSION="1.6.10"
+                    elif [[ "$RPC_SERIES" == "11.0" || "$RPC_SERIES" == "11.1"  ]]; then
+                      ANSIBLE_VERSION="1.9.3"
+                    else
+                      ANSIBLE_VERSION="1.9.4"
+                    fi
+                    /usr/local/bin/pip install ansible==$ANSIBLE_VERSION || exit_failure "PIP Install Ansible Failure"
+                  }
                   get_rpc_series %rpc_release%
                   /usr/bin/pip install --upgrade pip || exit_failure "PIP Upgrade PIP Failure"
                   /usr/local/bin/pip install pip==1.5.6 || exit_failure "PIP Install PIP Failure"
-                  if [[ "$RPC_SERIES" == "10.1" ]]; then
-                    /usr/local/bin/pip install ansible==1.6.10 || exit_failure "PIP Install Ansible Failure"
-                  else
-                    /usr/local/bin/pip install ansible==1.9.2 || exit_failure "PIP Install Ansible Failure"
-                  fi
+                  install_ansible
                   cd /opt/cloud-training
                   # BEGIN - Terrible Chicken Egg Hack
                   export MY_PUBLIC_IP=`curl -s http://ipv4.icanhazip.com/`

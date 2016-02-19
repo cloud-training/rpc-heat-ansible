@@ -1,0 +1,37 @@
+---
+global_overrides:
+  swift:
+    part_power: 8
+    weight: 100
+    min_part_hours: 1
+    repl_number: 3
+    storage_network: "br-storage"
+    replication_network: "br-storage"
+    mount_point: /srv/node
+    drives:
+      - name: swift1
+      - name: swift2
+      - name: swift3
+      - name: swift4
+      - name: swift5
+    storage_policies:
+      - policy:
+          name: default
+          index: 0
+          default: True
+
+{% if groups.infra|length > 0 %}
+swift-proxy_hosts:
+{% for host in groups.infra %}
+  {{ heat_stack_prefix|string }}-{{ host }}:
+    ip: 172.29.236.{{ hostvars[ host ].node_id }}
+{% endfor %}
+{% endif %}
+
+{% if groups.object|length > 0 %}
+swift_hosts:
+{% for host in groups.object %}
+  {{ heat_stack_prefix|string }}-{{ host }}:
+    ip: 172.29.236.{{ hostvars[ host ].node_id }}
+{% endfor %}
+{% endif %}

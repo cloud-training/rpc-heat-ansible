@@ -1,0 +1,649 @@
+---
+# This playbook installs Rackspace Private Cloud v12.0
+
+
+- name: Do Nothing
+  hosts: all
+  tags:
+    - nothing
+  tasks:
+    - name: Ping Nodes
+      ping:
+
+- name: Prepare Environment
+  hosts: all
+  tags:
+    - prepare
+    - compute
+    - block
+    - object
+    - object_stand_alone
+    - maas
+    - ceph
+    - tempest
+  tasks:
+    - name: Install Packages
+      apt: name={{ item }} state=present
+      with_items:
+        - colordiff
+        - fping
+
+    - name: Add Nodes Hosts File Entries (Long)
+      lineinfile: dest=/etc/hosts line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ heat_stack_prefix|string }}-{{ item }}' insertafter=EOF state=present
+      with_items: groups.all
+
+    - name: Add Nodes Hosts File Entries (Short)
+      lineinfile: dest=/etc/hosts line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ item }}' insertafter=EOF state=present
+      with_items: groups.all
+
+    - name: Add Nodes Hosts File Entries (Node)
+      lineinfile: dest=/etc/hosts line='{{ hostvars[item].ansible_eth2.ipv4.address }} {{ "n%02d"|format(hostvars[item].node_id) }}' insertafter=EOF state=present
+      with_items: groups.all
+
+    - name: Check Connectivity
+      command: fping {{ item }}
+      changed_when: False
+      with_items: groups.all
+
+    - name: Create /etc/ansible/facts.d
+      file: path=/etc/ansible/facts.d state=directory
+
+    - name: Create Dummy Fact
+      ini_file: dest=/etc/ansible/facts.d/dummy.fact section=dummy option=dummy value=dummy
+
+    - name: Gather Facts
+      setup:
+
+    - name: Set Environment Variables and Force Color Prompt
+      lineinfile: dest=/root/.bashrc regexp='{{ item.regexp }}' line='{{ item.line }}' insertafter=EOF state=present
+      with_items:
+        - { regexp: '^(#)?force_color_prompt',      line: 'force_color_prompt=yes' }
+        - { regexp: '^export MY_HEAT_STACK_PREFIX', line: 'export MY_HEAT_STACK_PREFIX={{ heat_stack_prefix|string }}' }
+        - { regexp: '^export MY_NODE_ID',           line: 'export MY_NODE_ID={{ node_id }}' }
+        - { regexp: '^export MY_IP',                line: 'export MY_IP={{ hostvars[inventory_hostname].ansible_eth2.ipv4.address }}' }
+        - { regexp: '^export MY_PRIVATE_IP',        line: 'export MY_PRIVATE_IP={{ hostvars[inventory_hostname].ansible_eth2.ipv4.address }}' }
+        - { regexp: '^export MY_PUBLIC_IP',         line: 'export MY_PUBLIC_IP={{ hostvars[inventory_hostname].ansible_eth0.ipv4.address }}' }
+
+    - name: Create Swap File
+      command: dd if=/dev/zero of=/mnt/16GB.swap bs=1024 count=16777216 creates=/mnt/16GB.swap
+
+    - name: Format Swap File
+      command: mkswap /mnt/16GB.swap
+      changed_when: false
+
+    - name: Check Swap File
+      command: swapon -s
+      register: check_swap_file_result
+      changed_when: false
+
+    - name: Enable Swap File
+      command: swapon /mnt/16GB.swap
+      when: "'/mnt/16GB.swap' not in check_swap_file_result.stdout"
+
+    - name: Add Swap To /etc/fstab
+      lineinfile: dest=/etc/fstab line='/mnt/16GB.swap  none  swap  sw 0  0' insertafter=EOF state=present
+
+    - name: Set Swappiness
+      sysctl: name=vm.swappiness value=90 state=present
+
+    - name: Create Partition Table
+      shell: |
+        parted -s {{ item.device }} mktable {{ item.type }} && partprobe {{ item.device }}
+      when: ansible_local.partitions is not defined
+      with_items:
+        - device: /dev/xvdz
+          type: msdos
+
+    - name: Create Primary Partitions
+      shell: |
+        export PARTITION_START=`parted {{ item.device }} unit GB print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
+        if [[ $PARTITION_START -lt 1 ]]; then
+          PARTITION_START=1
+        fi
+        export PARTITION_END=`awk "BEGIN { print $PARTITION_START + {{ item.size }} }"`
+        parted -s -a optimal {{ item.device }} unit GB mkpart primary ${PARTITION_START} ${PARTITION_END} && partprobe {{ item.device }}
+      when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
+      with_items:
+        - group: infra
+          device: /dev/xvdz
+          size: 160
+        - group: logger
+          device: /dev/xvdz
+          size: 30
+        - group: compute
+          device: /dev/xvdz
+          size: 15
+        - group: block
+          device: /dev/xvdz
+          size: 20
+        - group: block
+          device: /dev/xvdz
+          size: 45
+        - group: object
+          device: /dev/xvdz
+          size: 15
+
+    - name: Create Extended Partitions (Extended Partition Will Consume All Free Space)
+      shell: |
+        export PARTITION_START=`parted {{ item.device }} unit GB print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
+        export PARTITION_END=`parted {{ item.device }} unit GB print free | awk '/Free Space/ { print $2 }' | tail -n 1 | sed 's/GB//'`
+        parted -s -a optimal {{ item.device }} unit GB mkpart extended ${PARTITION_START} ${PARTITION_END} && partprobe {{ item.device }}
+      when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
+      with_items:
+        - group: object
+          device: /dev/xvdz
+
+    - name: Create Logical Partitions
+      shell: |
+        export PARTITION_START=`parted {{ item.device }} print free | awk '/Free Space/ { print $1 }' | tail -n 1 | sed 's/GB//'`
+        export PARTITION_END=`awk "BEGIN { print $PARTITION_START + {{ item.size }} }"`
+        parted -s -a optimal {{ item.device }} unit GB mkpart logical ${PARTITION_START} ${PARTITION_END} && partprobe {{ item.device }}
+      when: inventory_hostname in groups[ item.group ] and ansible_local.partitions is not defined
+      with_items:
+        - group: object
+          device: /dev/xvdz
+          size: 25
+        - group: object
+          device: /dev/xvdz
+          size: 25
+        - group: object
+          device: /dev/xvdz
+          size: 25
+        - group: object
+          device: /dev/xvdz
+          size: 25
+        - group: object
+          device: /dev/xvdz
+          size: 25
+
+    - name: Create Partitions Done Fact
+      ini_file: dest=/etc/ansible/facts.d/partitions.fact section=state option=done value=true
+
+- name: Setup Common
+  hosts: all
+  tags:
+    - compute
+    - block
+    - object
+    - object_stand_alone
+    - maas
+    - ceph
+    - tempest
+  tasks:
+    - name: Check Connectivity
+      command: fping {{ item }}
+      changed_when: False
+      with_items: groups.all
+
+    - name: Genereate SSH Keypair
+      command: ssh-keygen -f ~/.ssh/id_rsa -t rsa -q -N "" creates=/root/.ssh/id_rsa.pub
+      when: inventory_hostname == groups.infra|first
+
+    - name: Get SSH Public Key
+      command: cat /root/.ssh/id_rsa.pub
+      register: public_key_result
+      changed_when: False
+      when: inventory_hostname == groups.infra|first
+
+    - name: Distribute SSH Public Key
+      authorized_key: user=root key='{{ hostvars[ groups.infra|first ].public_key_result.stdout }}' state=present
+
+    - name: Test SSH Connectivity
+      command: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no {{ item }} hostname
+      changed_when: False
+      when: inventory_hostname == groups.infra|first
+      with_items: groups.all
+
+    - name: Update and Upgrade System
+      apt: upgrade=safe update_cache=yes cache_valid_time=3600
+
+    - name: Install Necessary Base Packages
+      apt: pkg={{ item }} state=present update_cache=yes force=yes
+      with_items:
+        - aptitude
+        - build-essential
+        - git
+        - python-dev
+        - bridge-utils
+        - debootstrap
+        - ifenslave
+        - lsof
+        - lvm2
+        - ntp
+        - ntpdate
+        - openssh-server
+        - sudo
+        - tcpdump
+        - vlan
+
+    - name: Create Physical Volumes
+      command: pvcreate --metadatasize 2048 {{ item.device }}
+      register: pvcreate_result
+      failed_when: pvcreate_result.rc != 0 and pvcreate_result.rc != 5
+      changed_when: False
+      when: inventory_hostname in groups[ item.group ]
+      with_items:
+        - group: infra
+          device: /dev/xvdz1
+        - group: logger
+          device: /dev/xvdz1
+        - group: compute
+          device: /dev/xvdz1
+        - group: block
+          device: /dev/xvdz1
+        - group: object
+          device: /dev/xvdz1
+
+    - name: Create Logical Volume Groups
+      lvg: vg={{ item.vg }} pvs={{ item.pvs }} state=present vg_options=''
+      when: inventory_hostname in groups[ item.group ]
+      with_items:
+        - group: infra
+          vg: lxc
+          pvs: /dev/xvdz1
+        - group: logger
+          vg: lxc
+          pvs: /dev/xvdz1
+        - group: compute
+          vg: lxc
+          pvs: /dev/xvdz1
+        - group: block
+          vg: lxc
+          pvs: /dev/xvdz1
+        - group: object
+          vg: lxc
+          pvs: /dev/xvdz1
+
+    - name: Create /etc/network/interfaces.d/
+      file: dest=/etc/network/interfaces.d/ state=directory
+
+    - name: Source /etc/network/interfaces.d/*.cfg
+      lineinfile: dest=/etc/network/interfaces line='source /etc/network/interfaces.d/*.cfg' insertafter=EOF state=present
+
+    - name: Create /etc/network/interfaces.d/rpc.cfg
+      template: src=templates/etc/network/interfaces.d/rpc-12.0.cfg.j2 dest=/etc/network/interfaces.d/rpc.cfg
+
+    - name: Bring Up VXLANs
+      command: ifup vxlan-{{ item }}
+      register: ifup_vxlans_result
+      changed_when: "ifup_vxlans_result.rc == 0 and ifup_vxlans_result.stderr != 'ifup: interface vxlan-{{ item }} already configured'"
+      with_items:
+        - mgmt
+        - vxlan
+        - vlan
+        - storage
+
+    - name: Check Connectivity
+      command: fping 172.29.236.{{ hostvars[item].node_id }}
+      changed_when: False
+      with_items: groups.all
+
+- name: Setup Block
+  hosts: block
+  tags:
+    - block
+  tasks:
+    - name: Create Physical Volumes
+      command: pvcreate --metadatasize 2048 {{ item.device }}
+      register: pvcreate_result
+      failed_when: pvcreate_result.rc != 0 and pvcreate_result.rc != 5
+      changed_when: False
+      with_items:
+        - device: /dev/xvdz2
+
+    - name: Create Logical Volume Groups
+      lvg: vg={{ item.vg }} pvs={{ item.pvs }} state=present vg_options=''
+      with_items:
+        - vg: cinder-volumes
+          pvs: /dev/xvdz2
+
+- name: Setup Object
+  hosts: object
+  tags:
+    - object
+    - object_stand_alone
+  tasks:
+    - name: Install Necessary Base Packages
+      apt: pkg={{ item }} state=present update_cache=yes force=yes
+      with_items:
+        - xfsprogs
+
+    - name: XFS Format Volumes
+      filesystem: dev=/dev/{{ item.device }} fstype=xfs opts='-i size=1024 -L {{ item.label }}'
+      with_items:
+        - device: xvdz5
+          label: swift1
+        - device: xvdz6
+          label: swift2
+        - device: xvdz7
+          label: swift3
+        - device: xvdz8
+          label: swift4
+        - device: xvdz9
+          label: swift5
+
+    - name: Create Root Mount Points Directory
+      file: path=/srv/node state=directory owner=root group=root
+
+    - name: Create Device Mount Point Directories
+      file: path=/srv/node/{{ item }} state=directory
+      with_items:
+        - swift1
+        - swift2
+        - swift3
+        - swift4
+        - swift5
+
+    - name: Mount Device
+      mount: name=/srv/node/{{ item }} src='LABEL={{ item }}' state=mounted fstype=xfs opts='noatime,nodiratime,nobarrier,logbufs=8' passno=0
+      with_items:
+        - swift1
+        - swift2
+        - swift3
+        - swift4
+        - swift5
+
+- name: Configure Common
+  hosts: infra[0]
+  tags:
+    - compute
+    - block
+    - ceph
+    - object
+    - object_stand_alone
+    - maas
+    - tempest
+  tasks:
+    - name: Create /opt
+      file: dest=/opt state=directory
+
+    - name: Clone RPC Repo
+      git: repo=https://github.com/rcbops/rpc-openstack dest=/opt/rpc-openstack version={{ rpc_release }} recursive=yes force=yes
+
+    - name: Bugs - Apply Patches (OpenStack Ansible)
+      command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible
+      when: apply_patches | bool
+      ignore_errors: yes
+      with_items:
+        - bug-rabbitless.patch
+
+    - name: Bugs - Apply Patches (RPC OpenStack)
+      command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack
+      when: apply_patches | bool
+      ignore_errors: yes
+      with_items:
+        - bug-842.patch
+
+    - name: Bugs - Apply Patches (Ceph MON)
+      command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack/rpcd/playbooks/roles/ceph-mon
+      when: apply_patches | bool
+      ignore_errors: yes
+      with_items: []
+
+    - name: Bugs - Apply Patches (Ceph OSD)
+      command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack/rpcd/playbooks/roles/ceph-osd
+      when: apply_patches | bool
+      ignore_errors: yes
+      with_items: []
+
+    - name: Bugs - Apply Patches (Ceph Common)
+      command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack/rpcd/playbooks/roles/ceph-common
+      when: apply_patches | bool
+      ignore_errors: yes
+      with_items: []
+
+    - name: Create /etc/openstack_deploy
+      file: dest=/etc/openstack_deploy state=directory
+
+    - name: Copy Default Configuration Files
+      command: cp -R /opt/rpc-openstack/{{ item }}/etc/openstack_deploy /etc
+      when: ansible_local.default_configs is not defined
+      with_items:
+        - openstack-ansible
+        - rpcd
+
+    - name: Copy Default Configuration Files Done Fact
+      ini_file: dest=/etc/ansible/facts.d/default_configs.fact section=state option=done value=true
+
+    - name: Copy OpenStack User Config File
+      template: src=templates/etc/openstack_deploy/openstack_user_config-12.0.yml.j2 dest=/etc/openstack_deploy/openstack_user_config.yml
+
+    - name: Update OpenStack User Variables File
+      lineinfile: dest=/etc/openstack_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
+      with_items:
+        - { regexp: '^(# )?nova_virt_type:', line: 'nova_virt_type: qemu' }
+        - { regexp: '^galera_innodb_buffer_pool_size:', line: 'galera_innodb_buffer_pool_size: 256M' }
+        - { regexp: '^galera_innodb_log_buffer_size:', line: 'galera_innodb_log_buffer_size: 32M' }
+        - { regexp: '^galera_wsrep_provider_options:', line: 'galera_wsrep_provider_options: [ { option: "gcache.size", value: "32M" } ]' }
+
+    - name: Run Password Token Generation Script
+      command: ./scripts/pw-token-gen.py --file /etc/openstack_deploy/{{ item }} chdir=/opt/rpc-openstack/openstack-ansible
+      when: ansible_local.pw_token_gen is not defined
+      with_items:
+        - user_secrets.yml
+        - user_extras_secrets.yml
+
+    - name: Run Password Token Generation Script Done Fact
+      ini_file: dest=/etc/ansible/facts.d/pw_token_gen.fact section=state option=done value=true
+
+    - name: Update RPC User Variables File
+      lineinfile: dest=/etc/openstack_deploy/user_extras_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
+      with_items:
+        - { regexp: '^neutron_dnsmasq_dns_servers:', line: 'neutron_dnsmasq_dns_servers: 8.8.8.8,8.8.4.4'}
+        - { regexp: '^neutron_network_device_mtu:', line: 'neutron_network_device_mtu: 1400'}
+        - { regexp: '^neutron_dhcp_config:', line: 'neutron_dhcp_config: { dhcp-option-force: "26,1400", log-facility: "/var/log/neutron/neutron-dnsmasq.log" }'}
+
+    - name: Set Deploy Environment HAProxy Fact
+      ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=deploy_haproxy value=yes
+
+    - name: Set Deploy Environment Swift Fact
+      ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=deploy_swift value=no
+
+- name: Configure Object
+  hosts: infra[0]
+  tags:
+    - object
+  tasks:
+    - name: Update OpenStack User Variables File
+      lineinfile: dest=/etc/openstack_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
+      with_items:
+        - { regexp: '^glance_default_store:', line: 'glance_default_store: swift' }
+
+- name: Configure Stand Alone Object
+  hosts: infra[0]
+  tags:
+    - object_stand_alone
+  tasks:
+    - name: Copy OpenStack User Config File
+      template: src=templates/etc/openstack_deploy/openstack_user_config-12.0-object-stand-alone.yml.j2 dest=/etc/openstack_deploy/openstack_user_config.yml
+
+- name: Configure Object Common
+  hosts: infra[0]
+  tags:
+    - object
+    - object_stand_alone
+  tasks:
+    - name: Copy OpenStack Swift Config File
+      template: src=templates/etc/openstack_deploy/conf.d/swift-12.0.yml.j2 dest=/etc/openstack_deploy/conf.d/swift.yml
+
+    - name: Update OpenStack User Config File
+      lineinfile: "dest=/etc/openstack_deploy/openstack_user_config.yml regexp='         ( #)? - swift_proxy' line='          - swift_proxy' state=present"
+
+    - name: Set Deploy Environment Swift Fact
+      ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=deploy_swift value=yes
+
+- name: Configure Ceph
+  hosts: infra[0]
+  tags:
+    - ceph
+  tasks:
+    - name: Copy Ceph OSA Config File
+      template: src=templates/etc/openstack_deploy/conf.d/ceph-12.0.yml.j2 dest=/etc/openstack_deploy/conf.d/ceph.yml
+
+    - name: Update OpenStack User Config File
+      lineinfile: "dest=/etc/openstack_deploy/openstack_user_config.yml regexp='         ( #)? - mons' line='          - mons' state=present"
+
+    - name: Configure Ceph Openstack Settings
+      lineinfile: dest=/etc/openstack_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
+      with_items:
+        - { regexp: '^glance_default_store:', line: 'glance_default_store: rbd' }
+        - { regexp: '^nova_libvirt_images_rbd_pool:', line: 'nova_libvirt_images_rbd_pool: vms' }
+        - { regexp: '^nova_force_config_drive:', line: 'nova_force_config_drive: False' }
+        - { regexp: '^nova_libvirtd_listen_tls:', line: 'nova_libvirtd_listen_tls: 0' }
+        - { regexp: '^nova_libvirtd_listen_tcp:', line: 'nova_libvirtd_listen_tcp: 1' }
+        - { regexp: '^nova_libvirtd_auth_tcp:', line: 'nova_libvirtd_auth_tcp: none' }
+
+    - name: Configure Ceph Settings
+      lineinfile: dest=/etc/openstack_deploy/user_extras_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
+      with_items:
+        - { regexp: '^monitor_interface:', line: 'monitor_interface: eth1' }
+        - { regexp: '^public_network:', line: 'public_network: 172.29.236.0/22' }
+        - { regexp: '^cluster_network:', line: 'cluster_network: 172.29.244.0/22' }
+        - { regexp: '^journal_size:', line: 'journal_size: 1000' }
+        - { regexp: '^common_single_host_mode:', line: 'common_single_host_mode: true' }
+
+    - name: Set Deploy Environment Ceph Fact
+      ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=deploy_ceph value=yes
+
+- name: Configure MaaS
+  hosts: infra[0]
+  tags:
+    - maas
+  tasks:
+    - name: Update RPC User Variables File
+      lineinfile: dest=/etc/openstack_deploy/user_extras_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
+      with_items:
+        - { regexp: '^rackspace_cloud_auth_url:', line: 'rackspace_cloud_auth_url: {{ rackspace_cloud_auth_url }}' }
+        - { regexp: '^rackspace_cloud_tenant_id:', line: 'rackspace_cloud_tenant_id: {{ rackspace_cloud_tenant_id }}' }
+        - { regexp: '^rackspace_cloud_username:', line: 'rackspace_cloud_username: {{ rackspace_cloud_username }}' }
+        - { regexp: '^rackspace_cloud_password:', line: 'rackspace_cloud_password: {{ rackspace_cloud_password }}' }
+        - { regexp: '^rackspace_cloud_api_key:', line: 'rackspace_cloud_api_key: {{ rackspace_cloud_api_key }}' }
+        - { regexp: '^maas_notification_plan:', line: 'maas_notification_plan: {{ maas_notification_plan }}' }
+        - { regexp: "^(#)?lb_name:", line: "lb_name: '{{ heat_stack_prefix|string }}-{{ groups.infra|first }}'" }
+        - { regexp: '^(# )?maas_(nova|horizon)_scheme:', line: 'maas_horizon_scheme: https' }
+        - { regexp: '^memory_used_percentage_threshold:', line: 'memory_used_percentage_threshold: 99.0'}
+        - { regexp: '^network_checks_list:', line: 'network_checks_list: []'} # Temporarily disable network checks.
+        - { regexp: '^net_max_speed:', line: 'net_max_speed: 1000'} # NIC speed not discoverable on Cloud Servers.
+
+    - name: PIP Install Rackspace Monitoring CLI
+      pip: name=rackspace-monitoring-cli state=present
+
+    - name: Get IP Address Alias
+      shell: raxmon-entities-list --details --username={{ rackspace_cloud_username }} --api-key={{ rackspace_cloud_api_key }} | awk -F "(" '/{{ hostvars[inventory_hostname].ansible_eth0.ipv4.address }}/ { print $2 }' | awk -F "'" '{ print $2}' | head -n 1
+      register: infra1_maas_target_alias
+
+    - name: Set MaaS Target Alias
+      lineinfile: "dest=/etc/openstack_deploy/user_extras_variables.yml regexp='maas_target_alias:' line='maas_target_alias: {{ infra1_maas_target_alias.stdout }}' state=present"
+
+    - name: Set Deploy Environment MaaS Fact
+      ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=deploy_maas value=yes
+
+- name: Configure Tempest
+  hosts: infra[0]
+  tags:
+    - tempest
+  tasks:
+    - name: Update OpenStack User Variables File
+      lineinfile: dest=/etc/openstack_deploy/user_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
+      with_items:
+        - { regexp: '^(# )?tempest_public_subnet_cidr:', line: 'tempest_public_subnet_cidr: 172.29.248.0/22' }
+
+    - name: Set Deploy Environment Tempest Fact
+      ini_file: dest=/etc/ansible/facts.d/deploy_environment.fact section=option option=deploy_tempest value=yes
+
+- name: Update LibVirt CPU Map
+  hosts: compute
+  tags:
+    - compute
+  tasks:
+    - name: Pre-Install LibVirt
+      apt: pkg=libvirt-bin state=present update_cache=yes force=yes
+
+    - name: Create /usr/share/libvirt
+      file: path=/usr/share/libvirt state=directory
+
+    - name: Copy LibVirt CPU Map
+      copy: src=files/usr/share/libvirt/cpu_map.xml dest=/usr/share/libvirt/cpu_map.xml
+
+    - name: Restart LibVirt
+      service: name=libvirt-bin state=restarted
+
+- name: Install RPC
+  hosts: infra[0]
+  tags:
+    - compute
+    - block
+    - ceph
+    - object
+    - object_stand_alone
+    - maas
+    - tempest
+  tasks:
+    - name:
+      shell: ./scripts/deploy.sh >> /opt/cloud-training/deploy.sh.log 2>> /opt/cloud-training/deploy.sh.err chdir=/opt/rpc-openstack/
+      register: deploy_result
+      until: deploy_result.rc == 0
+      retries: "{{ deploy_retries }}"
+      delay: 10
+      environment:
+        DEPLOY_HAPROXY: "{{ ansible_local.deploy_environment.option.deploy_haproxy }}"
+        DEPLOY_MAAS: "{{ ansible_local.deploy_environment.option.deploy_maas }}"
+        DEPLOY_CEPH: "{{ ansible_local.deploy_environment.option.deploy_ceph }}"
+        DEPLOY_TEMPEST: "{{ ansible_local.deploy_environment.option.deploy_tempest }}"
+        DEPLOY_SWIFT: "{{ ansible_local.deploy_environment.option.deploy_swift }}"
+        ANSIBLE_FORCE_COLOR: "false"
+        FORKS: "10"
+
+- name: Configure External Network - Play 1 of 2
+  hosts: infra[0]
+  tags:
+    - network_external
+  tasks:
+    - name: Get Utility Container
+      shell: lxc-ls -1 | grep utility
+      register: utility_container
+
+    - name: Add Utility Container Host
+      add_host: name={{ utility_container.stdout_lines | first }} group=utility ansible_ssh_private_key_file=/root/.ssh/id_rsa
+
+- name: Configure External Network - Play 2 of 2
+  hosts: utility[0]
+  tags:
+    - network_external
+  tasks:
+    - name: Get Public Network
+      raw: |
+        source /root/openrc
+        neutron net-list | awk '/ Public / { print $2 }'
+      register: public_network_result
+
+    - name: Create Public Network
+      raw: |
+        source /root/openrc
+        neutron net-create --router:external --provider:network_type flat --provider:physical_network flat Public
+      when: public_network_result.stdout_lines|length == 0
+
+    - name: Get Public Subnet
+      raw: |
+        source /root/openrc
+        neutron subnet-list | awk '/ Public Subnet / { print $2 }'
+      register: public_subnet_result
+
+    - name: Create Public Subnet
+      raw: |
+        source /root/openrc
+        neutron subnet-create --name "Public Subnet" --disable-dhcp Public 172.29.248.0/22
+      when: public_subnet_result.stdout_lines|length == 0
+
+- name: Restart MaaS
+  hosts: all
+  tags:
+    - maas
+  tasks:
+    - name: Check If Rackspace Monitoring Agent Is Install
+      stat: path=/usr/bin/rackspace-monitoring-agent
+      register: agent_installed
+
+    - name: Restart Rackspace Monitoring Agent
+      service: name=rackspace-monitoring-agent state=restarted
+      when: agent_installed.stat.exists
