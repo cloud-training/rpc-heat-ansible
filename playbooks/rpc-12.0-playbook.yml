@@ -522,6 +522,8 @@
         - { regexp: "^(#)?lb_name:", line: "lb_name: '{{ heat_stack_prefix|string }}-{{ groups.infra|first }}'" }
         - { regexp: '^(# )?maas_(nova|horizon)_scheme:', line: 'maas_horizon_scheme: https' }
         - { regexp: '^memory_used_percentage_threshold:', line: 'memory_used_percentage_threshold: 99.0'}
+        - { regexp: '^maas_filesystem_warning_threshold:', line: 'maas_filesystem_warning_threshold: 90.0'}
+        - { regexp: '^maas_filesystem_critical_threshold:', line: 'maas_filesystem_critical_threshold: 95.0'}
         - { regexp: '^network_checks_list:', line: 'network_checks_list: []'} # Temporarily disable network checks.
         - { regexp: '^net_max_speed:', line: 'net_max_speed: 1000'} # NIC speed not discoverable on Cloud Servers.
 
