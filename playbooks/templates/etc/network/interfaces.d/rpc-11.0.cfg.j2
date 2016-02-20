@@ -63,7 +63,7 @@ iface br-vxlan inet static
 
 # Bridge VLAN
 auto br-vlan
-{% if inventory_hostname == groups.infra|first %}
+{% if inventory_hostname in groups.infra %}
 iface br-vlan inet static
 {% else %}
 iface br-vlan inet manual
@@ -76,9 +76,11 @@ iface br-vlan inet manual
     pre-up ip link set br-vlan-veth up
     pre-up ip link set eth12 up
     post-down ip link del br-vlan-veth || true
-{% if inventory_hostname == groups.infra|first %}
-    address 172.29.248.1
+{% if inventory_hostname in groups.infra %}
+    address 172.29.248.{{ node_id }}
     netmask 255.255.252.0
+{% endif %}
+{% if inventory_hostname == groups.infra|first %}
     up /sbin/iptables -A POSTROUTING -t mangle -p tcp --dport 22 -j CHECKSUM --checksum-fill
     down /sbin/iptables -D POSTROUTING -t mangle -p tcp --dport 22 -j CHECKSUM --checksum-fill
     up /sbin/iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
