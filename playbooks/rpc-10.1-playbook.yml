@@ -62,7 +62,7 @@
         - { regexp: '^export MY_PUBLIC_IP',         line: 'export MY_PUBLIC_IP={{ hostvars[inventory_hostname].ansible_eth0.ipv4.address }}' }
 
     - name: Create Swap File
-      command: dd if=/dev/zero of=/mnt/8GB.swap bs=1024 count=16777216 creates=/mnt/8GB.swap
+      command: dd if=/dev/zero of=/mnt/8GB.swap bs=1024 count=8388608 creates=/mnt/8GB.swap
 
     - name: Format Swap File
       command: mkswap /mnt/8GB.swap
