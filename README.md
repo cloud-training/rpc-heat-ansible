@@ -429,6 +429,12 @@ Unless explicitly specified via an environment file or as an override, the follo
 | `maas_notification_email_address` | `rpc-maas-alerts@mg.cloudtrain.me`                       |
 | `apply_patches`                   | `True`                                                   |
 | `deploy_retries`                  | `2`                                                      |
+| `infra_flavor`                    | `8 GB Performance`                                       |
+| `logger_flavor`                   | `4 GB Performance`                                       |
+| `compute_flavor`                  | `4 GB Performance`                                       |
+| `block_flavor`                    | `4 GB Performance`                                       |
+| `object_flavor`                   | `2 GB Performance`                                       |
+| `ceph_flavor`                     | `8 GB Performance`                                       |
 
 ### Troubleshooting
 
