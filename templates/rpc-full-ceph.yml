@@ -156,11 +156,11 @@ resources:
   swift_signal_handle_block1:
     type: OS::Heat::SwiftSignalHandle
 
-  swift_signal_handle_ceph1:
-      type: OS::Heat::SwiftSignalHandle
-
   swift_signal_handle_object1:
     type: OS::Heat::SwiftSignalHandle
+
+  swift_signal_handle_ceph1:
+      type: OS::Heat::SwiftSignalHandle
 
   swift_signal_infra1:
     type: OS::Heat::SwiftSignal
@@ -190,17 +190,17 @@ resources:
       count: 1
       timeout: 7200
 
-  swift_signal_ceph1:
-    type: OS::Heat::SwiftSignal
-    properties:
-      handle: { get_resource: swift_signal_handle_ceph1 }
-      count: 1
-      timeout: 7200
-
   swift_signal_object1:
     type: OS::Heat::SwiftSignal
     properties:
       handle: { get_resource: swift_signal_handle_object1 }
+      count: 1
+      timeout: 7200
+
+  swift_signal_ceph1:
+    type: OS::Heat::SwiftSignal
+    properties:
+      handle: { get_resource: swift_signal_handle_ceph1 }
       count: 1
       timeout: 7200
 
