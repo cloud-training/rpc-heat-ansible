@@ -416,7 +416,7 @@ resources:
 
   server_infra1:
     type: OS::Nova::Server
-    depends_on: [ swift_signal_object1, swift_signal_object2, swift_signal_object3 ]
+    depends_on: [ swift_signal_logger1, swift_signal_object1, swift_signal_object2, swift_signal_object3 ]
     properties:
       name:
         str_replace:

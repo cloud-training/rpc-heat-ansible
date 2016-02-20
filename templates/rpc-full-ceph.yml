@@ -459,7 +459,7 @@ resources:
 
   server_infra1:
     type: OS::Nova::Server
-    depends_on: [ swift_signal_logger1, swift_signal_compute1, swift_signal_block1, swift_signal_object1 ]
+    depends_on: [ swift_signal_logger1, swift_signal_compute1, swift_signal_block1, swift_signal_object1, swift_signal_ceph1 ]
     properties:
       name:
         str_replace:
