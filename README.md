@@ -3,7 +3,7 @@
 ```
 heat stack-create -t 240 \
   -f templates/rpc-*.yml \
-  -e environments/*.yml \
+  -e environments/rpc-*.yml \
   [-e environments/user-maas-credentials.yml] \
   <stack-name>
 ```
@@ -51,9 +51,12 @@ heat stack-create -t 240 \
 
 Templates define the cloud resources necessary for the environment. These can be found in the `templates` directory.
 
-* `rpc-full-ceph.yml` - Compute, Block, Object, Ceph
-* `rpc-full.yml`      - Compute, Block, Object
-* `rpc-object.yml`    - Stand-Alone Object
+* `rpc-full-ceph.yml`    - Infra, Logger, Compute, Block, Object, Ceph
+* `rpc-full.yml`         - Infra, Logger, Compute, Block, Object
+* `rpc-object.yml`       - Infra, Logger, Object (x3)
+* `rpc-ha-full-ceph.yml` - Infra (x3), Logger, Compute (x2), Block, Object, Ceph
+* `rpc-ha-full.yml`      - Infra (x3), Logger, Compute (x2), Block, Object
+* `rpc-ha-object.yml`    - Infra (x3), Logger, Object (x3)
 
 ### Environments
 
