@@ -369,7 +369,7 @@
   tasks:
     - name: Copy RPC Swift Config File
       template: src=templates/etc/rpc_deploy/conf.d/swift-10.1.yml.j2 dest=/etc/rpc_deploy/conf.d/swift.yml
-    
+
     - name: Update RPC User Config File
       lineinfile: "dest=/etc/rpc_deploy/rpc_user_config.yml regexp='         ( #)? - swift_proxy' line='          - swift_proxy' state=present"
 
@@ -678,7 +678,7 @@
     - name: Check If Rackspace Monitoring Agent Is Install
       stat: path=/usr/bin/rackspace-monitoring-agent
       register: agent_installed
-      
+
     - name: Restart Rackspace Monitoring Agent
       service: name=rackspace-monitoring-agent state=restarted
       when: agent_installed.stat.exists
