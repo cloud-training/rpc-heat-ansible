@@ -17,7 +17,7 @@ mons_hosts:
 {% for host in groups.infra %}
   {{ heat_stack_prefix|string }}-{{ host }}:
     ip: 172.29.236.{{ hostvars[ host ].node_id }}
-{% if inventory_hostname == groups.infra|first %}
+{% if host == groups.infra|first %}
     affinity:
       ceph_mon_container: 3
 {% else %}
