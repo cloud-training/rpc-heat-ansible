@@ -634,7 +634,7 @@
     - name: Create Public Subnet
       raw: |
         source /root/openrc
-        neutron subnet-create --name "Public Subnet" --disable-dhcp Public 172.29.248.0/22
+        neutron subnet-create --name "Public Subnet" --disable-dhcp --allocation-pool start=172.29.248.4,end=172.29.248.254 Public 172.29.248.0/22
       when: public_subnet_result.stdout_lines|length == 0
 
 - name: Restart MaaS
