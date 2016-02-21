@@ -21,8 +21,9 @@ global_overrides:
           - hosts
         type: "raw"
         container_bridge: "br-mgmt"
-        container_interface: "eth1"
         container_type: "veth"
+        container_interface: "eth1"
+        container_mtu: "1450"
         ip_from_q: "management"
         is_container_address: true
         is_ssh_address: true
@@ -38,6 +39,7 @@ global_overrides:
         container_bridge: "br-storage"
         container_type: "veth"
         container_interface: "eth2"
+        container_mtu: "1450"
         ip_from_q: "storage"
     - network:
         group_binds:
@@ -45,6 +47,7 @@ global_overrides:
         container_bridge: "br-vxlan"
         container_type: "veth"
         container_interface: "eth10"
+        container_mtu: "1450"
         ip_from_q: "tunnel"
         type: "vxlan"
         range: "1:1000"
@@ -55,6 +58,7 @@ global_overrides:
         container_bridge: "br-vlan"
         container_type: "veth"
         container_interface: "eth11"
+        container_mtu: "1450"
         type: "vlan"
         range: "101:200"
         net_name: "vlan"
