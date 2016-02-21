@@ -19,11 +19,11 @@ global_overrides:
         group_binds:
           - all_containers
           - hosts
-        type: "raw"
         container_bridge: "br-mgmt"
-        container_interface: "eth1"
         container_type: "veth"
+        container_interface: "eth1"
         ip_from_q: "management"
+        type: "raw"
         is_container_address: true
         is_ssh_address: true
     - network:
@@ -33,11 +33,11 @@ global_overrides:
           - cinder_volume
           - nova_compute
           # - swift_proxy
-        type: "raw"
         container_bridge: "br-storage"
         container_type: "veth"
         container_interface: "eth2"
         ip_from_q: "storage"
+        type: "raw"
     - network:
         group_binds:
           - neutron_linuxbridge_agent
