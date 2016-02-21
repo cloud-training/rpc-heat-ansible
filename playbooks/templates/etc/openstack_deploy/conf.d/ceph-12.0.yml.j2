@@ -1,12 +1,28 @@
 ---
+# {% if groups.infra|length > 0 %}
+# mons_hosts:
+# {% for host in groups.infra %}
+#   {{ heat_stack_prefix|string }}-{{ host }}:
+#     ip: 172.29.236.{{ hostvars[ host ].node_id }}
+# {% if groups.infra|length == 1 %}
+#     affinity:
+#       ceph_mon_container: 3
+# {% endif %}
+# {% endfor %}
+# {% endif %}
+
+# FIXME Only deploy mons containers on a single infra host until task hanging bug is fixed.
 {% if groups.infra|length > 0 %}
 mons_hosts:
 {% for host in groups.infra %}
   {{ heat_stack_prefix|string }}-{{ host }}:
     ip: 172.29.236.{{ hostvars[ host ].node_id }}
-{% if groups.infra|length == 1 %}
+{% if inventory_hostname == groups.infra|first %}
     affinity:
       ceph_mon_container: 3
+{% else %}
+    affinity:
+      ceph_mon_container: 0
 {% endif %}
 {% endfor %}
 {% endif %}

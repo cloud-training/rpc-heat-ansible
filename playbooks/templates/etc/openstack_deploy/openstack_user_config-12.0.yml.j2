@@ -97,12 +97,19 @@ storage-infra_hosts:
 {% endfor %}
 {% endif %}
 
+# {% if groups.infra|length > 0 %}
+# repo-infra_hosts:
+# {% for host in groups.infra %}
+#   {{ heat_stack_prefix|string }}-{{ host }}:
+#     ip: 172.29.236.{{ hostvars[ host ].node_id }}
+# {% endfor %}
+# {% endif %}
+
+# FIXME Only deploy a single repo container until lsync bug is fixed.
 {% if groups.infra|length > 0 %}
 repo-infra_hosts:
-{% for host in groups.infra %}
-  {{ heat_stack_prefix|string }}-{{ host }}:
-    ip: 172.29.236.{{ hostvars[ host ].node_id }}
-{% endfor %}
+  {{ heat_stack_prefix|string }}-{{ groups.infra|first }}:
+    ip: 172.29.236.{{ hostvars[ groups.infra|first ].node_id }}
 {% endif %}
 
 {% if groups.infra|length > 0 %}
