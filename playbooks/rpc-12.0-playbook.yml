@@ -367,6 +367,7 @@
       with_items:
         - bug-rabbitless.patch
         - bug-276784.patch
+        - bug-272021.patch
 
     - name: Bugs - Apply Patches (RPC OpenStack)
       command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack
