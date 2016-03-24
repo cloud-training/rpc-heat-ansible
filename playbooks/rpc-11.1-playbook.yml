@@ -486,8 +486,8 @@
       lineinfile: dest=/etc/openstack_deploy/user_extras_variables.yml regexp='{{ item.regexp }}' line='{{ item.line }}' state=present
       with_items:
         - { regexp: '^monitor_interface:', line: 'monitor_interface: eth1' }          # Set ceph monitoring interface to eth1 (inside container) which used br-mgmt
-        - { regexp: '^cluster_network:', line: 'cluster_network: 172.29.236.0/22' }   # The cluster network used for monitoring set to br-mgmt
-        - { regexp: '^public_network:', line: 'public_network: 172.29.244.0/22' }     # The replication/data network is set to br-storage
+        - { regexp: '^cluster_network:', line: 'cluster_network: 172.29.236.0/22' }   # The cluster network used for monitoring and OSD replication to br-mgmt
+        - { regexp: '^public_network:', line: 'public_network: 172.29.244.0/22' }     # The data network is set to br-storage
         - { regexp: '^journal_size:', line: 'journal_size: 1000' }                    # Configure 1G journal size
         - { regexp: '^raw_multi_journal:', line: 'raw_multi_journal: true' }          # Don't use filesystem for OSD journals
         - { regexp: '^openstack_config:', line: 'openstack_config: true' }            # Enabling openstrack support inside the ceph-ansible playbooks
