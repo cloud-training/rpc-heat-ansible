@@ -8,6 +8,15 @@ heat stack-create -t 240 \
   <stack-name>
 ```
 
+or
+
+```
+rack orchestration stack create --name <stack-name> \
+  --template-file templates/rpc-<template-name>.yml \
+  --environment-file environments/rpc-<environment-name>.yml \
+  --timeout 240
+```
+
 ### Build Status
 
 | Deployment                                                                                      | Release           | Patched Builds *                                                                                                    | Unpatched Builds *                                                                                                              |
