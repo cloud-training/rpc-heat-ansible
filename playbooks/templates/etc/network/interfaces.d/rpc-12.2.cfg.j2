@@ -1,0 +1,88 @@
+# VXLAN - Management
+auto vxlan-mgmt
+iface vxlan-mgmt inet manual
+    pre-up ip link add vxlan-mgmt type vxlan id 10 group 239.0.0.10 dev eth2 || true
+    up ip link set $IFACE up
+    down ip link set $IFACE down
+    post-down ip link del vxlan-mgmt || true
+
+# VXLAN - Storage
+auto vxlan-storage
+iface vxlan-storage inet manual
+    pre-up ip link add vxlan-storage type vxlan id 20 group 239.0.0.20 dev eth2 || true
+    up ip link set $IFACE up
+    down ip link set $IFACE down
+    post-down ip link del vxlan-storage || true
+
+# VXLAN - VXLAN
+auto vxlan-vxlan
+iface vxlan-vxlan inet manual
+    pre-up ip link add vxlan-vxlan type vxlan id 30 group 239.0.0.30 dev eth2 || true
+    up ip link set $IFACE up
+    down ip link set $IFACE down
+    post-down ip link del vxlan-vxlan || true
+
+# VXLAN - VLAN
+auto vxlan-vlan
+iface vxlan-vlan inet manual
+    pre-up ip link add vxlan-vlan type vxlan id 40 group 239.0.0.40 dev eth2 || true
+    up ip link set $IFACE up
+    down ip link set $IFACE down
+    post-down ip link del vxlan-vlan || true
+
+# Bridge - Management
+auto br-mgmt
+iface br-mgmt inet static
+    bridge_stp off
+    bridge_waitport 0
+    bridge_fd 0
+    bridge_ports vxlan-mgmt
+    address 172.29.236.{{ node_id }}
+    netmask 255.255.252.0
+    dns-nameservers 8.8.8.8
+
+# Bridge Storage
+auto br-storage
+iface br-storage inet static
+    bridge_stp off
+    bridge_waitport 0
+    bridge_fd 0
+    bridge_ports vxlan-storage
+    address 172.29.244.{{ node_id }}
+    netmask 255.255.252.0
+
+# Bridge VXLAN
+auto br-vxlan
+iface br-vxlan inet static
+    bridge_stp off
+    bridge_waitport 0
+    bridge_fd 0
+    bridge_ports vxlan-vxlan
+    address 172.29.240.{{ node_id }}
+    netmask 255.255.252.0
+
+# Bridge VLAN
+auto br-vlan
+{% if inventory_hostname in groups.infra %}
+iface br-vlan inet static
+{% else %}
+iface br-vlan inet manual
+{% endif %}
+    bridge_stp off
+    bridge_waitport 0
+    bridge_fd 0
+    bridge_ports vxlan-vlan br-vlan-veth
+    pre-up ip link add br-vlan-veth type veth peer name eth12 || true
+    pre-up ip link set br-vlan-veth up
+    pre-up ip link set eth12 up
+    post-down ip link del br-vlan-veth || true
+{% if inventory_hostname in groups.infra %}
+    address 172.29.248.{{ node_id }}
+    netmask 255.255.252.0
+{% endif %}
+{% if inventory_hostname == groups.infra|first %}
+    up /sbin/iptables -A POSTROUTING -t mangle -p tcp --dport 22 -j CHECKSUM --checksum-fill
+    down /sbin/iptables -D POSTROUTING -t mangle -p tcp --dport 22 -j CHECKSUM --checksum-fill
+    up /sbin/iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+    down /sbin/iptables -t nat -D POSTROUTING -o eth0 -j MASQUERADE
+{% endif %}
