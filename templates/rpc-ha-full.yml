@@ -240,6 +240,8 @@ resources:
           - python-pip
           - python-apt
           - python-dev
+          - libffi-dev
+          - libssl-dev
         write_files:
           - path: /opt/cloud-training/id_rsa
             permissions: "0600"
