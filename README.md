@@ -157,7 +157,7 @@ heat stack-create -t 240 \
 heat stack-create -t 240 \
   -f templates/rpc-full-ceph.yml \
   -e environments/rpc-12.0-full-ceph-net.yml \
-   <stack-name>
+  <stack-name>
 ```
 
 #### RPC v12.0 Full + Ceph
@@ -254,7 +254,7 @@ heat stack-create -t 240 \
 heat stack-create -t 240 \
   -f templates/rpc-full-ceph.yml \
   -e environments/rpc-11.1-full-ceph-net.yml \
-   <stack-name>
+  <stack-name>
 ```
 
 #### RPC v11.1 Full + Ceph
