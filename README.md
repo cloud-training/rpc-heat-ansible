@@ -21,6 +21,18 @@ rack orchestration stack create --name <stack-name> \
 
 | Deployment                                                                                      | Release           | Patched Builds *                                                                                                    | Unpatched Builds *                                                                                                              |
 |-------------------------------------------------------------------------------------------------|-------------------|---------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
+| [RPC v12.2 Full + Ceph + External Network + MaaS](#rpc-v122-full--ceph--external-network--maas) | r12.2.0rc3        | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.2 - Full Ceph Net MaaS - Latest Tag) | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.2 - Full Ceph Net MaaS - Latest Tag - Unpatched) |
+| [RPC v12.2 Full + Ceph + External Network](#rpc-v122-full--ceph--external-network)              | r12.2.0rc3        | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.2 - Full Ceph Net - Latest Tag)      | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.2 - Full Ceph Net - Latest Tag - Unpatched)      |
+| [RPC v12.2 Full + External Network + MaaS](#rpc-v122-full--external-network--maas)              | r12.2.0rc3        | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.2 - Full Net MaaS - Latest Tag)      | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.2 - Full Net MaaS - Latest Tag - Unpatched)      |
+| [RPC v12.2 Full + External Network](#rpc-v122-full--external-network)                           | r12.2.0rc3        | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.2 - Full Net - Latest Tag)           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.2 - Full Net - Latest Tag - Unpatched)           |
+| [RPC v12.2 Stand-Alone Object + MaaS](#rpc-v122-stand-alone-object--maas)                       | r12.2.0rc3        | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.2 - Object MaaS - Latest Tag)        | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.2 - Object MaaS - Latest Tag - Unpatched)        |
+| [RPC v12.2 Stand-Alone Object](#rpc-v122-stand-alone-object)                                    | r12.2.0rc3        | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.2 - Object - Latest Tag)             | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.2 - Object - Latest Tag - Unpatched)             |
+| [RPC v12.1 Full + Ceph + External Network + MaaS](#rpc-v121-full--ceph--external-network--maas) | r12.1.3           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.1 - Full Ceph Net MaaS - Latest Tag) | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.1 - Full Ceph Net MaaS - Latest Tag - Unpatched) |
+| [RPC v12.1 Full + Ceph + External Network](#rpc-v121-full--ceph--external-network)              | r12.1.3           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.1 - Full Ceph Net - Latest Tag)      | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.1 - Full Ceph Net - Latest Tag - Unpatched)      |
+| [RPC v12.1 Full + External Network + MaaS](#rpc-v121-full--external-network--maas)              | r12.1.3           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.1 - Full Net MaaS - Latest Tag)      | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.1 - Full Net MaaS - Latest Tag - Unpatched)      |
+| [RPC v12.1 Full + External Network](#rpc-v121-full--external-network)                           | r12.1.3           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.1 - Full Net - Latest Tag)           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.1 - Full Net - Latest Tag - Unpatched)           |
+| [RPC v12.1 Stand-Alone Object + MaaS](#rpc-v121-stand-alone-object--maas)                       | r12.1.3           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.1 - Object MaaS - Latest Tag)        | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.1 - Object MaaS - Latest Tag - Unpatched)        |
+| [RPC v12.1 Stand-Alone Object](#rpc-v121-stand-alone-object)                                    | r12.1.3           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.1 - Object - Latest Tag)             | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.1 - Object - Latest Tag - Unpatched)             |
 | [RPC v12.0 Full + Ceph + External Network + MaaS](#rpc-v120-full--ceph--external-network--maas) | r12.0.2           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Ceph Net MaaS - Latest Tag) | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Ceph Net MaaS - Latest Tag - Unpatched) |
 | [RPC v12.0 Full + Ceph + External Network](#rpc-v120-full--ceph--external-network)              | r12.0.2           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Ceph Net - Latest Tag)      | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Ceph Net - Latest Tag - Unpatched)      |
 | [RPC v12.0 Full + External Network + MaaS](#rpc-v120-full--external-network--maas)              | r12.0.2           | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Net MaaS - Latest Tag)      | ![Build Status](http://jenkins.cloudtrain.me:8080/buildStatus/icon?job=RPC v12.0 - Full Net MaaS - Latest Tag - Unpatched)      |
@@ -77,6 +89,32 @@ Templates define the cloud resources necessary for the environment. These can be
 
 Template parameters may be passed in through the use of an environment file. There are several environments that have been provided for various types of deployments. These can be found in the `environments` directory.
 
+#### RPC v12.2
+
+* `rpc-12.2-full-ceph-net-maas.yml` - Compute, Block, Object, Ceph, External Network, MaaS
+* `rpc-12.2-full-ceph-maas.yml`     - Compute, Block, Object, Ceph, MaaS
+* `rpc-12.2-full-ceph-net.yml`      - Compute, Block, Object, Ceph, External Network
+* `rpc-12.2-full-ceph.yml`          - Compute, Block, Object, Ceph
+* `rpc-12.2-full-net-maas.yml`      - Compute, Block, Object, External Network, MaaS
+* `rpc-12.2-full-maas.yml`          - Compute, Block, Object, Maas
+* `rpc-12.2-full-net.yml`           - Compute, Block, Object, External Network
+* `rpc-12.2-full.yml`               - Compute, Block, Object
+* `rpc-12.2-object-maas.yml`        - Stand-Alone Object, MaaS
+* `rpc-12.2-object.yml`             - Stand-Alone Object
+
+#### RPC v12.1
+
+* `rpc-12.1-full-ceph-net-maas.yml` - Compute, Block, Object, Ceph, External Network, MaaS
+* `rpc-12.1-full-ceph-maas.yml`     - Compute, Block, Object, Ceph, MaaS
+* `rpc-12.1-full-ceph-net.yml`      - Compute, Block, Object, Ceph, External Network
+* `rpc-12.1-full-ceph.yml`          - Compute, Block, Object, Ceph
+* `rpc-12.1-full-net-maas.yml`      - Compute, Block, Object, External Network, MaaS
+* `rpc-12.1-full-maas.yml`          - Compute, Block, Object, Maas
+* `rpc-12.1-full-net.yml`           - Compute, Block, Object, External Network
+* `rpc-12.1-full.yml`               - Compute, Block, Object
+* `rpc-12.1-object-maas.yml`        - Stand-Alone Object, MaaS
+* `rpc-12.1-object.yml`             - Stand-Alone Object
+
 #### RPC v12.0
 
 * `rpc-12.0-full-ceph-net-maas.yml` - Compute, Block, Object, Ceph, External Network, MaaS
@@ -89,6 +127,7 @@ Template parameters may be passed in through the use of an environment file. The
 * `rpc-12.0-full.yml`               - Compute, Block, Object
 * `rpc-12.0-object-maas.yml`        - Stand-Alone Object, MaaS
 * `rpc-12.0-object.yml`             - Stand-Alone Object
+
 
 #### RPC v11.1
 
@@ -133,6 +172,200 @@ parameters:
   rackspace_cloud_password: SomeUsersPassword
   rackspace_cloud_api_key: SomeAPIKey
   maas_notification_email_address: you@example.com
+```
+
+### Sample Deployments v12.2
+
+#### RPC v12.2 Full + Ceph + External Network + MaaS
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full-ceph.yml \
+  -e environments/rpc-12.0-full-ceph-net-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
+```
+
+#### RPC v12.2 Full + Ceph + MaaS
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full-ceph.yml \
+  -e environments/rpc-12.0-full-ceph-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
+```
+
+#### RPC v12.2 Full + Ceph + External Network
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full-ceph.yml \
+  -e environments/rpc-12.0-full-ceph-net.yml \
+  <stack-name>
+```
+
+#### RPC v12.2 Full + Ceph
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full-ceph.yml \
+  -e environments/rpc-12.0-full-ceph.yml \
+  <stack-name>
+```
+
+#### RPC v12.2 Full + External Network + MaaS
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full.yml \
+  -e environments/rpc-12.0-full-net-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
+```
+
+#### RPC v12.2 Full + MaaS
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full.yml \
+  -e environments/rpc-12.0-full-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
+```
+
+#### RPC v12.2 Full + External Network
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full.yml \
+  -e environments/rpc-12.0-full-net.yml \
+  <stack-name>
+```
+
+#### RPC v12.2 Full
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full.yml \
+  -e environments/rpc-12.0-full.yml \
+  <stack-name>
+```
+
+#### RPC v12.2 Stand-Alone Object + MaaS
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-object.yml \
+  -e environments/rpc-12.0-object-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
+```
+
+#### RPC v12.2 Stand-Alone Object
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-object.yml \
+  -e environments/rpc-12.0-object.yml \
+  <stack-name>
+```
+
+### Sample Deployments v12.1
+
+#### RPC v12.1 Full + Ceph + External Network + MaaS
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full-ceph.yml \
+  -e environments/rpc-12.0-full-ceph-net-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
+```
+
+#### RPC v12.1 Full + Ceph + MaaS
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full-ceph.yml \
+  -e environments/rpc-12.0-full-ceph-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
+```
+
+#### RPC v12.1 Full + Ceph + External Network
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full-ceph.yml \
+  -e environments/rpc-12.0-full-ceph-net.yml \
+  <stack-name>
+```
+
+#### RPC v12.1 Full + Ceph
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full-ceph.yml \
+  -e environments/rpc-12.0-full-ceph.yml \
+  <stack-name>
+```
+
+#### RPC v12.1 Full + External Network + MaaS
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full.yml \
+  -e environments/rpc-12.0-full-net-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
+```
+
+#### RPC v12.1 Full + MaaS
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full.yml \
+  -e environments/rpc-12.0-full-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
+```
+
+#### RPC v12.1 Full + External Network
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full.yml \
+  -e environments/rpc-12.0-full-net.yml \
+  <stack-name>
+```
+
+#### RPC v12.1 Full
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-full.yml \
+  -e environments/rpc-12.0-full.yml \
+  <stack-name>
+```
+
+#### RPC v12.1 Stand-Alone Object + MaaS
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-object.yml \
+  -e environments/rpc-12.0-object-maas.yml \
+  -e environments/user-maas-credentials.yml \
+  <stack-name>
+```
+
+#### RPC v12.1 Stand-Alone Object
+
+```
+heat stack-create -t 240 \
+  -f templates/rpc-object.yml \
+  -e environments/rpc-12.0-object.yml \
+  <stack-name>
 ```
 
 ### Sample Deployments v12.0
