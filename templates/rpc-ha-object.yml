@@ -318,8 +318,10 @@ resources:
                         export RPC_SERIES="10.1"
                     elif [[ "$@" == "kilo" ]]; then
                         export RPC_SERIES="11.1"
-                    elif [[ "$@" == "liberty-12.0" || "$@" == "master" ]]; then
-                        export RPC_SERIES="12.0"
+                    elif [[ "$@" == "liberty-12.1" ]]; then
+                        export RPC_SERIES="12.1"
+                    elif [[ "$@" == "liberty-12.2" || "$@" == "master" ]]; then
+                        export RPC_SERIES="12.2"
                     else
                         export RPC_SERIES=`echo $@ | sed 's/^r//g' | awk -F '[\.]' '{ print $1 "." $2 }'`
                     fi
