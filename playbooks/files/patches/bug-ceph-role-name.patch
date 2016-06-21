@@ -1,0 +1,145 @@
+From c2be71e80920034d401806dcca9caf1bf0d51bec Mon Sep 17 00:00:00 2001
+From: Matt Thompson <mattt@defunct.ca>
+Date: Thu, 12 May 2016 16:50:58 +0100
+Subject: [PATCH] Update Ceph roles used
+
+Update the names of the Ceph roles used to correctly reference them with
+their Ansible Galaxy names.
+
+The roles ceph-mon and ceph-osd have a dependency of ceph.ceph-common.
+This was originally ceph-common but was changed to allow the roles to be
+uploaded to Ansible Galaxy. ansible-role-requirements.yml was specifying
+ceph-common and not ceph.ceph-common. This meant that installing
+ceph-mon and ceph-osd caused ceph.ceph-common to be downloaded and the
+version used was HEAD of the ceph-common master branch instead of the
+version specified in ansible-role-requirements.yml. This issue was not
+detected for two reasons, firstly because the newer versions of
+ceph-common worked with the older versions of ceph-mon and ceph-osd.
+Secondly the Ceph role repos are generated using git subtree from a
+single shared repo [1] and that process was broken which meant that
+changes to the roles were not being published.
+
+To address the above issue this patch updates the role names and SHAs
+used.
+
+A clean up task is added to remove the roles downloaded using the
+previous names.
+
+[1] https://github.com/ceph/ceph-ansible
+
+Co-Authored-By: git-harry <git-harry@live.co.uk>
+
+Closes #1071
+
+(cherry picked from commit 7c192d3d6ec06fc745eec5de753a50b905d6c6e5)
+---
+ .gitignore                    | 6 +++---
+ ansible-role-requirements.yml | 6 +++---
+ rpcd/playbooks/ceph-mon.yml   | 2 +-
+ rpcd/playbooks/ceph-osd.yml   | 2 +-
+ rpcd/playbooks/setup-maas.yml | 2 +-
+ scripts/deploy.sh             | 3 +++
+ scripts/linting-ansible.sh    | 6 +++---
+ 7 files changed, 15 insertions(+), 12 deletions(-)
+
+diff --git a/.gitignore b/.gitignore
+index 7ee33b4..8dc6a20 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -54,6 +54,6 @@ docs/_build/
+ target/
+ 
+ # generated files
+-rpcd/playbooks/roles/ceph-common
+-rpcd/playbooks/roles/ceph-mon
+-rpcd/playbooks/roles/ceph-osd
++rpcd/playbooks/roles/ceph.ceph-common
++rpcd/playbooks/roles/ceph.ceph-mon
++rpcd/playbooks/roles/ceph.ceph-osd
+diff --git a/ansible-role-requirements.yml b/ansible-role-requirements.yml
+index f68035a..5627e81 100644
+--- a/ansible-role-requirements.yml
++++ b/ansible-role-requirements.yml
+@@ -1,9 +1,9 @@
+-- name: ceph-common
++- name: ceph.ceph-common
+   src: https://github.com/ceph/ansible-ceph-common.git
+   version: 1c623611a1d43b4c9116d1a0c21f0bdbdd87a0e7
+-- name: ceph-mon
++- name: ceph.ceph-mon
+   src: https://github.com/ceph/ansible-ceph-mon.git
+   version: 01d3d6f0b06125b33b1e25745c06fa1d7137f7e9
+-- name: ceph-osd
++- name: ceph.ceph-osd
+   src: https://github.com/ceph/ansible-ceph-osd.git
+   version: 434a13f4d3ee3f60c410052d2670d5dfea034bf8
+diff --git a/rpcd/playbooks/ceph-mon.yml b/rpcd/playbooks/ceph-mon.yml
+index 5db6e45..bc65bee 100644
+--- a/rpcd/playbooks/ceph-mon.yml
++++ b/rpcd/playbooks/ceph-mon.yml
+@@ -18,7 +18,7 @@
+   user: root
+   max_fail_percentage: 0
+   roles:
+-    - ceph-mon
++    - ceph.ceph-mon
+   tasks:
+     - name: Check if rbd pool exists and is empty
+       shell: rados -p rbd df | egrep '^rbd( +0){9}$'
+diff --git a/rpcd/playbooks/ceph-osd.yml b/rpcd/playbooks/ceph-osd.yml
+index 23f7e36..a4f7557 100644
+--- a/rpcd/playbooks/ceph-osd.yml
++++ b/rpcd/playbooks/ceph-osd.yml
+@@ -42,6 +42,6 @@
+       tags:
+         - ceph-logs
+   roles:
+-    - ceph-osd
++    - ceph.ceph-osd
+   vars:
+     is_metal: "{{ properties.is_metal|default(false) }}"
+diff --git a/rpcd/playbooks/setup-maas.yml b/rpcd/playbooks/setup-maas.yml
+index 6a90483..176d030 100644
+--- a/rpcd/playbooks/setup-maas.yml
++++ b/rpcd/playbooks/setup-maas.yml
+@@ -19,7 +19,7 @@
+ - name: Install Ceph dependencies
+   hosts: osds_all:mons_all:&hosts
+   roles:
+-    - role: ceph-common
++    - role: ceph.ceph-common
+ 
+ - name: Install MaaS
+   hosts: hosts:all_containers
+diff --git a/scripts/deploy.sh b/scripts/deploy.sh
+index 097d6a9..122e3df 100755
+--- a/scripts/deploy.sh
++++ b/scripts/deploy.sh
+@@ -32,6 +32,9 @@ cd ${OA_DIR}
+ 
+ # bootstrap ansible and install galaxy roles (needed whether AIO or multinode)
+ which openstack-ansible || ./scripts/bootstrap-ansible.sh
++# This removes Ceph roles downloaded using their pre-Ansible-Galaxy names
++ansible-galaxy remove --roles-path /opt/rpc-openstack/rpcd/playbooks/roles/ ceph-common ceph-mon ceph-osd
++
+ ansible-galaxy install --role-file=/opt/rpc-openstack/ansible-role-requirements.yml --force \
+                            --roles-path=/opt/rpc-openstack/rpcd/playbooks/roles
+ 
+diff --git a/scripts/linting-ansible.sh b/scripts/linting-ansible.sh
+index 5b0b780..76acb77 100755
+--- a/scripts/linting-ansible.sh
++++ b/scripts/linting-ansible.sh
+@@ -31,7 +31,7 @@ pushd rpcd/playbooks/
+   # Lint playbooks and roles while skipping the ceph-* roles. They are not
+   # ours and so we do not wish to lint them and receive errors about code we
+   # do not maintain.
+-  ansible-lint *.yml --exclude roles/ceph-common \
+-                     --exclude roles/ceph-mon \
+-                     --exclude roles/ceph-osd
++  ansible-lint *.yml --exclude roles/ceph.ceph-common \
++                     --exclude roles/ceph.ceph-mon \
++                     --exclude roles/ceph.ceph-osd
+ popd
+-- 
+2.8.3
+

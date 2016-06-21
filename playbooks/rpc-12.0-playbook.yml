@@ -370,7 +370,8 @@
       command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack
       when: apply_patches | bool
       ignore_errors: yes
-      with_items: []
+      with_items:
+        - bug-ceph-role-name.patch
 
     - name: Bugs - Apply Patches (Ceph MON)
       command: git apply /opt/cloud-training/rpc-heat-ansible/playbooks/files/patches/{{ item }} chdir=/opt/rpc-openstack/rpcd/playbooks/roles/ceph-mon
