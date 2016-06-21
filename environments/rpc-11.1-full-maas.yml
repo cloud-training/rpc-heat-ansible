@@ -1,3 +1,3 @@
 parameters:
   ansible_tags: compute,block,object,maas
-  rpc_release: r11.1.4
+  rpc_release: r11.1.11

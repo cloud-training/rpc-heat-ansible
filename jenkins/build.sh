@@ -18,8 +18,10 @@ if [[ "$RPC_RELEASE" == "juno" ]]; then
     RPC_SERIES="10.1"
 elif [[ "$RPC_RELEASE" == "kilo" ]]; then
     RPC_SERIES="11.1"
-elif [[ "$RPC_RELEASE" == "liberty-12.0" || "$RPC_RELEASE" == "master" ]]; then
-    RPC_SERIES="12.0"
+elif [[ "$RPC_RELEASE" == "liberty-12.1" ]]; then
+    RPC_SERIES="12.1"
+elif [[ "$RPC_RELEASE" == "liberty-12.2" || "$RPC_RELEASE" == "master" ]]; then
+    RPC_SERIES="12.2"
 else
     RPC_SERIES=`echo $RPC_RELEASE | sed 's/^r//g' | awk -F '[\.]' '{ print $1 "." $2 }'`
 fi
