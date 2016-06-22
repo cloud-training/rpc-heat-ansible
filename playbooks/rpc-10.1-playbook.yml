@@ -331,7 +331,7 @@
       when: apply_patches | bool
       ignore_errors: yes
       with_items:
-        - bug-1522897.patch
+        - 10.1/bug-1522897.patch
 
     - name: Get Modern PIP
       command: curl -O http://mirror.rackspace.com/rackspaceprivatecloud/downloads/get-pip.py chdir=/opt creates=/opt/get-pip.py

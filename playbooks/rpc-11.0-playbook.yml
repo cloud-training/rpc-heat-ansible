@@ -344,7 +344,7 @@
       when: apply_patches | bool
       ignore_errors: yes
       with_items:
-        - bug-rabbitless-maas.patch
+        - 11.0/bug-rabbitless-maas.patch
 
     - name: Create /etc/openstack_deploy
       file: dest=/etc/openstack_deploy state=directory
