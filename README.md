@@ -181,7 +181,7 @@ parameters:
 ```
 heat stack-create -t 240 \
   -f templates/rpc-full-ceph.yml \
-  -e environments/rpc-12.0-full-ceph-net-maas.yml \
+  -e environments/rpc-12.2-full-ceph-net-maas.yml \
   -e environments/user-maas-credentials.yml \
   <stack-name>
 ```
@@ -191,7 +191,7 @@ heat stack-create -t 240 \
 ```
 heat stack-create -t 240 \
   -f templates/rpc-full-ceph.yml \
-  -e environments/rpc-12.0-full-ceph-maas.yml \
+  -e environments/rpc-12.2-full-ceph-maas.yml \
   -e environments/user-maas-credentials.yml \
   <stack-name>
 ```
@@ -201,7 +201,7 @@ heat stack-create -t 240 \
 ```
 heat stack-create -t 240 \
   -f templates/rpc-full-ceph.yml \
-  -e environments/rpc-12.0-full-ceph-net.yml \
+  -e environments/rpc-12.2-full-ceph-net.yml \
   <stack-name>
 ```
 
@@ -210,7 +210,7 @@ heat stack-create -t 240 \
 ```
 heat stack-create -t 240 \
   -f templates/rpc-full-ceph.yml \
-  -e environments/rpc-12.0-full-ceph.yml \
+  -e environments/rpc-12.2-full-ceph.yml \
   <stack-name>
 ```
 
@@ -219,7 +219,7 @@ heat stack-create -t 240 \
 ```
 heat stack-create -t 240 \
   -f templates/rpc-full.yml \
-  -e environments/rpc-12.0-full-net-maas.yml \
+  -e environments/rpc-12.2-full-net-maas.yml \
   -e environments/user-maas-credentials.yml \
   <stack-name>
 ```
@@ -229,7 +229,7 @@ heat stack-create -t 240 \
 ```
 heat stack-create -t 240 \
   -f templates/rpc-full.yml \
-  -e environments/rpc-12.0-full-maas.yml \
+  -e environments/rpc-12.2-full-maas.yml \
   -e environments/user-maas-credentials.yml \
   <stack-name>
 ```
@@ -239,7 +239,7 @@ heat stack-create -t 240 \
 ```
 heat stack-create -t 240 \
   -f templates/rpc-full.yml \
-  -e environments/rpc-12.0-full-net.yml \
+  -e environments/rpc-12.2-full-net.yml \
   <stack-name>
 ```
 
@@ -248,7 +248,7 @@ heat stack-create -t 240 \
 ```
 heat stack-create -t 240 \
   -f templates/rpc-full.yml \
-  -e environments/rpc-12.0-full.yml \
+  -e environments/rpc-12.2-full.yml \
   <stack-name>
 ```
 
@@ -257,7 +257,7 @@ heat stack-create -t 240 \
 ```
 heat stack-create -t 240 \
   -f templates/rpc-object.yml \
-  -e environments/rpc-12.0-object-maas.yml \
+  -e environments/rpc-12.2-object-maas.yml \
   -e environments/user-maas-credentials.yml \
   <stack-name>
 ```
@@ -267,7 +267,7 @@ heat stack-create -t 240 \
 ```
 heat stack-create -t 240 \
   -f templates/rpc-object.yml \
-  -e environments/rpc-12.0-object.yml \
+  -e environments/rpc-12.2-object.yml \
   <stack-name>
 ```
 
@@ -278,7 +278,7 @@ heat stack-create -t 240 \
 ```
 heat stack-create -t 240 \
   -f templates/rpc-full-ceph.yml \
-  -e environments/rpc-12.0-full-ceph-net-maas.yml \
+  -e environments/rpc-12.1-full-ceph-net-maas.yml \
   -e environments/user-maas-credentials.yml \
   <stack-name>
 ```
@@ -288,7 +288,7 @@ heat stack-create -t 240 \
 ```
 heat stack-create -t 240 \
   -f templates/rpc-full-ceph.yml \
-  -e environments/rpc-12.0-full-ceph-maas.yml \
+  -e environments/rpc-12.1-full-ceph-maas.yml \
   -e environments/user-maas-credentials.yml \
   <stack-name>
 ```
@@ -298,7 +298,7 @@ heat stack-create -t 240 \
 ```
 heat stack-create -t 240 \
   -f templates/rpc-full-ceph.yml \
-  -e environments/rpc-12.0-full-ceph-net.yml \
+  -e environments/rpc-12.1-full-ceph-net.yml \
   <stack-name>
 ```
 
@@ -307,7 +307,7 @@ heat stack-create -t 240 \
 ```
 heat stack-create -t 240 \
   -f templates/rpc-full-ceph.yml \
-  -e environments/rpc-12.0-full-ceph.yml \
+  -e environments/rpc-12.1-full-ceph.yml \
   <stack-name>
 ```
 
@@ -316,7 +316,7 @@ heat stack-create -t 240 \
 ```
 heat stack-create -t 240 \
   -f templates/rpc-full.yml \
-  -e environments/rpc-12.0-full-net-maas.yml \
+  -e environments/rpc-12.1-full-net-maas.yml \
   -e environments/user-maas-credentials.yml \
   <stack-name>
 ```
@@ -326,7 +326,7 @@ heat stack-create -t 240 \
 ```
 heat stack-create -t 240 \
   -f templates/rpc-full.yml \
-  -e environments/rpc-12.0-full-maas.yml \
+  -e environments/rpc-12.1-full-maas.yml \
   -e environments/user-maas-credentials.yml \
   <stack-name>
 ```
@@ -336,7 +336,7 @@ heat stack-create -t 240 \
 ```
 heat stack-create -t 240 \
   -f templates/rpc-full.yml \
-  -e environments/rpc-12.0-full-net.yml \
+  -e environments/rpc-12.1-full-net.yml \
   <stack-name>
 ```
 
@@ -345,7 +345,7 @@ heat stack-create -t 240 \
 ```
 heat stack-create -t 240 \
   -f templates/rpc-full.yml \
-  -e environments/rpc-12.0-full.yml \
+  -e environments/rpc-12.1-full.yml \
   <stack-name>
 ```
 
@@ -354,7 +354,7 @@ heat stack-create -t 240 \
 ```
 heat stack-create -t 240 \
   -f templates/rpc-object.yml \
-  -e environments/rpc-12.0-object-maas.yml \
+  -e environments/rpc-12.1-object-maas.yml \
   -e environments/user-maas-credentials.yml \
   <stack-name>
 ```
@@ -364,7 +364,7 @@ heat stack-create -t 240 \
 ```
 heat stack-create -t 240 \
   -f templates/rpc-object.yml \
-  -e environments/rpc-12.0-object.yml \
+  -e environments/rpc-12.1-object.yml \
   <stack-name>
 ```
 
